@@ -6,8 +6,6 @@
   <title>SYMO</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -77,28 +75,7 @@
   }
   #sl{position:fixed;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
 
-  /* ==========================================
-     MAPPA — sfondo fisso, COMPLETAMENTE FERMA
-     Visibile solo su tab Mappa
-  ========================================== */
-  #map{
-    position:fixed;inset:0;width:100%;height:100%;z-index:4;
-    opacity:0;pointer-events:none;
-    transition:opacity .6s ease;
-  }
-  #map.map-on{opacity:1;}
-  #map-overlay{
-    position:fixed;inset:0;z-index:5;pointer-events:none;
-    background:
-      linear-gradient(to bottom,rgba(3,5,8,.70) 0%,rgba(3,5,8,.1) 35%,rgba(3,5,8,.1) 65%,rgba(3,5,8,.75) 100%);
-    opacity:0;transition:opacity .6s ease;
-  }
-  #map-overlay.map-on{opacity:1;}
-  .leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) brightness(0.44) saturate(2.2) contrast(1.1);}
-  .leaflet-container{background:#030508;}
-  .leaflet-control-zoom,.leaflet-control-attribution{display:none!important;}
-
-  /* ORBS — sopra mappa, sotto app */
+  /* ORBS */
   #ov{position:fixed;inset:0;z-index:5;pointer-events:none;
     background:radial-gradient(ellipse 65% 55% at 10% 8%,rgba(18,65,8,.32) 0%,transparent 52%),
                radial-gradient(ellipse 55% 50% at 90% 92%,rgba(8,52,4,.28) 0%,transparent 52%),
@@ -197,17 +174,6 @@
   .panel{position:absolute;inset:0;padding:13px 17px;opacity:0;transform:translateY(5px);pointer-events:none;transition:opacity .25s,transform .25s;}
   .panel.on{opacity:1;transform:translateY(0);pointer-events:all;}
 
-  /* PANEL MAPPA — solo label coordinate, sfondo è #map globale */
-  .panel-map{padding:0!important;}
-  .map-label{
-    position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-    display:flex;align-items:center;gap:7px;
-    background:rgba(8,14,30,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.09);border-radius:var(--rp);
-    padding:6px 14px;font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.8px;
-    pointer-events:none;
-  }
-
   /* PANEL ESTERNO */
   .pext{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px;}
   .extl{}
@@ -272,10 +238,6 @@
 <div id="scan-sweep"></div>
 <div id="corners"></div>
 <div id="particles"></div>
-
-<!-- MAPPA — fixed, mostrata solo su tab Mappa, COMPLETAMENTE FERMA -->
-<div id="map"></div>
-<div id="map-overlay"></div>
 
 <div id="ov"></div>
 <div id="orbs"><div class="orb oa"></div><div class="orb ob"></div><div class="orb oc"></div></div>
@@ -348,16 +310,8 @@
     <div class="cwx glass">
       <div class="tabs">
 
-        <!-- TAB 1: MAPPA -->
-        <button class="tab active" id="tab-map" onclick="swTab('map')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-            <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
-          </svg>Mappa
-        </button>
-
-        <!-- TAB 2: ESTERNO -->
-        <button class="tab" id="tab-ext" onclick="swTab('ext')">
+        <!-- TAB 1: ESTERNO -->
+        <button class="tab active" id="tab-ext" onclick="swTab('ext')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
             <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -367,7 +321,7 @@
           </svg>Esterno
         </button>
 
-        <!-- TAB 3: CONFRONTO -->
+        <!-- TAB 2: CONFRONTO -->
         <button class="tab" id="tab-cmp" onclick="swTab('cmp')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
@@ -378,16 +332,8 @@
 
       <div class="panels">
 
-        <!-- PANEL 1: MAPPA -->
-        <div class="panel panel-map on" id="panel-map">
-          <div class="map-label">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-            45.6855N · 8.4604E · Borgomanero
-          </div>
-        </div>
-
-        <!-- PANEL 2: ESTERNO (tab separata, div separato) -->
-        <div class="panel pext" id="panel-ext">
+        <!-- PANEL 1: ESTERNO -->
+        <div class="panel pext on" id="panel-ext">
           <div class="extl">
             <div class="eloc">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -428,7 +374,7 @@
           </div>
         </div>
 
-        <!-- PANEL 3: CONFRONTO (tab separata, div separato) -->
+        <!-- PANEL 2: CONFRONTO (tab separata, div separato) -->
         <div class="panel pcmp" id="panel-cmp">
           <div class="ccard">
             <div class="ctop">
@@ -492,49 +438,15 @@
 })();
 
 /* ==========================================
-   MAPPA — COMPLETAMENTE FERMA, zero drift
+   2 TAB: Esterno e Confronto
 ========================================== */
-const mapEl=document.getElementById('map');
-const mapOvEl=document.getElementById('map-overlay');
-
-const map=L.map('map',{
-  center:[45.6855,8.4604],
-  zoom:15,
-  zoomControl:false,
-  attributionControl:false,
-  dragging:false,
-  scrollWheelZoom:false,
-  doubleClickZoom:false,
-  boxZoom:false,
-  keyboard:false,
-  tap:false,
-  touchZoom:false
-});
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
-
-// Mostra mappa subito (tab Mappa è quella di default)
-map.whenReady(()=>{
-  mapEl.classList.add('map-on');
-  mapOvEl.classList.add('map-on');
-  setTimeout(()=>map.invalidateSize(),100);
-});
-// NON c'è nessuna funzione drift() — la mappa è FERMA
-
-/* ==========================================
-   3 TAB SEPARATE E INDIPENDENTI
-========================================== */
-const TABS=['map','ext','cmp'];
+const TABS=['ext','cmp'];
 
 function swTab(n){
   TABS.forEach(k=>{
     document.getElementById('tab-'+k).classList.toggle('active',k===n);
     document.getElementById('panel-'+k).classList.toggle('on',k===n);
   });
-  // Mappa visibile SOLO tab "map"
-  const showMap=(n==='map');
-  mapEl.classList.toggle('map-on',showMap);
-  mapOvEl.classList.toggle('map-on',showMap);
-  if(showMap)setTimeout(()=>map.invalidateSize(),150);
   if(n==='cmp')updDelta();
 }
 
