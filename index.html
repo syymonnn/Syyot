@@ -8,384 +8,445 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #04070f;
-      --glass:    rgba(255,255,255,0.035);
-      --glass-2:  rgba(255,255,255,0.06);
-      --glass-3:  rgba(255,255,255,0.09);
-      --border:   rgba(255,255,255,0.07);
-      --border-l: rgba(255,255,255,0.14);
-      --green:  #39ff14;
-      --yellow: #ccff00;
-      --grad:   linear-gradient(135deg, #39ff14 0%, #ccff00 100%);
-      --glow:   0 0 30px rgba(57,255,20,0.4);
-      --glow-s: 0 0 14px rgba(57,255,20,0.3);
-      --txt:    #eef3ff;
-      --muted:  #3d506a;
-      --mid:    #6a7f9a;
-      --danger: #ff3e5e;
-      --r:    24px;
-      --r-s:  14px;
-      --r-p:  100px;
+      --bg:      #04070f;
+      --g1:      rgba(255,255,255,0.030);
+      --g2:      rgba(255,255,255,0.055);
+      --g3:      rgba(255,255,255,0.085);
+      --bd:      rgba(255,255,255,0.068);
+      --bdl:     rgba(255,255,255,0.15);
+      --green:   #39ff14;
+      --yellow:  #ccff00;
+      --grad:    linear-gradient(135deg,#39ff14 0%,#ccff00 100%);
+      --glow:    0 0 28px rgba(57,255,20,0.45);
+      --glows:   0 0 12px rgba(57,255,20,0.3);
+      --txt:     #edf2ff;
+      --muted:   #374f6a;
+      --mid:     #697f9a;
+      --danger:  #ff3e5e;
+      --r:       22px;
+      --rs:      13px;
+      --rp:      100px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
 
-    body {
+    body{
       font-family:'Sora',system-ui,sans-serif;
       background:var(--bg);
       color:var(--txt);
-      min-height:100vh;
-      overflow-x:hidden;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
     }
 
-    /* ── CANVAS BACKGROUND ── */
-    #bg-canvas {
-      position:fixed;inset:0;
-      width:100%;height:100%;
-      z-index:0;
-      pointer-events:none;
+    /* ══════════════════════════════════════════
+       BACKGROUND
+    ══════════════════════════════════════════ */
+    .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+
+    /* Static deep gradient */
+    .bg-base{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse 80% 55% at 5%  0%,  #0e2808 0%,transparent 52%),
+        radial-gradient(ellipse 55% 45% at 95% 100%, #081d05 0%,transparent 52%),
+        radial-gradient(ellipse 45% 65% at 50% 50%,  #050d1a 0%,transparent 68%),
+        var(--bg);
     }
 
-    /* Animated gradient orbs */
-    .orb-layer {
-      position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+    /* Animated mesh */
+    .bg-mesh{
+      position:absolute;inset:-60%;width:220%;height:220%;
+      background:
+        radial-gradient(circle 650px at 18% 28%, rgba(57,255,20,0.055) 0%,transparent 70%),
+        radial-gradient(circle 500px at 82% 72%, rgba(204,255,0,0.042) 0%,transparent 70%),
+        radial-gradient(circle 380px at 58%  8%, rgba(20,180,10,0.032) 0%,transparent 70%),
+        radial-gradient(circle 320px at  8% 82%, rgba(57,255,20,0.028) 0%,transparent 70%);
+      animation:meshDrift 22s ease-in-out infinite alternate;
     }
-    .orb {
-      position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;
-      animation:orbFloat linear infinite;
-    }
-    .orb-1 {
-      width:600px;height:600px;
-      background:radial-gradient(circle, #1a4a0a 0%, #39ff1430 60%, transparent 100%);
-      top:-200px;left:-150px;
-      animation-duration:22s;animation-delay:0s;
-    }
-    .orb-2 {
-      width:500px;height:500px;
-      background:radial-gradient(circle, #2a3a00 0%, #ccff0040 60%, transparent 100%);
-      top:40%;right:-180px;
-      animation-duration:18s;animation-delay:-6s;
-    }
-    .orb-3 {
-      width:400px;height:400px;
-      background:radial-gradient(circle, #0a1a35 0%, #1a4aff20 60%, transparent 100%);
-      bottom:-100px;left:30%;
-      animation-duration:26s;animation-delay:-12s;
-    }
-    .orb-4 {
-      width:300px;height:300px;
-      background:radial-gradient(circle, #1a3a10 0%, #39ff1425 60%, transparent 100%);
-      top:25%;left:40%;
-      animation-duration:15s;animation-delay:-4s;
-    }
-    @keyframes orbFloat {
-      0%   {transform:translate(0px,0px) scale(1);}
-      25%  {transform:translate(40px,-30px) scale(1.05);}
-      50%  {transform:translate(-20px,50px) scale(0.95);}
-      75%  {transform:translate(-50px,-20px) scale(1.03);}
-      100% {transform:translate(0px,0px) scale(1);}
+    @keyframes meshDrift{
+      0%  {transform:translate(0,0) scale(1);}
+      33% {transform:translate(4%,-5%) scale(1.05);}
+      66% {transform:translate(-5%,4%) scale(.96);}
+      100%{transform:translate(3%,3%) scale(1.04);}
     }
 
-    /* Scanline overlay */
-    .scanlines {
-      position:fixed;inset:0;z-index:2;pointer-events:none;
+    /* 3-D perspective grid */
+    .grid-wrap{
+      position:absolute;
+      bottom:-5%;left:-15%;right:-15%;
+      height:68%;
+      perspective:550px;
+      perspective-origin:50% -10%;
+    }
+    .grid-plane{
+      position:absolute;inset:0;
+      transform:rotateX(65deg);
+      transform-origin:50% 0%;
+      background-image:
+        linear-gradient(rgba(57,255,20,.14) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(57,255,20,.14) 1px,transparent 1px);
+      background-size:52px 52px;
+      animation:gridScroll 3.5s linear infinite;
+      -webkit-mask-image:radial-gradient(ellipse 88% 75% at 50% 100%,black 20%,transparent 78%);
+      mask-image:radial-gradient(ellipse 88% 75% at 50% 100%,black 20%,transparent 78%);
+    }
+    @keyframes gridScroll{
+      from{background-position:center 0}
+      to  {background-position:center 52px}
+    }
+
+    /* Horizon glow */
+    .horizon{
+      position:absolute;bottom:31%;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(57,255,20,.5) 25%,rgba(204,255,0,.7) 50%,rgba(57,255,20,.5) 75%,transparent);
+      filter:blur(.8px);
+      animation:hPulse 3.5s ease-in-out infinite;
+    }
+    .horizon-halo{
+      position:absolute;bottom:28%;left:8%;right:8%;height:50px;
+      background:radial-gradient(ellipse 80% 100% at 50% 0%,rgba(57,255,20,.1) 0%,transparent 100%);
+      filter:blur(10px);
+      animation:hPulse 3.5s ease-in-out infinite;
+    }
+    @keyframes hPulse{0%,100%{opacity:.65}50%{opacity:1}}
+
+    /* Floating orbs */
+    .orb{position:absolute;border-radius:50%;filter:blur(75px);animation:orbF linear infinite;}
+    .orb1{width:680px;height:680px;top:-260px;left:-210px;
+          background:radial-gradient(circle,rgba(57,255,20,.065) 0%,transparent 70%);
+          animation-duration:26s;}
+    .orb2{width:480px;height:480px;top:32%;right:-175px;
+          background:radial-gradient(circle,rgba(204,255,0,.052) 0%,transparent 70%);
+          animation-duration:20s;animation-delay:-8s;}
+    .orb3{width:380px;height:380px;bottom:-100px;left:28%;
+          background:radial-gradient(circle,rgba(28,100,255,.038) 0%,transparent 70%);
+          animation-duration:30s;animation-delay:-15s;}
+    @keyframes orbF{
+      0%  {transform:translate(0,0) scale(1);}
+      25% {transform:translate(32px,-26px) scale(1.06);}
+      50% {transform:translate(-18px,44px) scale(.93);}
+      75% {transform:translate(-42px,-16px) scale(1.04);}
+      100%{transform:translate(0,0) scale(1);}
+    }
+
+    /* Scanlines */
+    .scanlines{
+      position:absolute;inset:0;
       background:repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(0,0,0,0.04) 3px,
-        rgba(0,0,0,0.04) 4px
+        to bottom,transparent 0,transparent 3px,
+        rgba(0,0,0,.042) 3px,rgba(0,0,0,.042) 4px
       );
     }
 
-    /* Noise grain */
-    .grain {
-      position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.025;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      background-size:200px 200px;
-      animation:grainShift 0.15s steps(1) infinite;
-    }
-    @keyframes grainShift {
-      0%{background-position:0 0}25%{background-position:-30px 20px}
-      50%{background-position:20px -30px}75%{background-position:-10px 40px}100%{background-position:0 0}
-    }
-
-    /* ── SCROLL CONTAINER ── */
-    .scroll-wrap {
+    /* ══════════════════════════════════════════
+       APP SHELL — full-height, no scroll
+    ══════════════════════════════════════════ */
+    .app{
       position:relative;z-index:10;
-      min-height:100vh;
-      padding:24px 18px 60px;
-      display:flex;justify-content:center;
-    }
-    .dash {
-      width:100%;max-width:920px;
-      display:flex;flex-direction:column;gap:16px;
-    }
-
-    /* Stagger entry animations */
-    .dash > * {
-      opacity:0;transform:translateY(18px);
-      animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) forwards;
-    }
-    .dash > *:nth-child(1){animation-delay:.05s}
-    .dash > *:nth-child(2){animation-delay:.15s}
-    .dash > *:nth-child(3){animation-delay:.25s}
-    .dash > *:nth-child(4){animation-delay:.35s}
-    .dash > *:nth-child(5){animation-delay:.45s}
-    .dash > *:nth-child(6){animation-delay:.50s}
-    @keyframes fadeUp {
-      to{opacity:1;transform:translateY(0);}
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:18px 20px 18px;
+      gap:12px;
+      min-height:0;
     }
 
     /* ── TOP BAR ── */
-    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 2px;}
-    .greeting .hello{font-size:12px;font-weight:400;color:var(--mid);letter-spacing:.6px;margin-bottom:4px;text-transform:uppercase;}
-    .greeting h1{font-size:28px;font-weight:800;letter-spacing:-0.8px;line-height:1;}
+    .top-bar{
+      display:flex;justify-content:space-between;align-items:center;
+      flex-shrink:0;
+    }
+    .greeting .eye{font-size:10px;font-weight:600;color:var(--muted);
+                   letter-spacing:1.4px;text-transform:uppercase;margin-bottom:3px;}
+    .greeting h1{font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1;}
     .greeting h1 em{
       font-style:normal;
-      background:var(--grad);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-      filter:drop-shadow(0 0 12px rgba(57,255,20,0.4));
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 12px rgba(57,255,20,.5));
     }
+    .top-right{display:flex;align-items:center;gap:8px;}
 
-    .top-right{display:flex;align-items:center;gap:10px;}
-    .location-chip {
+    .loc-chip,.pill-btn{
       display:flex;align-items:center;gap:6px;
-      background:var(--glass-2);
-      backdrop-filter:blur(20px);
-      border:1px solid var(--border);
-      border-radius:var(--r-p);
-      padding:8px 14px;
-      font-size:11px;font-weight:500;color:var(--mid);
+      background:var(--g2);backdrop-filter:blur(20px);
+      border:1px solid var(--bd);border-radius:var(--rp);
+      padding:8px 14px;font-size:11px;font-weight:500;color:var(--mid);
+      transition:.2s;
     }
-    .location-chip svg{color:var(--green);}
+    .pill-btn{cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;}
+    .pill-btn:hover{border-color:var(--bdl);color:var(--txt);}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--danger);
+         transition:.3s;flex-shrink:0;}
+    .dot.ok{background:var(--green);box-shadow:var(--glows);}
 
-    .pill-btn{
-      display:flex;align-items:center;gap:7px;
-      background:var(--glass-2);backdrop-filter:blur(20px);
-      border:1px solid var(--border);border-radius:var(--r-p);
-      padding:9px 16px;font-size:12px;font-weight:600;color:var(--mid);
-      cursor:pointer;transition:.2s;font-family:'Sora',sans-serif;
+    /* ══════════════════════════════════════════
+       MAIN GRID  — fills remaining height
+    ══════════════════════════════════════════ */
+    .main-grid{
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:auto 1fr;
+      gap:12px;
+      min-height:0;
     }
-    .pill-btn:hover{border-color:var(--border-l);color:var(--txt);}
-    .dot{width:7px;height:7px;border-radius:50%;background:var(--danger);transition:.3s;flex-shrink:0;}
-    .dot.ok{background:var(--green);box-shadow:var(--glow-s);}
 
-    /* ── ENV SENSORS ── */
-    .env-block{
-      background:var(--glass);
-      backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-      border:1px solid var(--border);border-radius:var(--r);
-      padding:26px 30px;position:relative;overflow:hidden;
+    /* Card base */
+    .card{
+      background:var(--g1);
+      backdrop-filter:blur(38px);-webkit-backdrop-filter:blur(38px);
+      border:1px solid var(--bd);border-radius:var(--r);
+      position:relative;overflow:hidden;
+      display:flex;flex-direction:column;
     }
-    .env-block::after{
-      content:'';position:absolute;
-      top:0;left:0;right:0;height:1px;
-      background:linear-gradient(90deg, transparent, rgba(57,255,20,0.3), transparent);
+    .card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(57,255,20,.35),transparent);
     }
-    .env-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
-    .section-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
+
+    /* ── Sensors card (top-left) ── */
+    .card-sensors{
+      grid-column:1;grid-row:1;
+      padding:20px 22px;
+    }
+    .card-sensors .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+    .slabel{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
     .live-pill{
       display:flex;align-items:center;gap:5px;
-      background:rgba(57,255,20,0.07);border:1px solid rgba(57,255,20,0.18);
-      border-radius:var(--r-p);padding:4px 10px;
-      font-size:11px;font-weight:600;color:var(--green);
+      background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.18);
+      border-radius:var(--rp);padding:3px 9px;
+      font-size:10px;font-weight:700;color:var(--green);
     }
-    .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:var(--glow-s);animation:pulse 2s infinite;}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+    .ldot{width:5px;height:5px;border-radius:50%;background:var(--green);
+          box-shadow:var(--glows);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 
-    .stats-row{display:flex;gap:0;flex-wrap:wrap;}
-    .stat-item{flex:1;min-width:130px;padding:0 32px 0 0;position:relative;}
-    .stat-item+.stat-item{padding:0 0 0 32px;}
-    .stat-item+.stat-item::before{
+    .stats-row{display:flex;gap:0;}
+    .stat{flex:1;position:relative;padding-right:24px;}
+    .stat+.stat{padding:0 0 0 24px;}
+    .stat+.stat::before{
       content:'';position:absolute;left:0;top:5%;
-      width:1px;height:90%;background:var(--border);
+      width:1px;height:90%;background:var(--bd);
     }
-    .stat-item .val{
-      font-size:64px;font-weight:800;letter-spacing:-4px;line-height:1;
-      display:flex;align-items:baseline;gap:4px;
-    }
-    .val .num{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(57,255,20,0.3));}
-    .val .num.plain{background:none;-webkit-text-fill-color:var(--txt);filter:none;}
-    .val .unit{font-size:20px;font-weight:300;color:var(--mid);-webkit-text-fill-color:var(--mid);}
-    .stat-item .lbl{font-size:12px;font-weight:500;color:var(--mid);margin-top:6px;letter-spacing:.3px;}
+    .val{font-size:52px;font-weight:800;letter-spacing:-3.5px;line-height:1;
+         display:flex;align-items:baseline;gap:3px;}
+    .num{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+         filter:drop-shadow(0 0 8px rgba(57,255,20,.35));}
+    .num.plain{background:none;-webkit-text-fill-color:var(--txt);filter:none;}
+    .unit{font-size:17px;font-weight:300;color:var(--mid);-webkit-text-fill-color:var(--mid);}
+    .lbl{font-size:11px;font-weight:500;color:var(--mid);margin-top:5px;letter-spacing:.2px;}
 
-    /* ── WEATHER BLOCK ── */
-    .weather-block{
-      background:var(--glass);
-      backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-      border:1px solid var(--border);border-radius:var(--r);
-      overflow:hidden;position:relative;
+    /* ── Devices card (top-right) ── */
+    .card-devices{
+      grid-column:2;grid-row:1;
+      padding:20px 22px;
     }
-    .weather-block::after{
-      content:'';position:absolute;
-      top:0;left:0;right:0;height:1px;
-      background:linear-gradient(90deg, transparent, rgba(204,255,0,0.25), transparent);
+    .card-devices .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+    .dev-list{display:flex;flex-direction:column;gap:10px;}
+    .dev-row{
+      display:flex;align-items:center;gap:14px;
+      background:var(--g2);border:1px solid var(--bd);
+      border-radius:var(--rs);padding:12px 15px;
+      transition:border-color .25s,box-shadow .25s;
     }
-
-    .w-tabs{
-      display:flex;padding:14px 18px 0;gap:4px;
-      border-bottom:1px solid var(--border);
+    .dev-row.on{
+      border-color:rgba(57,255,20,.28);
+      box-shadow:0 0 20px rgba(57,255,20,.1), inset 0 0 20px rgba(57,255,20,.04);
     }
-    .w-tab{
-      padding:9px 18px;border-radius:var(--r-p) var(--r-p) 0 0;
-      font-size:12px;font-weight:600;color:var(--mid);
-      cursor:pointer;border:1px solid transparent;border-bottom:none;
-      background:transparent;font-family:'Sora',sans-serif;
-      letter-spacing:.2px;position:relative;bottom:-1px;transition:.2s;
-    }
-    .w-tab.active{background:var(--glass-3);border-color:var(--border);color:var(--txt);}
-    .w-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
-
-    .w-panel{display:none;padding:26px 30px;}
-    .w-panel.active{display:block;}
-
-    /* Esterno panel */
-    .w-main-row{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;}
-    .w-left{flex:1;min-width:200px;}
-    .w-city-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
-    .w-city-row svg{color:var(--green);}
-    .w-city-name{font-size:13px;font-weight:600;color:var(--mid);}
-    .w-city-sub{font-size:11px;font-weight:400;color:var(--muted);}
-    .w-icon{font-size:52px;line-height:1;margin-bottom:6px;}
-    .w-temp-big{
-      font-size:80px;font-weight:800;letter-spacing:-5px;line-height:1;
-      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-      filter:drop-shadow(0 0 16px rgba(57,255,20,0.3));
-    }
-    .w-condition{font-size:16px;font-weight:500;color:var(--mid);margin-top:8px;}
-    .w-right{display:flex;flex-direction:column;gap:8px;min-width:170px;}
-    .w-detail{
-      display:flex;justify-content:space-between;align-items:center;
-      background:var(--glass-2);border:1px solid var(--border);
-      border-radius:var(--r-s);padding:11px 14px;
-      transition:border-color .2s;
-    }
-    .w-detail:hover{border-color:var(--border-l);}
-    .wd-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px;}
-    .wd-val{font-size:14px;font-weight:700;color:var(--txt);}
-    .wd-icon{font-size:20px;}
-
-    /* Confronto panel */
-    .delta-label-row{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
-    .delta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-    .delta-card{
-      background:var(--glass-2);border:1px solid var(--border);
-      border-radius:var(--r-s);padding:16px;
-    }
-    .dc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-    .dc-name{font-size:12px;color:var(--mid);font-weight:500;}
-    .dc-diff{font-size:13px;font-weight:800;}
-    .dc-diff.pos{color:var(--green);}
-    .dc-diff.neg{color:var(--danger);}
-    .dc-diff.neu{color:var(--mid);}
-    .dc-bar-wrap{height:5px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden;margin-bottom:8px;}
-    .dc-bar{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.4,0,.2,1);}
-    .dc-bar.green{background:var(--grad);}
-    .dc-bar.danger{background:var(--danger);}
-    .dc-bar.blue{background:linear-gradient(90deg,#1a6fff,#00d4ff);}
-    .dc-vals{display:flex;justify-content:space-between;}
-    .dc-vals .inside{font-size:11px;font-weight:600;color:var(--green);}
-    .dc-vals .outside{font-size:11px;font-weight:500;color:var(--mid);}
-
-    .comfort-card{
-      background:var(--glass-2);border:1px solid var(--border);
-      border-radius:var(--r-s);padding:18px 20px;
-      display:flex;align-items:center;gap:16px;
-    }
-    .comfort-icon{font-size:40px;flex-shrink:0;}
-    .comfort-title{font-size:16px;font-weight:700;margin-bottom:3px;}
-    .comfort-desc{font-size:12px;color:var(--mid);}
-
-    /* ── DEVICES ── */
-    .section-header{display:flex;justify-content:space-between;align-items:flex-end;padding:0 2px;}
-    .section-header h3{font-size:18px;font-weight:700;letter-spacing:-.3px;}
-    .section-header h3 .accent-line{
-      display:block;width:36px;height:3px;
-      background:var(--grad);border-radius:3px;margin-top:5px;
-      box-shadow:var(--glow-s);
-    }
-    .section-count{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;}
-
-    .devices-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
-    .device-card{
-      background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      border:1px solid var(--border);border-radius:var(--r);
-      padding:22px;display:flex;flex-direction:column;min-height:185px;
-      transition:transform .2s, border-color .2s, box-shadow .2s;
-    }
-    .device-card:hover{border-color:var(--border-l);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
-    .device-card:active{transform:scale(.98);}
-    .device-icon{
-      width:44px;height:44px;border-radius:13px;
-      background:var(--glass-2);border:1px solid var(--border);
+    .dev-ico{
+      width:38px;height:38px;border-radius:11px;
+      background:var(--g2);border:1px solid var(--bd);
       display:flex;align-items:center;justify-content:center;
-      color:var(--yellow);margin-bottom:16px;
+      flex-shrink:0;transition:border-color .25s,background .25s;
     }
-    .device-info h4{font-size:17px;font-weight:700;margin-bottom:3px;}
-    .device-info p{font-size:12px;color:var(--muted);}
-    .device-controls{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:16px;}
-    .device-state{font-size:13px;font-weight:700;color:var(--muted);}
+    .dev-row.on .dev-ico{
+      background:rgba(57,255,20,.1);
+      border-color:rgba(57,255,20,.3);
+    }
+    .dev-ico svg{color:var(--yellow);transition:color .25s;}
+    .dev-row.on .dev-ico svg{color:var(--green);}
+    .dev-name{font-size:14px;font-weight:700;flex:1;}
+    .dev-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+    .dev-state{font-size:11px;font-weight:700;color:var(--muted);margin-right:10px;
+               transition:color .25s;white-space:nowrap;}
+    .dev-row.on .dev-state{color:var(--green);}
 
+    /* Toggle */
     .toggle{
-      width:58px;height:30px;border-radius:30px;
-      background:rgba(255,255,255,0.08);border:1px solid var(--border);
-      position:relative;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);
+      width:52px;height:27px;border-radius:var(--rp);
+      background:rgba(255,255,255,.08);border:1px solid var(--bd);
+      position:relative;cursor:pointer;flex-shrink:0;
+      transition:background .3s,box-shadow .3s,border-color .3s;
     }
     .toggle.on{background:var(--grad);box-shadow:var(--glow);border-color:transparent;}
     .knob{
-      width:22px;height:22px;border-radius:50%;background:#fff;
+      width:20px;height:20px;border-radius:50%;background:#fff;
       position:absolute;top:3px;left:3px;
-      transition:.3s cubic-bezier(.68,-.55,.265,1.55);
-      box-shadow:0 2px 6px rgba(0,0,0,0.3);
+      transition:.35s cubic-bezier(.68,-.55,.265,1.55);
+      box-shadow:0 2px 6px rgba(0,0,0,.3);
     }
-    .toggle.on .knob{left:32px;}
+    .toggle.on .knob{left:29px;}
 
-    /* ── FOOTER ── */
-    .meta-footer{
-      padding:14px 4px;font-size:11px;color:var(--muted);
+    /* Ring pulse on toggle-on */
+    .toggle::after{
+      content:'';position:absolute;inset:-3px;border-radius:var(--rp);
+      border:1.5px solid rgba(57,255,20,0);
+      transition:border-color .2s;
+    }
+    .toggle.on::after{border-color:rgba(57,255,20,.4);}
+    .toggle.ring-anim::after{
+      animation:ringPop .4s ease-out forwards;
+    }
+    @keyframes ringPop{
+      0%  {inset:-3px;opacity:1;border-color:rgba(57,255,20,.6);}
+      100%{inset:-10px;opacity:0;border-color:rgba(57,255,20,0);}
+    }
+
+    /* ── Weather block (bottom row, full width) ── */
+    .card-weather{
+      grid-column:1/-1;
+      grid-row:2;
+      display:flex;flex-direction:column;
+      min-height:0;
+    }
+
+    .w-tabs{
+      display:flex;padding:13px 18px 0;gap:4px;
+      border-bottom:1px solid var(--bd);flex-shrink:0;
+    }
+    .w-tab{
+      padding:8px 16px;border-radius:var(--rp) var(--rp) 0 0;
+      font-size:11px;font-weight:600;color:var(--mid);
+      cursor:pointer;border:1px solid transparent;border-bottom:none;
+      background:transparent;font-family:'Sora',sans-serif;
+      position:relative;bottom:-1px;transition:.2s;
+    }
+    .w-tab.active{background:var(--g3);border-color:var(--bd);color:var(--txt);}
+    .w-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
+
+    .w-panel{display:none;flex:1;padding:18px 22px;min-height:0;overflow:hidden;}
+    .w-panel.active{display:flex;flex-direction:column;}
+
+    /* Esterno panel */
+    .w-ext-layout{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:20px;
+      align-items:center;
+      flex:1;
+    }
+    .w-left{}
+    .w-location{display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+    .w-location svg{color:var(--green);}
+    .w-city{font-size:12px;font-weight:600;color:var(--mid);}
+    .w-city-sub{font-size:10px;color:var(--muted);}
+    .w-temp-row{display:flex;align-items:baseline;gap:8px;}
+    .w-temp-big{
+      font-size:68px;font-weight:800;letter-spacing:-4px;line-height:1;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 14px rgba(57,255,20,.3));
+    }
+    .w-icon-wrap{
+      width:52px;height:52px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .w-condition{font-size:13px;font-weight:500;color:var(--mid);margin-top:4px;}
+
+    .w-details{
+      display:grid;grid-template-columns:1fr 1fr;gap:8px;
+    }
+    .wdet{
+      background:var(--g2);border:1px solid var(--bd);
+      border-radius:var(--rs);padding:10px 13px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .wdet-ico{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .wdet-lbl{font-size:10px;color:var(--muted);font-weight:500;margin-bottom:2px;}
+    .wdet-val{font-size:14px;font-weight:700;}
+
+    /* Confronto panel */
+    .w-cmp-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;flex:1;align-items:start;}
+
+    .delta-card{
+      background:var(--g2);border:1px solid var(--bd);
+      border-radius:var(--rs);padding:14px 16px;
+    }
+    .dc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .dc-name{font-size:11px;color:var(--mid);font-weight:600;display:flex;align-items:center;gap:5px;}
+    .dc-diff{font-size:14px;font-weight:800;}
+    .dc-diff.pos{color:var(--green);}
+    .dc-diff.neg{color:var(--danger);}
+    .dc-diff.neu{color:var(--mid);}
+    .bar-wrap{height:5px;background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+    .bar{height:100%;border-radius:5px;transition:width 1.1s cubic-bezier(.4,0,.2,1);}
+    .bar.g{background:var(--grad);}
+    .bar.r{background:var(--danger);}
+    .bar.b{background:linear-gradient(90deg,#1a6fff,#00d4ff);}
+    .dc-vals{display:flex;justify-content:space-between;}
+    .dvi{font-size:11px;font-weight:600;color:var(--green);}
+    .dvo{font-size:11px;font-weight:500;color:var(--mid);}
+
+    .comfort-card{
+      background:var(--g2);border:1px solid var(--bd);
+      border-radius:var(--rs);padding:16px;
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .c-top{display:flex;align-items:center;gap:10px;}
+    .c-ico-wrap{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .c-title{font-size:14px;font-weight:700;}
+    .c-desc{font-size:11px;color:var(--mid);line-height:1.5;}
+
+    /* footer */
+    .meta{
+      flex-shrink:0;
       display:flex;justify-content:space-between;
-      font-family:'DM Mono',monospace;opacity:.45;
+      font-size:10px;color:var(--muted);
+      font-family:'DM Mono',monospace;
+      padding:0 2px;opacity:.45;
     }
-    code{color:var(--green);font-family:'DM Mono',monospace;}
+    code{color:var(--green);}
 
-    @media(max-width:540px){
-      .stat-item .val{font-size:50px;}
-      .w-temp-big{font-size:60px;}
-      .delta-grid{grid-template-columns:1fr;}
-      .top-right .location-chip{display:none;}
+    @media(max-width:640px){
+      .main-grid{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;}
+      .card-sensors{grid-column:1;grid-row:1;}
+      .card-devices{grid-column:1;grid-row:2;}
+      .card-weather{grid-column:1;grid-row:3;}
+      .val{font-size:44px;}
+      html,body{overflow:auto}
+      .w-cmp-layout{grid-template-columns:1fr 1fr;}
     }
   </style>
 </head>
 <body>
 
-<!-- CANVAS 3D BACKGROUND -->
-<canvas id="bg-canvas"></canvas>
-
-<!-- ORB LAYER -->
-<div class="orb-layer">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="orb orb-4"></div>
+<!-- BACKGROUND -->
+<div class="bg">
+  <div class="bg-base"></div>
+  <div class="bg-mesh"></div>
+  <div class="grid-wrap"><div class="grid-plane"></div></div>
+  <div class="horizon"></div>
+  <div class="horizon-halo"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="scanlines"></div>
 </div>
 
-<!-- SCANLINES + GRAIN -->
-<div class="scanlines"></div>
-<div class="grain"></div>
-
-<!-- CONTENT -->
-<div class="scroll-wrap">
-<div class="dash">
+<!-- APP -->
+<div class="app">
 
   <!-- TOP BAR -->
   <div class="top-bar">
     <div class="greeting">
-      <div class="hello">Sistema di controllo</div>
+      <div class="eye">Sistema di controllo</div>
       <h1>Hello, <em>SYMO</em></h1>
     </div>
     <div class="top-right">
-      <div class="location-chip">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <div class="loc-chip">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:var(--green)">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
         Borgomanero, NO
       </div>
       <button class="pill-btn" onclick="connect()">
@@ -395,331 +456,232 @@
     </div>
   </div>
 
-  <!-- ENV SENSORS -->
-  <div class="env-block">
-    <div class="env-header">
-      <span class="section-label">Ambiente Interno</span>
-      <div class="live-pill"><div class="live-dot"></div>LIVE</div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="val"><span class="num" id="temp">--.-</span><span class="unit">°C</span></div>
-        <div class="lbl">Temperatura interna</div>
-      </div>
-      <div class="stat-item">
-        <div class="val"><span class="num plain" id="hum">--.-</span><span class="unit">%</span></div>
-        <div class="lbl">Umidità interna</div>
-      </div>
-    </div>
-  </div>
+  <!-- MAIN GRID -->
+  <div class="main-grid">
 
-  <!-- WEATHER BLOCK -->
-  <div class="weather-block">
-    <div class="w-tabs">
-      <button class="w-tab active" onclick="switchTab(this,'esterno')">🌤&nbsp; Esterno</button>
-      <button class="w-tab" onclick="switchTab(this,'confronto')">⚡&nbsp; Confronto</button>
-    </div>
-
-    <!-- ESTERNO -->
-    <div class="w-panel active" id="panel-esterno">
-      <div class="w-main-row">
-        <div class="w-left">
-          <div class="w-city-row">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-            <span class="w-city-name">Borgomanero</span>
-            <span class="w-city-sub">· Via Caneto 24, NO</span>
-          </div>
-          <div class="w-icon" id="w-icon">⌛</div>
-          <div class="w-temp-big" id="w-temp">--°</div>
-          <div class="w-condition" id="w-cond">Caricamento meteo…</div>
+    <!-- SENSORS -->
+    <div class="card card-sensors">
+      <div class="ch">
+        <span class="slabel">Ambiente Interno</span>
+        <div class="live-pill"><div class="ldot"></div>LIVE</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="val"><span class="num" id="temp">--.-</span><span class="unit">°C</span></div>
+          <div class="lbl">Temperatura</div>
         </div>
-        <div class="w-right">
-          <div class="w-detail">
-            <div><div class="wd-label">Umidità</div><div class="wd-val" id="w-hum">--%</div></div>
-            <div class="wd-icon">💧</div>
-          </div>
-          <div class="w-detail">
-            <div><div class="wd-label">Vento</div><div class="wd-val" id="w-wind">-- km/h</div></div>
-            <div class="wd-icon">💨</div>
-          </div>
-          <div class="w-detail">
-            <div><div class="wd-label">Percepita</div><div class="wd-val" id="w-feels">--°C</div></div>
-            <div class="wd-icon">🌡</div>
-          </div>
-          <div class="w-detail">
-            <div><div class="wd-label">UV Index</div><div class="wd-val" id="w-uv">--</div></div>
-            <div class="wd-icon">☀️</div>
-          </div>
+        <div class="stat">
+          <div class="val"><span class="num plain" id="hum">--.-</span><span class="unit">%</span></div>
+          <div class="lbl">Umidità</div>
         </div>
       </div>
     </div>
 
-    <!-- CONFRONTO -->
-    <div class="w-panel" id="panel-confronto">
-      <div class="delta-label-row">Interno vs Esterno</div>
-      <div class="delta-grid">
-        <div class="delta-card">
-          <div class="dc-top">
-            <span class="dc-name">🌡 Temperatura</span>
-            <span class="dc-diff" id="d-temp-diff">—</span>
-          </div>
-          <div class="dc-bar-wrap"><div class="dc-bar green" id="d-temp-bar" style="width:0%"></div></div>
-          <div class="dc-vals">
-            <span class="inside">Int: <span id="dt-in">--</span>°</span>
-            <span class="outside">Est: <span id="dt-out">--</span>°</span>
-          </div>
-        </div>
-        <div class="delta-card">
-          <div class="dc-top">
-            <span class="dc-name">💧 Umidità</span>
-            <span class="dc-diff" id="d-hum-diff">—</span>
-          </div>
-          <div class="dc-bar-wrap"><div class="dc-bar blue" id="d-hum-bar" style="width:0%"></div></div>
-          <div class="dc-vals">
-            <span class="inside">Int: <span id="dh-in">--</span>%</span>
-            <span class="outside">Est: <span id="dh-out">--</span>%</span>
-          </div>
-        </div>
+    <!-- DEVICES -->
+    <div class="card card-devices">
+      <div class="ch">
+        <span class="slabel">Dispositivi</span>
+        <span style="font-size:10px;font-weight:600;color:var(--muted)">1 ATTIVO</span>
       </div>
-      <div class="comfort-card">
-        <div class="comfort-icon" id="c-icon">🤔</div>
-        <div>
-          <div class="comfort-title" id="c-label">In attesa dati…</div>
-          <div class="comfort-desc" id="c-desc">Connetti il sensore MQTT per l'analisi</div>
+      <div class="dev-list">
+        <div class="dev-row" id="devRow">
+          <div class="dev-ico">
+            <!-- bulb SVG -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/>
+              <path d="M9 18h6"/><path d="M10 22h4"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <div class="dev-name">Lighting</div>
+            <div class="dev-sub">Luce Stanza</div>
+          </div>
+          <span class="dev-state" id="toggleTxt">SPENTO</span>
+          <div id="toggle" class="toggle"><div class="knob"></div></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- DEVICES -->
-  <div class="section-header">
-    <h3>Dispositivi<span class="accent-line"></span></h3>
-    <span class="section-count">1 dispositivo</span>
-  </div>
+    <!-- WEATHER -->
+    <div class="card card-weather">
+      <div class="w-tabs">
+        <button class="w-tab active" onclick="switchTab(this,'ext')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:5px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Esterno
+        </button>
+        <button class="w-tab" onclick="switchTab(this,'cmp')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:5px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Confronto
+        </button>
+      </div>
 
-  <div class="devices-grid">
-    <div class="device-card">
-      <div class="device-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/>
-          <path d="M9 18h6"/><path d="M10 22h4"/>
-        </svg>
+      <!-- ESTERNO -->
+      <div class="w-panel active" id="panel-ext">
+        <div class="w-ext-layout">
+          <div class="w-left">
+            <div class="w-location">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              <span class="w-city">Borgomanero</span>
+              <span class="w-city-sub">· Via Caneto 24, NO</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div class="w-icon-wrap" id="w-icon">
+                <!-- spinner while loading -->
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(57,255,20,.4)" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="9" stroke-dasharray="56" stroke-dashoffset="14">
+                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                  </circle>
+                </svg>
+              </div>
+              <div>
+                <div class="w-temp-big" id="w-temp">--°</div>
+                <div class="w-condition" id="w-cond">Caricamento…</div>
+              </div>
+            </div>
+          </div>
+          <div class="w-details">
+            <div class="wdet">
+              <div class="wdet-ico">
+                <!-- humidity drop -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M12 2 C12 2 5 10 5 15 a7 7 0 0 0 14 0 C19 10 12 2 12 2z"/>
+                </svg>
+              </div>
+              <div><div class="wdet-lbl">Umidità</div><div class="wdet-val" id="w-hum">--%</div></div>
+            </div>
+            <div class="wdet">
+              <div class="wdet-ico">
+                <!-- wind -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+                  <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+                  <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+                </svg>
+              </div>
+              <div><div class="wdet-lbl">Vento</div><div class="wdet-val" id="w-wind">-- km/h</div></div>
+            </div>
+            <div class="wdet">
+              <div class="wdet-ico">
+                <!-- thermometer -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                </svg>
+              </div>
+              <div><div class="wdet-lbl">Percepita</div><div class="wdet-val" id="w-feels">--°C</div></div>
+            </div>
+            <div class="wdet">
+              <div class="wdet-ico">
+                <!-- sun / uv -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="4"/>
+                  <line x1="12" y1="2" x2="12" y2="5"/>
+                  <line x1="12" y1="19" x2="12" y2="22"/>
+                  <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/>
+                  <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+                  <line x1="2" y1="12" x2="5" y2="12"/>
+                  <line x1="19" y1="12" x2="22" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/>
+                  <line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+                </svg>
+              </div>
+              <div><div class="wdet-lbl">UV Index</div><div class="wdet-val" id="w-uv">--</div></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="device-info">
-        <h4>Lighting</h4>
-        <p>Luce Stanza</p>
-      </div>
-      <div class="device-controls">
-        <span class="device-state" id="toggleTxt">SPENTO</span>
-        <div id="toggle" class="toggle"><div class="knob"></div></div>
+
+      <!-- CONFRONTO -->
+      <div class="w-panel" id="panel-cmp">
+        <div class="w-cmp-layout">
+          <div class="delta-card">
+            <div class="dc-top">
+              <span class="dc-name">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                Temperatura
+              </span>
+              <span class="dc-diff" id="d-temp-diff">—</span>
+            </div>
+            <div class="bar-wrap"><div class="bar g" id="d-temp-bar" style="width:0%"></div></div>
+            <div class="dc-vals">
+              <span class="dvi">Int: <span id="dt-in">--</span>°</span>
+              <span class="dvo">Est: <span id="dt-out">--</span>°</span>
+            </div>
+          </div>
+          <div class="delta-card">
+            <div class="dc-top">
+              <span class="dc-name">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 C12 2 5 10 5 15 a7 7 0 0 0 14 0 C19 10 12 2 12 2z"/></svg>
+                Umidità
+              </span>
+              <span class="dc-diff" id="d-hum-diff">—</span>
+            </div>
+            <div class="bar-wrap"><div class="bar b" id="d-hum-bar" style="width:0%"></div></div>
+            <div class="dc-vals">
+              <span class="dvi">Int: <span id="dh-in">--</span>%</span>
+              <span class="dvo">Est: <span id="dh-out">--</span>%</span>
+            </div>
+          </div>
+          <div class="comfort-card">
+            <div class="c-top">
+              <div class="c-ico-wrap" id="c-ico">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div class="c-title" id="c-label">In attesa…</div>
+            </div>
+            <div class="c-desc" id="c-desc">Connetti il sensore MQTT per l'analisi del comfort</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="meta-footer">
+  </div><!-- /main-grid -->
+
+  <div class="meta">
     <span>MQTT <code>symo/room/data</code> · 45.6855°N 8.4604°E</span>
     <span id="lastMsg">Last: —</span>
   </div>
 
-</div>
-</div>
+</div><!-- /app -->
 
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════
-   THREE.JS PARTICLE MAP BACKGROUND
-═══════════════════════════════════════════ */
-(function() {
-  const canvas = document.getElementById('bg-canvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  if (!gl) return;
+/* ══════════════════════════════════════════
+   WEATHER  — Borgomanero fixed coords
+══════════════════════════════════════════ */
+const LAT = 45.6855, LON = 8.4604;
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Vertex shader: animated grid of points
-  const vsrc = `
-    attribute vec2 a_pos;
-    attribute float a_phase;
-    uniform float u_time;
-    uniform vec2 u_res;
-    void main() {
-      float wave = sin(a_pos.x * 3.0 + u_time * 0.6 + a_phase) * 0.012
-                 + cos(a_pos.y * 2.5 + u_time * 0.4 + a_phase * 1.3) * 0.008;
-      vec2 p = a_pos + vec2(wave);
-      gl_Position = vec4(p, 0.0, 1.0);
-      float dist = length(p);
-      gl_PointSize = mix(1.2, 2.8, 1.0 - smoothstep(0.0, 1.4, dist));
-    }
-  `;
-  const fsrc = `
-    precision mediump float;
-    uniform float u_time;
-    void main() {
-      vec2 c = gl_PointCoord - 0.5;
-      float d = length(c);
-      if (d > 0.5) discard;
-      float alpha = (1.0 - d * 2.0) * 0.35;
-      // Fluo green tint
-      vec3 col = mix(vec3(0.22, 1.0, 0.08), vec3(0.8, 1.0, 0.0), d * 2.0);
-      gl_FragColor = vec4(col, alpha);
-    }
-  `;
-
-  function mkShader(type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src); gl.compileShader(s);
-    return s;
-  }
-  const prog = gl.createProgram();
-  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, vsrc));
-  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, fsrc));
-  gl.linkProgram(prog);
-  gl.useProgram(prog);
-
-  // Build grid points — perspective-like, denser in center
-  const cols = 55, rows = 38;
-  const positions = [];
-  const phases = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const x = (c / (cols - 1)) * 2 - 1;
-      const y = (r / (rows - 1)) * 2 - 1;
-      positions.push(x, y);
-      phases.push(Math.random() * Math.PI * 2);
-    }
-  }
-  const N = positions.length / 2;
-
-  const posBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  const aPos = gl.getAttribLocation(prog, 'a_pos');
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-  const phaseBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(phases), gl.STATIC_DRAW);
-  const aPhase = gl.getAttribLocation(prog, 'a_phase');
-  gl.enableVertexAttribArray(aPhase);
-  gl.vertexAttribPointer(aPhase, 1, gl.FLOAT, false, 0, 0);
-
-  const uTime = gl.getUniformLocation(prog, 'u_time');
-  const uRes  = gl.getUniformLocation(prog, 'u_res');
-
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-  gl.clearColor(0, 0, 0, 0);
-
-  // Also draw grid lines
-  const lineVsrc = `
-    attribute vec2 a_pos;
-    attribute float a_phase;
-    uniform float u_time;
-    void main() {
-      float wave = sin(a_pos.x * 3.0 + u_time * 0.6 + a_phase) * 0.012
-                 + cos(a_pos.y * 2.5 + u_time * 0.4 + a_phase * 1.3) * 0.008;
-      vec2 p = a_pos + vec2(wave);
-      gl_Position = vec4(p, 0.0, 1.0);
-    }
-  `;
-  const lineFsrc = `
-    precision mediump float;
-    void main() {
-      gl_FragColor = vec4(0.22, 1.0, 0.08, 0.04);
-    }
-  `;
-  const lprog = gl.createProgram();
-  gl.attachShader(lprog, mkShader(gl.VERTEX_SHADER, lineVsrc));
-  gl.attachShader(lprog, mkShader(gl.FRAGMENT_SHADER, lineFsrc));
-  gl.linkProgram(lprog);
-
-  // Build line indices (grid)
-  const lineIdx = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols - 1; c++) {
-      lineIdx.push(r*cols+c, r*cols+c+1);
-    }
-  }
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows - 1; r++) {
-      lineIdx.push(r*cols+c, (r+1)*cols+c);
-    }
-  }
-  const idxBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIdx), gl.STATIC_DRAW);
-
-  let t0 = null;
-  function draw(ts) {
-    if (!t0) t0 = ts;
-    const t = (ts - t0) * 0.001;
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform1f(uTime, t);
-    gl.uniform2f(uRes, canvas.width, canvas.height);
-
-    // Draw lines
-    gl.useProgram(lprog);
-    const lPos   = gl.getAttribLocation(lprog, 'a_pos');
-    const lPhase = gl.getAttribLocation(lprog, 'a_phase');
-    const lTime  = gl.getUniformLocation(lprog, 'u_time');
-    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-    gl.enableVertexAttribArray(lPos);
-    gl.vertexAttribPointer(lPos, 2, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
-    gl.enableVertexAttribArray(lPhase);
-    gl.vertexAttribPointer(lPhase, 1, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
-    gl.uniform1f(lTime, t);
-    gl.drawElements(gl.LINES, lineIdx.length, gl.UNSIGNED_SHORT, 0);
-
-    // Draw points
-    gl.useProgram(prog);
-    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
-    gl.enableVertexAttribArray(aPhase);
-    gl.vertexAttribPointer(aPhase, 1, gl.FLOAT, false, 0, 0);
-    gl.uniform1f(uTime, t);
-    gl.drawArrays(gl.POINTS, 0, N);
-
-    requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
-})();
-
-/* ═══════════════════════════════════════════
-   WEATHER — fixed coords Borgomanero, NO
-═══════════════════════════════════════════ */
-const LAT  = 45.6855;
-const LON  = 8.4604;
-
-const WMO = {
-  0:'Sereno',1:'Parzialmente nuvoloso',2:'Nuvoloso',3:'Coperto',
+const WMO_LABEL = {
+  0:'Sereno',1:'Parz. nuvoloso',2:'Nuvoloso',3:'Coperto',
   45:'Nebbia',48:'Nebbia ghiacciata',
-  51:'Pioggerella leggera',53:'Pioggerella',55:'Pioggerella intensa',
+  51:'Pioggerella',53:'Pioggerella mod.',55:'Pioggerella intensa',
   61:'Pioggia leggera',63:'Pioggia',65:'Pioggia intensa',
   71:'Neve leggera',73:'Neve',75:'Neve intensa',
-  80:'Rovesci',81:'Rovesci moderati',82:'Rovesci forti',
-  95:'Temporale',96:'Temporale con grandine',99:'Temporale forte'
+  80:'Rovesci',81:'Rovesci mod.',82:'Rovesci forti',
+  95:'Temporale',96:'Temporale+grandine',99:'Temporale forte'
 };
-const WMO_ICON = {
-  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
-  45:'🌫',48:'🌫',
-  51:'🌦',53:'🌦',55:'🌧',
-  61:'🌧',63:'🌧',65:'⛈',
-  71:'❄️',73:'❄️',75:'❄️',
-  80:'🌦',81:'🌧',82:'⛈',
-  95:'⛈',96:'⛈',99:'⛈'
-};
+
+// SVG icons for each weather category
+function weatherSVG(code) {
+  const c = code ?? 0;
+  // Sunny
+  if (c === 0) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ccff00" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="rgba(204,255,0,.15)"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>`;
+  // Partly cloudy
+  if (c === 1 || c === 2) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.5" stroke="#ccff00" stroke-width="1.6" fill="rgba(204,255,0,.1)"/><line x1="9" y1="2" x2="9" y2="4" stroke="#ccff00" stroke-width="1.6"/><line x1="3.5" y1="3.5" x2="5" y2="5" stroke="#ccff00" stroke-width="1.6"/><line x1="2" y1="9" x2="4" y2="9" stroke="#ccff00" stroke-width="1.6"/><path d="M17 18a4 4 0 0 0 0-8 5 5 0 0 0-9.9 1A4 4 0 0 0 8 18z" stroke="rgba(255,255,255,.55)" stroke-width="1.5" fill="rgba(255,255,255,.06)"/></svg>`;
+  // Overcast
+  if (c === 3) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.6" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="rgba(255,255,255,.06)"/></svg>`;
+  // Fog
+  if (c === 45 || c === 48) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.6" stroke-linecap="round"><line x1="3" y1="10" x2="21" y2="10"/><line x1="5" y1="14" x2="19" y2="14"/><line x1="7" y1="18" x2="17" y2="18"/><path d="M17 6a4 4 0 0 0-7.9.9A3 3 0 0 0 6 10"/></svg>`;
+  // Rain / drizzle
+  if ([51,53,55,61,63,65,80,81,82].includes(c)) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M20 16.2A4.5 4.5 0 0 0 17.5 8H16A8 8 0 1 0 4 16.9" stroke="rgba(255,255,255,.5)" stroke-width="1.6"/><line x1="8" y1="19" x2="8" y2="21" stroke="#39ff14" stroke-width="1.8"/><line x1="12" y1="17" x2="12" y2="19" stroke="#39ff14" stroke-width="1.8"/><line x1="16" y1="19" x2="16" y2="21" stroke="#39ff14" stroke-width="1.8"/></svg>`;
+  // Snow
+  if ([71,73,75].includes(c)) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(200,220,255,.7)" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5 5-5-5"/><path d="M17 17l-5-5-5 5"/><line x1="4.22" y1="12" x2="19.78" y2="12"/><path d="M8 6l-4 6 4 6"/><path d="M16 6l4 6-4 6"/></svg>`;
+  // Storm
+  if ([95,96,99].includes(c)) return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" stroke="rgba(255,255,255,.5)" stroke-width="1.6"/><polyline points="13 11 9 17 15 17 11 23" stroke="#ccff00" stroke-width="1.8"/></svg>`;
+  // Default
+  return `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+}
 
 let outTemp = null, outHum = null;
 
@@ -728,60 +690,61 @@ async function fetchWeather() {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`
       + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index`
       + `&wind_speed_unit=kmh&timezone=Europe%2FRome`;
-    const res = await fetch(url);
-    const d   = await res.json();
-    const c   = d.current;
+    const d = await (await fetch(url)).json();
+    const c = d.current;
     outTemp = c.temperature_2m;
     outHum  = c.relative_humidity_2m;
     const code = c.weather_code ?? 0;
     document.getElementById('w-temp').textContent  = outTemp.toFixed(1) + '°';
-    document.getElementById('w-icon').textContent  = WMO_ICON[code] ?? '🌡';
-    document.getElementById('w-cond').textContent  = WMO[code] ?? 'N/A';
+    document.getElementById('w-icon').innerHTML    = weatherSVG(code);
+    document.getElementById('w-cond').textContent  = WMO_LABEL[code] ?? 'N/A';
     document.getElementById('w-hum').textContent   = outHum + '%';
     document.getElementById('w-wind').textContent  = (c.wind_speed_10m ?? '--') + ' km/h';
     document.getElementById('w-feels').textContent = (c.apparent_temperature?.toFixed(1) ?? '--') + '°C';
     document.getElementById('w-uv').textContent    = c.uv_index ?? '--';
     updateDelta();
   } catch(e) {
-    document.getElementById('w-cond').textContent = 'Errore caricamento meteo';
+    document.getElementById('w-cond').textContent = 'Errore rete';
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ══════════════════════════════════════════
    TABS
-═══════════════════════════════════════════ */
+══════════════════════════════════════════ */
 function switchTab(el, name) {
   document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.w-panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
-  if (name === 'confronto') updateDelta();
+  if (name === 'cmp') updateDelta();
 }
 
-/* ═══════════════════════════════════════════
-   DELTA / CONFRONTO
-═══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DELTA / COMFORT
+══════════════════════════════════════════ */
 let inTemp = null, inHum = null;
+
+const COMFORT_SVG = {
+  great: `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+  cold:  `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4a9eff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M16 15s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+  hot:   `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M16 15s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+  ok:    `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+};
 
 function updateDelta() {
   const hiT = inTemp !== null, hoT = outTemp !== null;
   const hiH = inHum  !== null, hoH = outHum  !== null;
-
-  // Temp
   document.getElementById('dt-in').textContent  = hiT ? inTemp.toFixed(1) : '--';
   document.getElementById('dt-out').textContent = hoT ? outTemp.toFixed(1) : '--';
   if (hiT && hoT) {
-    const dt = inTemp - outTemp;
-    const el = document.getElementById('d-temp-diff');
+    const dt  = inTemp - outTemp;
+    const el  = document.getElementById('d-temp-diff');
     el.textContent = (dt >= 0 ? '+' : '') + dt.toFixed(1) + '°';
     el.className   = 'dc-diff ' + (dt > 2 ? 'pos' : dt < -2 ? 'neg' : 'neu');
-    const pct = Math.min(100, (Math.abs(dt) / 15) * 100);
     const bar = document.getElementById('d-temp-bar');
-    bar.style.width = pct + '%';
-    bar.className   = 'dc-bar ' + (dt >= 0 ? 'green' : 'danger');
+    bar.style.width = Math.min(100, Math.abs(dt) / 15 * 100) + '%';
+    bar.className   = 'bar ' + (dt >= 0 ? 'g' : 'r');
   }
-
-  // Hum
   document.getElementById('dh-in').textContent  = hiH ? inHum.toFixed(0) : '--';
   document.getElementById('dh-out').textContent = hoH ? outHum.toFixed(0) : '--';
   if (hiH && hoH) {
@@ -789,74 +752,67 @@ function updateDelta() {
     const elH = document.getElementById('d-hum-diff');
     elH.textContent = (dh >= 0 ? '+' : '') + dh.toFixed(0) + '%';
     elH.className   = 'dc-diff ' + (Math.abs(dh) > 15 ? 'neg' : 'pos');
-    document.getElementById('d-hum-bar').style.width = Math.min(100, (Math.abs(dh) / 40) * 100) + '%';
+    document.getElementById('d-hum-bar').style.width = Math.min(100, Math.abs(dh) / 40 * 100) + '%';
   }
-
-  // Comfort
   if (inTemp !== null && inHum !== null) {
     const t = inTemp, h = inHum;
-    let icon, lbl, desc;
-    if (t >= 19 && t <= 25 && h >= 35 && h <= 60) {
-      icon='😊'; lbl='Ottimale'; desc='Condizioni ideali di temperatura e umidità';
-    } else if (t < 16) {
-      icon='🥶'; lbl='Troppo freddo'; desc='Considera di alzare il riscaldamento';
-    } else if (t > 27) {
-      icon='🥵'; lbl='Troppo caldo'; desc='Ventila la stanza o usa il climatizzatore';
-    } else if (h < 30) {
-      icon='💨'; lbl='Aria secca'; desc='Un umidificatore potrebbe migliorare il comfort';
-    } else if (h > 70) {
-      icon='💦'; lbl='Troppo umido'; desc='Ventila e considera un deumidificatore';
-    } else {
-      icon='🙂'; lbl='Accettabile'; desc='Condizioni nella norma';
-    }
-    document.getElementById('c-icon').textContent  = icon;
+    let key, lbl, desc;
+    if      (t >= 19 && t <= 25 && h >= 35 && h <= 60) { key='great'; lbl='Ottimale';       desc='Temperatura e umidità ideali per il comfort'; }
+    else if (t < 16)                                    { key='cold';  lbl='Troppo freddo';  desc='Considera di alzare il riscaldamento'; }
+    else if (t > 27)                                    { key='hot';   lbl='Troppo caldo';   desc='Ventila o accendi il climatizzatore'; }
+    else if (h < 30)                                    { key='ok';    lbl='Aria secca';     desc='Un umidificatore migliorebbe il comfort'; }
+    else if (h > 70)                                    { key='ok';    lbl='Troppo umido';   desc='Ventila e valuta un deumidificatore'; }
+    else                                                { key='ok';    lbl='Accettabile';    desc='Condizioni nella norma'; }
+    document.getElementById('c-ico').innerHTML   = COMFORT_SVG[key];
     document.getElementById('c-label').textContent = lbl;
     document.getElementById('c-desc').textContent  = desc;
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ══════════════════════════════════════════
    MQTT
-═══════════════════════════════════════════ */
+══════════════════════════════════════════ */
 const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud";
 const MQTT_PORT = 8884;
-const MQTT_USER = "syymon";
-const MQTT_PASS = "Piazzale99";
 const TOPIC_DATA  = "symo/room/data";
 const TOPIC_RELAY = "symo/room/relay";
 
 let client = null, relayState = 0;
-
-const elTemp      = document.getElementById('temp');
-const elHum       = document.getElementById('hum');
-const elDot       = document.getElementById('dot');
-const elConn      = document.getElementById('connText');
-const elLast      = document.getElementById('lastMsg');
-const elToggle    = document.getElementById('toggle');
-const elToggleTxt = document.getElementById('toggleTxt');
+const elTemp = document.getElementById('temp');
+const elHum  = document.getElementById('hum');
+const elDot  = document.getElementById('dot');
+const elConn = document.getElementById('connText');
+const elLast = document.getElementById('lastMsg');
+const elTgl  = document.getElementById('toggle');
+const elTxt  = document.getElementById('toggleTxt');
+const elRow  = document.getElementById('devRow');
 
 function setConn(ok, msg) {
   elDot.classList.toggle('ok', !!ok);
   elConn.textContent = msg;
 }
+
 function setRelayUI(on) {
   relayState = on ? 1 : 0;
-  elToggle.classList.toggle('on', !!on);
-  elToggleTxt.textContent = on ? 'ACCESO' : 'SPENTO';
-  elToggleTxt.style.color  = on ? 'var(--green)' : 'var(--muted)';
+  elTgl.classList.toggle('on', !!on);
+  elRow.classList.toggle('on', !!on);
+  elTxt.textContent = on ? 'ACCESO' : 'SPENTO';
+  // ring animation
+  elTgl.classList.remove('ring-anim');
+  void elTgl.offsetWidth; // reflow
+  elTgl.classList.add('ring-anim');
+  setTimeout(() => elTgl.classList.remove('ring-anim'), 450);
 }
+
 function connect() {
   if (client) { try { client.end(true); } catch(e){} client = null; }
   setConn(false, 'Connessione…');
   client = mqtt.connect(`wss://${MQTT_HOST}:${MQTT_PORT}/mqtt`, {
-    username: MQTT_USER, password: MQTT_PASS,
+    username: 'syymon', password: 'Piazzale99',
     clientId: 'symo-web-' + Math.random().toString(16).slice(2),
     clean: true, connectTimeout: 8000, reconnectPeriod: 2000, keepalive: 30
   });
-  client.on('connect', () => {
-    setConn(true, 'Connesso');
-    client.subscribe(TOPIC_DATA);
-  });
+  client.on('connect', () => { setConn(true,'Connesso'); client.subscribe(TOPIC_DATA); });
   client.on('message', (topic, payload) => {
     if (topic !== TOPIC_DATA) return;
     try {
@@ -871,17 +827,14 @@ function connect() {
   client.on('close', () => setConn(false, 'Offline'));
 }
 
-elToggle.addEventListener('click', () => {
+elTgl.addEventListener('click', () => {
   const next = relayState ? 0 : 1;
   setRelayUI(next);
   if (client && client.connected) client.publish(TOPIC_RELAY, next ? 'ON' : 'OFF');
 });
 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
+/* ══════ INIT ══════ */
 fetchWeather();
-// Refresh meteo ogni 10 min
 setInterval(fetchWeather, 600000);
 connect();
 </script>
