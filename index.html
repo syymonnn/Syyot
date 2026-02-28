@@ -1,349 +1,888 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Syyroom</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>SYMO – Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #04070f;
+      --glass:    rgba(255,255,255,0.035);
+      --glass-2:  rgba(255,255,255,0.06);
+      --glass-3:  rgba(255,255,255,0.09);
+      --border:   rgba(255,255,255,0.07);
+      --border-l: rgba(255,255,255,0.14);
+      --green:  #39ff14;
+      --yellow: #ccff00;
+      --grad:   linear-gradient(135deg, #39ff14 0%, #ccff00 100%);
+      --glow:   0 0 30px rgba(57,255,20,0.4);
+      --glow-s: 0 0 14px rgba(57,255,20,0.3);
+      --txt:    #eef3ff;
+      --muted:  #3d506a;
+      --mid:    #6a7f9a;
+      --danger: #ff3e5e;
+      --r:    24px;
+      --r-s:  14px;
+      --r-p:  100px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family:'Sora',system-ui,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
 
-:root{
-  --bg-body:#080b16;
-  --glass-bg:rgba(255,255,255,0.04);
-  --glass-border:rgba(255,255,255,0.08);
-  --fluo-green:#39ff14;
-  --fluo-yellow:#ccff00;
-  --fluo-gradient:linear-gradient(135deg,var(--fluo-green),var(--fluo-yellow));
-  --fluo-glow:0 0 20px rgba(57,255,20,0.4);
-  --text-main:#ffffff;
-  --text-muted:#8b9bb4;
-  --danger:#ff4d4d;
-}
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position:fixed;inset:0;
+      width:100%;height:100%;
+      z-index:0;
+      pointer-events:none;
+    }
 
-*{box-sizing:border-box;margin:0;padding:0;}
+    /* Animated gradient orbs */
+    .orb-layer {
+      position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+    }
+    .orb {
+      position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;
+      animation:orbFloat linear infinite;
+    }
+    .orb-1 {
+      width:600px;height:600px;
+      background:radial-gradient(circle, #1a4a0a 0%, #39ff1430 60%, transparent 100%);
+      top:-200px;left:-150px;
+      animation-duration:22s;animation-delay:0s;
+    }
+    .orb-2 {
+      width:500px;height:500px;
+      background:radial-gradient(circle, #2a3a00 0%, #ccff0040 60%, transparent 100%);
+      top:40%;right:-180px;
+      animation-duration:18s;animation-delay:-6s;
+    }
+    .orb-3 {
+      width:400px;height:400px;
+      background:radial-gradient(circle, #0a1a35 0%, #1a4aff20 60%, transparent 100%);
+      bottom:-100px;left:30%;
+      animation-duration:26s;animation-delay:-12s;
+    }
+    .orb-4 {
+      width:300px;height:300px;
+      background:radial-gradient(circle, #1a3a10 0%, #39ff1425 60%, transparent 100%);
+      top:25%;left:40%;
+      animation-duration:15s;animation-delay:-4s;
+    }
+    @keyframes orbFloat {
+      0%   {transform:translate(0px,0px) scale(1);}
+      25%  {transform:translate(40px,-30px) scale(1.05);}
+      50%  {transform:translate(-20px,50px) scale(0.95);}
+      75%  {transform:translate(-50px,-20px) scale(1.03);}
+      100% {transform:translate(0px,0px) scale(1);}
+    }
 
-body{
-  font-family:'Inter',system-ui;
-  background-color:var(--bg-body);
-  background-image:
-    radial-gradient(circle at 10% 10%,#1a2344 0%,transparent 40%),
-    radial-gradient(circle at 90% 90%,#0d1225 0%,transparent 40%);
-  color:var(--text-main);
-  min-height:100vh;
-  padding:20px;
-  display:flex;
-  justify-content:center;
-}
+    /* Scanline overlay */
+    .scanlines {
+      position:fixed;inset:0;z-index:2;pointer-events:none;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.04) 3px,
+        rgba(0,0,0,0.04) 4px
+      );
+    }
 
-.dashboard{
-  width:100%;
-  max-width:900px;
-  display:flex;
-  flex-direction:column;
-  gap:30px;
-}
+    /* Noise grain */
+    .grain {
+      position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.025;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size:200px 200px;
+      animation:grainShift 0.15s steps(1) infinite;
+    }
+    @keyframes grainShift {
+      0%{background-position:0 0}25%{background-position:-30px 20px}
+      50%{background-position:20px -30px}75%{background-position:-10px 40px}100%{background-position:0 0}
+    }
 
-.top-bar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+    /* ── SCROLL CONTAINER ── */
+    .scroll-wrap {
+      position:relative;z-index:10;
+      min-height:100vh;
+      padding:24px 18px 60px;
+      display:flex;justify-content:center;
+    }
+    .dash {
+      width:100%;max-width:920px;
+      display:flex;flex-direction:column;gap:16px;
+    }
 
-.status-badge{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  background:var(--glass-bg);
-  backdrop-filter:blur(15px);
-  padding:10px 16px;
-  border-radius:20px;
-  font-size:12px;
-  border:1px solid var(--glass-border);
-  cursor:pointer;
-}
+    /* Stagger entry animations */
+    .dash > * {
+      opacity:0;transform:translateY(18px);
+      animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .dash > *:nth-child(1){animation-delay:.05s}
+    .dash > *:nth-child(2){animation-delay:.15s}
+    .dash > *:nth-child(3){animation-delay:.25s}
+    .dash > *:nth-child(4){animation-delay:.35s}
+    .dash > *:nth-child(5){animation-delay:.45s}
+    .dash > *:nth-child(6){animation-delay:.50s}
+    @keyframes fadeUp {
+      to{opacity:1;transform:translateY(0);}
+    }
 
-.dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--danger);
-}
-.dot.ok{
-  background:var(--fluo-green);
-  box-shadow:0 0 10px var(--fluo-green);
-}
+    /* ── TOP BAR ── */
+    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 2px;}
+    .greeting .hello{font-size:12px;font-weight:400;color:var(--mid);letter-spacing:.6px;margin-bottom:4px;text-transform:uppercase;}
+    .greeting h1{font-size:28px;font-weight:800;letter-spacing:-0.8px;line-height:1;}
+    .greeting h1 em{
+      font-style:normal;
+      background:var(--grad);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 12px rgba(57,255,20,0.4));
+    }
 
-.main-stats{
-  background:var(--glass-bg);
-  backdrop-filter:blur(30px);
-  border-radius:32px;
-  padding:30px;
-  border:1px solid var(--glass-border);
-  box-shadow:0 20px 40px rgba(0,0,0,0.4);
-}
+    .top-right{display:flex;align-items:center;gap:10px;}
+    .location-chip {
+      display:flex;align-items:center;gap:6px;
+      background:var(--glass-2);
+      backdrop-filter:blur(20px);
+      border:1px solid var(--border);
+      border-radius:var(--r-p);
+      padding:8px 14px;
+      font-size:11px;font-weight:500;color:var(--mid);
+    }
+    .location-chip svg{color:var(--green);}
 
-.main-stats h2{
-  font-size:14px;
-  color:var(--text-muted);
-  margin-bottom:20px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
+    .pill-btn{
+      display:flex;align-items:center;gap:7px;
+      background:var(--glass-2);backdrop-filter:blur(20px);
+      border:1px solid var(--border);border-radius:var(--r-p);
+      padding:9px 16px;font-size:12px;font-weight:600;color:var(--mid);
+      cursor:pointer;transition:.2s;font-family:'Sora',sans-serif;
+    }
+    .pill-btn:hover{border-color:var(--border-l);color:var(--txt);}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--danger);transition:.3s;flex-shrink:0;}
+    .dot.ok{background:var(--green);box-shadow:var(--glow-s);}
 
-.env-tabs{
-  position:relative;
-  display:flex;
-  gap:10px;
-  margin-bottom:25px;
-}
+    /* ── ENV SENSORS ── */
+    .env-block{
+      background:var(--glass);
+      backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+      border:1px solid var(--border);border-radius:var(--r);
+      padding:26px 30px;position:relative;overflow:hidden;
+    }
+    .env-block::after{
+      content:'';position:absolute;
+      top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg, transparent, rgba(57,255,20,0.3), transparent);
+    }
+    .env-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+    .section-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
+    .live-pill{
+      display:flex;align-items:center;gap:5px;
+      background:rgba(57,255,20,0.07);border:1px solid rgba(57,255,20,0.18);
+      border-radius:var(--r-p);padding:4px 10px;
+      font-size:11px;font-weight:600;color:var(--green);
+    }
+    .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:var(--glow-s);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 
-.tab{
-  flex:1;
-  text-align:center;
-  padding:10px 0;
-  border-radius:16px;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  color:var(--text-muted);
-  position:relative;
-  z-index:2;
-}
+    .stats-row{display:flex;gap:0;flex-wrap:wrap;}
+    .stat-item{flex:1;min-width:130px;padding:0 32px 0 0;position:relative;}
+    .stat-item+.stat-item{padding:0 0 0 32px;}
+    .stat-item+.stat-item::before{
+      content:'';position:absolute;left:0;top:5%;
+      width:1px;height:90%;background:var(--border);
+    }
+    .stat-item .val{
+      font-size:64px;font-weight:800;letter-spacing:-4px;line-height:1;
+      display:flex;align-items:baseline;gap:4px;
+    }
+    .val .num{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(57,255,20,0.3));}
+    .val .num.plain{background:none;-webkit-text-fill-color:var(--txt);filter:none;}
+    .val .unit{font-size:20px;font-weight:300;color:var(--mid);-webkit-text-fill-color:var(--mid);}
+    .stat-item .lbl{font-size:12px;font-weight:500;color:var(--mid);margin-top:6px;letter-spacing:.3px;}
 
-.tab.active{color:#000;}
+    /* ── WEATHER BLOCK ── */
+    .weather-block{
+      background:var(--glass);
+      backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+      border:1px solid var(--border);border-radius:var(--r);
+      overflow:hidden;position:relative;
+    }
+    .weather-block::after{
+      content:'';position:absolute;
+      top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg, transparent, rgba(204,255,0,0.25), transparent);
+    }
 
-.tab-glow{
-  position:absolute;
-  height:100%;
-  width:50%;
-  background:var(--fluo-gradient);
-  border-radius:16px;
-  top:0;
-  left:0;
-  transition:0.35s cubic-bezier(.6,.2,.2,1);
-  box-shadow:var(--fluo-glow);
-  z-index:1;
-}
+    .w-tabs{
+      display:flex;padding:14px 18px 0;gap:4px;
+      border-bottom:1px solid var(--border);
+    }
+    .w-tab{
+      padding:9px 18px;border-radius:var(--r-p) var(--r-p) 0 0;
+      font-size:12px;font-weight:600;color:var(--mid);
+      cursor:pointer;border:1px solid transparent;border-bottom:none;
+      background:transparent;font-family:'Sora',sans-serif;
+      letter-spacing:.2px;position:relative;bottom:-1px;transition:.2s;
+    }
+    .w-tab.active{background:var(--glass-3);border-color:var(--border);color:var(--txt);}
+    .w-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
 
-.stats-wrapper{position:relative;overflow:hidden;}
+    .w-panel{display:none;padding:26px 30px;}
+    .w-panel.active{display:block;}
 
-.stats-grid{
-  display:flex;
-  gap:40px;
-  transition:0.4s;
-  opacity:0;
-  transform:translateY(10px);
-  position:absolute;
-  width:100%;
-}
+    /* Esterno panel */
+    .w-main-row{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;}
+    .w-left{flex:1;min-width:200px;}
+    .w-city-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+    .w-city-row svg{color:var(--green);}
+    .w-city-name{font-size:13px;font-weight:600;color:var(--mid);}
+    .w-city-sub{font-size:11px;font-weight:400;color:var(--muted);}
+    .w-icon{font-size:52px;line-height:1;margin-bottom:6px;}
+    .w-temp-big{
+      font-size:80px;font-weight:800;letter-spacing:-5px;line-height:1;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 16px rgba(57,255,20,0.3));
+    }
+    .w-condition{font-size:16px;font-weight:500;color:var(--mid);margin-top:8px;}
+    .w-right{display:flex;flex-direction:column;gap:8px;min-width:170px;}
+    .w-detail{
+      display:flex;justify-content:space-between;align-items:center;
+      background:var(--glass-2);border:1px solid var(--border);
+      border-radius:var(--r-s);padding:11px 14px;
+      transition:border-color .2s;
+    }
+    .w-detail:hover{border-color:var(--border-l);}
+    .wd-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px;}
+    .wd-val{font-size:14px;font-weight:700;color:var(--txt);}
+    .wd-icon{font-size:20px;}
 
-.stats-grid.active{
-  opacity:1;
-  transform:translateY(0);
-  position:relative;
-}
+    /* Confronto panel */
+    .delta-label-row{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
+    .delta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    .delta-card{
+      background:var(--glass-2);border:1px solid var(--border);
+      border-radius:var(--r-s);padding:16px;
+    }
+    .dc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .dc-name{font-size:12px;color:var(--mid);font-weight:500;}
+    .dc-diff{font-size:13px;font-weight:800;}
+    .dc-diff.pos{color:var(--green);}
+    .dc-diff.neg{color:var(--danger);}
+    .dc-diff.neu{color:var(--mid);}
+    .dc-bar-wrap{height:5px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+    .dc-bar{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+    .dc-bar.green{background:var(--grad);}
+    .dc-bar.danger{background:var(--danger);}
+    .dc-bar.blue{background:linear-gradient(90deg,#1a6fff,#00d4ff);}
+    .dc-vals{display:flex;justify-content:space-between;}
+    .dc-vals .inside{font-size:11px;font-weight:600;color:var(--green);}
+    .dc-vals .outside{font-size:11px;font-weight:500;color:var(--mid);}
 
-.stat-item .value{
-  font-size:56px;
-  font-weight:700;
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  letter-spacing:-2px;
-}
+    .comfort-card{
+      background:var(--glass-2);border:1px solid var(--border);
+      border-radius:var(--r-s);padding:18px 20px;
+      display:flex;align-items:center;gap:16px;
+    }
+    .comfort-icon{font-size:40px;flex-shrink:0;}
+    .comfort-title{font-size:16px;font-weight:700;margin-bottom:3px;}
+    .comfort-desc{font-size:12px;color:var(--mid);}
 
-.stat-item .unit{
-  font-size:20px;
-  color:var(--text-muted);
-}
+    /* ── DEVICES ── */
+    .section-header{display:flex;justify-content:space-between;align-items:flex-end;padding:0 2px;}
+    .section-header h3{font-size:18px;font-weight:700;letter-spacing:-.3px;}
+    .section-header h3 .accent-line{
+      display:block;width:36px;height:3px;
+      background:var(--grad);border-radius:3px;margin-top:5px;
+      box-shadow:var(--glow-s);
+    }
+    .section-count{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;}
 
-.stat-item .label{
-  font-size:14px;
-  color:var(--text-muted);
-}
+    .devices-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+    .device-card{
+      background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border:1px solid var(--border);border-radius:var(--r);
+      padding:22px;display:flex;flex-direction:column;min-height:185px;
+      transition:transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .device-card:hover{border-color:var(--border-l);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+    .device-card:active{transform:scale(.98);}
+    .device-icon{
+      width:44px;height:44px;border-radius:13px;
+      background:var(--glass-2);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--yellow);margin-bottom:16px;
+    }
+    .device-info h4{font-size:17px;font-weight:700;margin-bottom:3px;}
+    .device-info p{font-size:12px;color:var(--muted);}
+    .device-controls{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:16px;}
+    .device-state{font-size:13px;font-weight:700;color:var(--muted);}
 
-.stat-item.fluo-text .value{
-  background:var(--fluo-gradient);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+    .toggle{
+      width:58px;height:30px;border-radius:30px;
+      background:rgba(255,255,255,0.08);border:1px solid var(--border);
+      position:relative;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);
+    }
+    .toggle.on{background:var(--grad);box-shadow:var(--glow);border-color:transparent;}
+    .knob{
+      width:22px;height:22px;border-radius:50%;background:#fff;
+      position:absolute;top:3px;left:3px;
+      transition:.3s cubic-bezier(.68,-.55,.265,1.55);
+      box-shadow:0 2px 6px rgba(0,0,0,0.3);
+    }
+    .toggle.on .knob{left:32px;}
 
-.devices-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-}
+    /* ── FOOTER ── */
+    .meta-footer{
+      padding:14px 4px;font-size:11px;color:var(--muted);
+      display:flex;justify-content:space-between;
+      font-family:'DM Mono',monospace;opacity:.45;
+    }
+    code{color:var(--green);font-family:'DM Mono',monospace;}
 
-.device-card{
-  background:var(--glass-bg);
-  backdrop-filter:blur(20px);
-  border-radius:32px;
-  padding:24px;
-  border:1px solid var(--glass-border);
-  min-height:200px;
-  display:flex;
-  flex-direction:column;
-}
-
-.toggle{
-  width:60px;height:32px;border-radius:30px;
-  background:rgba(255,255,255,0.1);
-  position:relative;
-  cursor:pointer;
-  border:1px solid var(--glass-border);
-  transition:0.3s;
-}
-
-.toggle.on{
-  background:var(--fluo-gradient);
-  box-shadow:var(--fluo-glow);
-}
-
-.knob{
-  width:24px;height:24px;border-radius:50%;
-  background:#fff;
-  position:absolute;
-  top:3px;left:4px;
-  transition:0.3s cubic-bezier(.68,-0.55,.265,1.55);
-}
-
-.toggle.on .knob{left:30px;}
-</style>
+    @media(max-width:540px){
+      .stat-item .val{font-size:50px;}
+      .w-temp-big{font-size:60px;}
+      .delta-grid{grid-template-columns:1fr;}
+      .top-right .location-chip{display:none;}
+    }
+  </style>
 </head>
-
 <body>
-<div class="dashboard">
 
-<div class="top-bar">
-  <h1>Hello, Symo</h1>
-  <div class="status-badge" onclick="connect()">
-    <div id="dot" class="dot"></div>
-    <span id="connText">Disconnesso</span>
+<!-- CANVAS 3D BACKGROUND -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ORB LAYER -->
+<div class="orb-layer">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<!-- SCANLINES + GRAIN -->
+<div class="scanlines"></div>
+<div class="grain"></div>
+
+<!-- CONTENT -->
+<div class="scroll-wrap">
+<div class="dash">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="greeting">
+      <div class="hello">Sistema di controllo</div>
+      <h1>Hello, <em>SYMO</em></h1>
+    </div>
+    <div class="top-right">
+      <div class="location-chip">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Borgomanero, NO
+      </div>
+      <button class="pill-btn" onclick="connect()">
+        <div id="dot" class="dot"></div>
+        <span id="connText">Disconnesso</span>
+      </button>
+    </div>
   </div>
-</div>
 
-<div class="main-stats">
-<h2>Ambiente</h2>
-
-<div class="env-tabs">
-  <div class="tab active" data-tab="inside">Interno</div>
-  <div class="tab" data-tab="outside">Esterno</div>
-  <div class="tab-glow"></div>
-</div>
-
-<div class="stats-wrapper">
-
-<div class="stats-grid inside active">
-  <div class="stat-item fluo-text">
-    <div class="value"><span id="temp">--.-</span><span class="unit">°C</span></div>
-    <div class="label">Temperatura</div>
+  <!-- ENV SENSORS -->
+  <div class="env-block">
+    <div class="env-header">
+      <span class="section-label">Ambiente Interno</span>
+      <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="val"><span class="num" id="temp">--.-</span><span class="unit">°C</span></div>
+        <div class="lbl">Temperatura interna</div>
+      </div>
+      <div class="stat-item">
+        <div class="val"><span class="num plain" id="hum">--.-</span><span class="unit">%</span></div>
+        <div class="lbl">Umidità interna</div>
+      </div>
+    </div>
   </div>
-  <div class="stat-item">
-    <div class="value"><span id="hum">--.-</span><span class="unit">%</span></div>
-    <div class="label">Umidità</div>
+
+  <!-- WEATHER BLOCK -->
+  <div class="weather-block">
+    <div class="w-tabs">
+      <button class="w-tab active" onclick="switchTab(this,'esterno')">🌤&nbsp; Esterno</button>
+      <button class="w-tab" onclick="switchTab(this,'confronto')">⚡&nbsp; Confronto</button>
+    </div>
+
+    <!-- ESTERNO -->
+    <div class="w-panel active" id="panel-esterno">
+      <div class="w-main-row">
+        <div class="w-left">
+          <div class="w-city-row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span class="w-city-name">Borgomanero</span>
+            <span class="w-city-sub">· Via Caneto 24, NO</span>
+          </div>
+          <div class="w-icon" id="w-icon">⌛</div>
+          <div class="w-temp-big" id="w-temp">--°</div>
+          <div class="w-condition" id="w-cond">Caricamento meteo…</div>
+        </div>
+        <div class="w-right">
+          <div class="w-detail">
+            <div><div class="wd-label">Umidità</div><div class="wd-val" id="w-hum">--%</div></div>
+            <div class="wd-icon">💧</div>
+          </div>
+          <div class="w-detail">
+            <div><div class="wd-label">Vento</div><div class="wd-val" id="w-wind">-- km/h</div></div>
+            <div class="wd-icon">💨</div>
+          </div>
+          <div class="w-detail">
+            <div><div class="wd-label">Percepita</div><div class="wd-val" id="w-feels">--°C</div></div>
+            <div class="wd-icon">🌡</div>
+          </div>
+          <div class="w-detail">
+            <div><div class="wd-label">UV Index</div><div class="wd-val" id="w-uv">--</div></div>
+            <div class="wd-icon">☀️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFRONTO -->
+    <div class="w-panel" id="panel-confronto">
+      <div class="delta-label-row">Interno vs Esterno</div>
+      <div class="delta-grid">
+        <div class="delta-card">
+          <div class="dc-top">
+            <span class="dc-name">🌡 Temperatura</span>
+            <span class="dc-diff" id="d-temp-diff">—</span>
+          </div>
+          <div class="dc-bar-wrap"><div class="dc-bar green" id="d-temp-bar" style="width:0%"></div></div>
+          <div class="dc-vals">
+            <span class="inside">Int: <span id="dt-in">--</span>°</span>
+            <span class="outside">Est: <span id="dt-out">--</span>°</span>
+          </div>
+        </div>
+        <div class="delta-card">
+          <div class="dc-top">
+            <span class="dc-name">💧 Umidità</span>
+            <span class="dc-diff" id="d-hum-diff">—</span>
+          </div>
+          <div class="dc-bar-wrap"><div class="dc-bar blue" id="d-hum-bar" style="width:0%"></div></div>
+          <div class="dc-vals">
+            <span class="inside">Int: <span id="dh-in">--</span>%</span>
+            <span class="outside">Est: <span id="dh-out">--</span>%</span>
+          </div>
+        </div>
+      </div>
+      <div class="comfort-card">
+        <div class="comfort-icon" id="c-icon">🤔</div>
+        <div>
+          <div class="comfort-title" id="c-label">In attesa dati…</div>
+          <div class="comfort-desc" id="c-desc">Connetti il sensore MQTT per l'analisi</div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="stats-grid outside">
-  <div class="stat-item fluo-text">
-    <div class="value"><span id="extTemp">--.-</span><span class="unit">°C</span></div>
-    <div class="label">Temperatura Esterna</div>
+  <!-- DEVICES -->
+  <div class="section-header">
+    <h3>Dispositivi<span class="accent-line"></span></h3>
+    <span class="section-count">1 dispositivo</span>
   </div>
-  <div class="stat-item">
-    <div class="value"><span id="extHum">--.-</span><span class="unit">%</span></div>
-    <div class="label">Umidità Esterna</div>
+
+  <div class="devices-grid">
+    <div class="device-card">
+      <div class="device-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/>
+          <path d="M9 18h6"/><path d="M10 22h4"/>
+        </svg>
+      </div>
+      <div class="device-info">
+        <h4>Lighting</h4>
+        <p>Luce Stanza</p>
+      </div>
+      <div class="device-controls">
+        <span class="device-state" id="toggleTxt">SPENTO</span>
+        <div id="toggle" class="toggle"><div class="knob"></div></div>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="meta-footer">
+    <span>MQTT <code>symo/room/data</code> · 45.6855°N 8.4604°E</span>
+    <span id="lastMsg">Last: —</span>
+  </div>
 
 </div>
-</div>
-
-<div class="devices-grid">
-<div class="device-card">
-  <h4>Lighting</h4>
-  <div class="toggle" id="toggle"><div class="knob"></div></div>
-</div>
-</div>
-
 </div>
 
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
-const MQTT_HOST="ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud";
-const MQTT_WS_PORT=8884;
-const MQTT_USER="syymon";
-const MQTT_PASS="Piazzale99";
-const TOPIC_DATA="symo/room/data";
-const TOPIC_RELAY="symo/room/relay";
+/* ═══════════════════════════════════════════
+   THREE.JS PARTICLE MAP BACKGROUND
+═══════════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
 
-const LAT=45.4642;
-const LON=9.1900;
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-let client=null;
-let relayState=0;
+  // Vertex shader: animated grid of points
+  const vsrc = `
+    attribute vec2 a_pos;
+    attribute float a_phase;
+    uniform float u_time;
+    uniform vec2 u_res;
+    void main() {
+      float wave = sin(a_pos.x * 3.0 + u_time * 0.6 + a_phase) * 0.012
+                 + cos(a_pos.y * 2.5 + u_time * 0.4 + a_phase * 1.3) * 0.008;
+      vec2 p = a_pos + vec2(wave);
+      gl_Position = vec4(p, 0.0, 1.0);
+      float dist = length(p);
+      gl_PointSize = mix(1.2, 2.8, 1.0 - smoothstep(0.0, 1.4, dist));
+    }
+  `;
+  const fsrc = `
+    precision mediump float;
+    uniform float u_time;
+    void main() {
+      vec2 c = gl_PointCoord - 0.5;
+      float d = length(c);
+      if (d > 0.5) discard;
+      float alpha = (1.0 - d * 2.0) * 0.35;
+      // Fluo green tint
+      vec3 col = mix(vec3(0.22, 1.0, 0.08), vec3(0.8, 1.0, 0.0), d * 2.0);
+      gl_FragColor = vec4(col, alpha);
+    }
+  `;
 
-function connect(){
-if(client){client.end(true);}
-client=mqtt.connect(`wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`,{
-username:MQTT_USER,password:MQTT_PASS,
-clientId:"symo-web-"+Math.random().toString(16).slice(2)
-});
-client.on("connect",()=>{
-document.getElementById("dot").classList.add("ok");
-document.getElementById("connText").innerText="Connesso";
-client.subscribe(TOPIC_DATA);
-});
-client.on("message",(t,p)=>{
-if(t!==TOPIC_DATA)return;
-const j=JSON.parse(p.toString());
-if(j.temperature)temp.innerText=j.temperature.toFixed(1);
-if(j.humidity)hum.innerText=j.humidity.toFixed(1);
-if(typeof j.relay==="number")setRelay(j.relay===1);
-});
-}
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, vsrc));
+  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, fsrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
 
-function setRelay(on){
-relayState=on?1:0;
-toggle.classList.toggle("on",on);
-}
+  // Build grid points — perspective-like, denser in center
+  const cols = 55, rows = 38;
+  const positions = [];
+  const phases = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = (c / (cols - 1)) * 2 - 1;
+      const y = (r / (rows - 1)) * 2 - 1;
+      positions.push(x, y);
+      phases.push(Math.random() * Math.PI * 2);
+    }
+  }
+  const N = positions.length / 2;
 
-toggle.onclick=()=>{
-const next=relayState?0:1;
-setRelay(next);
-if(client&&client.connected){
-client.publish(TOPIC_RELAY,next?"ON":"OFF");
-}
+  const posBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const phaseBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(phases), gl.STATIC_DRAW);
+  const aPhase = gl.getAttribLocation(prog, 'a_phase');
+  gl.enableVertexAttribArray(aPhase);
+  gl.vertexAttribPointer(aPhase, 1, gl.FLOAT, false, 0, 0);
+
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes  = gl.getUniformLocation(prog, 'u_res');
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.clearColor(0, 0, 0, 0);
+
+  // Also draw grid lines
+  const lineVsrc = `
+    attribute vec2 a_pos;
+    attribute float a_phase;
+    uniform float u_time;
+    void main() {
+      float wave = sin(a_pos.x * 3.0 + u_time * 0.6 + a_phase) * 0.012
+                 + cos(a_pos.y * 2.5 + u_time * 0.4 + a_phase * 1.3) * 0.008;
+      vec2 p = a_pos + vec2(wave);
+      gl_Position = vec4(p, 0.0, 1.0);
+    }
+  `;
+  const lineFsrc = `
+    precision mediump float;
+    void main() {
+      gl_FragColor = vec4(0.22, 1.0, 0.08, 0.04);
+    }
+  `;
+  const lprog = gl.createProgram();
+  gl.attachShader(lprog, mkShader(gl.VERTEX_SHADER, lineVsrc));
+  gl.attachShader(lprog, mkShader(gl.FRAGMENT_SHADER, lineFsrc));
+  gl.linkProgram(lprog);
+
+  // Build line indices (grid)
+  const lineIdx = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols - 1; c++) {
+      lineIdx.push(r*cols+c, r*cols+c+1);
+    }
+  }
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows - 1; r++) {
+      lineIdx.push(r*cols+c, (r+1)*cols+c);
+    }
+  }
+  const idxBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIdx), gl.STATIC_DRAW);
+
+  let t0 = null;
+  function draw(ts) {
+    if (!t0) t0 = ts;
+    const t = (ts - t0) * 0.001;
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(uTime, t);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+
+    // Draw lines
+    gl.useProgram(lprog);
+    const lPos   = gl.getAttribLocation(lprog, 'a_pos');
+    const lPhase = gl.getAttribLocation(lprog, 'a_phase');
+    const lTime  = gl.getUniformLocation(lprog, 'u_time');
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(lPos);
+    gl.vertexAttribPointer(lPos, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
+    gl.enableVertexAttribArray(lPhase);
+    gl.vertexAttribPointer(lPhase, 1, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuf);
+    gl.uniform1f(lTime, t);
+    gl.drawElements(gl.LINES, lineIdx.length, gl.UNSIGNED_SHORT, 0);
+
+    // Draw points
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuf);
+    gl.enableVertexAttribArray(aPhase);
+    gl.vertexAttribPointer(aPhase, 1, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(uTime, t);
+    gl.drawArrays(gl.POINTS, 0, N);
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ═══════════════════════════════════════════
+   WEATHER — fixed coords Borgomanero, NO
+═══════════════════════════════════════════ */
+const LAT  = 45.6855;
+const LON  = 8.4604;
+
+const WMO = {
+  0:'Sereno',1:'Parzialmente nuvoloso',2:'Nuvoloso',3:'Coperto',
+  45:'Nebbia',48:'Nebbia ghiacciata',
+  51:'Pioggerella leggera',53:'Pioggerella',55:'Pioggerella intensa',
+  61:'Pioggia leggera',63:'Pioggia',65:'Pioggia intensa',
+  71:'Neve leggera',73:'Neve',75:'Neve intensa',
+  80:'Rovesci',81:'Rovesci moderati',82:'Rovesci forti',
+  95:'Temporale',96:'Temporale con grandine',99:'Temporale forte'
+};
+const WMO_ICON = {
+  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+  45:'🌫',48:'🌫',
+  51:'🌦',53:'🌦',55:'🌧',
+  61:'🌧',63:'🌧',65:'⛈',
+  71:'❄️',73:'❄️',75:'❄️',
+  80:'🌦',81:'🌧',82:'⛈',
+  95:'⛈',96:'⛈',99:'⛈'
 };
 
-async function fetchWeather(){
-const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m`);
-const d=await r.json();
-extTemp.innerText=d.current_weather.temperature.toFixed(1);
-extHum.innerText=d.hourly.relativehumidity_2m[0];
+let outTemp = null, outHum = null;
+
+async function fetchWeather() {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`
+      + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index`
+      + `&wind_speed_unit=kmh&timezone=Europe%2FRome`;
+    const res = await fetch(url);
+    const d   = await res.json();
+    const c   = d.current;
+    outTemp = c.temperature_2m;
+    outHum  = c.relative_humidity_2m;
+    const code = c.weather_code ?? 0;
+    document.getElementById('w-temp').textContent  = outTemp.toFixed(1) + '°';
+    document.getElementById('w-icon').textContent  = WMO_ICON[code] ?? '🌡';
+    document.getElementById('w-cond').textContent  = WMO[code] ?? 'N/A';
+    document.getElementById('w-hum').textContent   = outHum + '%';
+    document.getElementById('w-wind').textContent  = (c.wind_speed_10m ?? '--') + ' km/h';
+    document.getElementById('w-feels').textContent = (c.apparent_temperature?.toFixed(1) ?? '--') + '°C';
+    document.getElementById('w-uv').textContent    = c.uv_index ?? '--';
+    updateDelta();
+  } catch(e) {
+    document.getElementById('w-cond').textContent = 'Errore caricamento meteo';
+  }
 }
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function switchTab(el, name) {
+  document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.w-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'confronto') updateDelta();
+}
+
+/* ═══════════════════════════════════════════
+   DELTA / CONFRONTO
+═══════════════════════════════════════════ */
+let inTemp = null, inHum = null;
+
+function updateDelta() {
+  const hiT = inTemp !== null, hoT = outTemp !== null;
+  const hiH = inHum  !== null, hoH = outHum  !== null;
+
+  // Temp
+  document.getElementById('dt-in').textContent  = hiT ? inTemp.toFixed(1) : '--';
+  document.getElementById('dt-out').textContent = hoT ? outTemp.toFixed(1) : '--';
+  if (hiT && hoT) {
+    const dt = inTemp - outTemp;
+    const el = document.getElementById('d-temp-diff');
+    el.textContent = (dt >= 0 ? '+' : '') + dt.toFixed(1) + '°';
+    el.className   = 'dc-diff ' + (dt > 2 ? 'pos' : dt < -2 ? 'neg' : 'neu');
+    const pct = Math.min(100, (Math.abs(dt) / 15) * 100);
+    const bar = document.getElementById('d-temp-bar');
+    bar.style.width = pct + '%';
+    bar.className   = 'dc-bar ' + (dt >= 0 ? 'green' : 'danger');
+  }
+
+  // Hum
+  document.getElementById('dh-in').textContent  = hiH ? inHum.toFixed(0) : '--';
+  document.getElementById('dh-out').textContent = hoH ? outHum.toFixed(0) : '--';
+  if (hiH && hoH) {
+    const dh = inHum - outHum;
+    const elH = document.getElementById('d-hum-diff');
+    elH.textContent = (dh >= 0 ? '+' : '') + dh.toFixed(0) + '%';
+    elH.className   = 'dc-diff ' + (Math.abs(dh) > 15 ? 'neg' : 'pos');
+    document.getElementById('d-hum-bar').style.width = Math.min(100, (Math.abs(dh) / 40) * 100) + '%';
+  }
+
+  // Comfort
+  if (inTemp !== null && inHum !== null) {
+    const t = inTemp, h = inHum;
+    let icon, lbl, desc;
+    if (t >= 19 && t <= 25 && h >= 35 && h <= 60) {
+      icon='😊'; lbl='Ottimale'; desc='Condizioni ideali di temperatura e umidità';
+    } else if (t < 16) {
+      icon='🥶'; lbl='Troppo freddo'; desc='Considera di alzare il riscaldamento';
+    } else if (t > 27) {
+      icon='🥵'; lbl='Troppo caldo'; desc='Ventila la stanza o usa il climatizzatore';
+    } else if (h < 30) {
+      icon='💨'; lbl='Aria secca'; desc='Un umidificatore potrebbe migliorare il comfort';
+    } else if (h > 70) {
+      icon='💦'; lbl='Troppo umido'; desc='Ventila e considera un deumidificatore';
+    } else {
+      icon='🙂'; lbl='Accettabile'; desc='Condizioni nella norma';
+    }
+    document.getElementById('c-icon').textContent  = icon;
+    document.getElementById('c-label').textContent = lbl;
+    document.getElementById('c-desc').textContent  = desc;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MQTT
+═══════════════════════════════════════════ */
+const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud";
+const MQTT_PORT = 8884;
+const MQTT_USER = "syymon";
+const MQTT_PASS = "Piazzale99";
+const TOPIC_DATA  = "symo/room/data";
+const TOPIC_RELAY = "symo/room/relay";
+
+let client = null, relayState = 0;
+
+const elTemp      = document.getElementById('temp');
+const elHum       = document.getElementById('hum');
+const elDot       = document.getElementById('dot');
+const elConn      = document.getElementById('connText');
+const elLast      = document.getElementById('lastMsg');
+const elToggle    = document.getElementById('toggle');
+const elToggleTxt = document.getElementById('toggleTxt');
+
+function setConn(ok, msg) {
+  elDot.classList.toggle('ok', !!ok);
+  elConn.textContent = msg;
+}
+function setRelayUI(on) {
+  relayState = on ? 1 : 0;
+  elToggle.classList.toggle('on', !!on);
+  elToggleTxt.textContent = on ? 'ACCESO' : 'SPENTO';
+  elToggleTxt.style.color  = on ? 'var(--green)' : 'var(--muted)';
+}
+function connect() {
+  if (client) { try { client.end(true); } catch(e){} client = null; }
+  setConn(false, 'Connessione…');
+  client = mqtt.connect(`wss://${MQTT_HOST}:${MQTT_PORT}/mqtt`, {
+    username: MQTT_USER, password: MQTT_PASS,
+    clientId: 'symo-web-' + Math.random().toString(16).slice(2),
+    clean: true, connectTimeout: 8000, reconnectPeriod: 2000, keepalive: 30
+  });
+  client.on('connect', () => {
+    setConn(true, 'Connesso');
+    client.subscribe(TOPIC_DATA);
+  });
+  client.on('message', (topic, payload) => {
+    if (topic !== TOPIC_DATA) return;
+    try {
+      const j = JSON.parse(payload.toString());
+      if (j.temperature != null) { inTemp = j.temperature; elTemp.textContent = j.temperature.toFixed(1); }
+      if (j.humidity    != null) { inHum  = j.humidity;    elHum.textContent  = j.humidity.toFixed(1); }
+      if (typeof j.relay === 'number') setRelayUI(j.relay === 1);
+      elLast.textContent = 'Last: ' + new Date().toLocaleTimeString('it-IT');
+      updateDelta();
+    } catch(e) {}
+  });
+  client.on('close', () => setConn(false, 'Offline'));
+}
+
+elToggle.addEventListener('click', () => {
+  const next = relayState ? 0 : 1;
+  setRelayUI(next);
+  if (client && client.connected) client.publish(TOPIC_RELAY, next ? 'ON' : 'OFF');
+});
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
 fetchWeather();
-setInterval(fetchWeather,600000);
-
-const tabs=document.querySelectorAll(".tab");
-const inside=document.querySelector(".inside");
-const outside=document.querySelector(".outside");
-const glow=document.querySelector(".tab-glow");
-
-tabs.forEach(tab=>{
-tab.onclick=()=>{
-tabs.forEach(t=>t.classList.remove("active"));
-tab.classList.add("active");
-if(tab.dataset.tab==="inside"){
-inside.classList.add("active");
-outside.classList.remove("active");
-glow.style.left="0%";
-}else{
-outside.classList.add("active");
-inside.classList.remove("active");
-glow.style.left="50%";
-}
-};
-});
-
+// Refresh meteo ogni 10 min
+setInterval(fetchWeather, 600000);
 connect();
 </script>
 </body>
