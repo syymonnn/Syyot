@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>SYMO</title>
+  <title>Syymon_room</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -247,13 +247,13 @@
 
   <div class="topbar">
     <div>
-      <div class="eye">Sistema di controllo</div>
-      <h1>Hello, <em>SYMO</em></h1>
+      <div class="eye">Room control</div>
+      <h1>Hello, <em>Symo</em></h1>
     </div>
     <div class="tr">
       <div class="chip glass" style="border-radius:999px">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--green)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        Borgomanero, NO
+        Borgomanero
       </div>
       <button class="chip glass" style="border-radius:999px;font-weight:600;" onclick="mqttConnect()">
         <div id="dot" class="dot"></div>
@@ -561,3 +561,4 @@ mqttConnect();
 </script>
 </body>
 </html>
+
