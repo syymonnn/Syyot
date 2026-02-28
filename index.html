@@ -1,312 +1,350 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SYMO – Liquid Glass Control</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Syyroom</title>
 
-    :root {
-      --bg-body: #080b16;
-      /* Vetro Apple Style: Sfondo semi-trasparente con bordo chiaro */
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      
-      --fluo-green: #39ff14;
-      --fluo-yellow: #ccff00;
-      --fluo-gradient: linear-gradient(135deg, var(--fluo-green) 0%, var(--fluo-yellow) 100%);
-      --fluo-glow: 0 0 20px rgba(57, 255, 20, 0.4);
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-      --text-main: #ffffff;
-      --text-muted: #8b9bb4;
-      --danger: #ff4d4d;
-    }
+:root{
+  --bg-body:#080b16;
+  --glass-bg:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.08);
+  --fluo-green:#39ff14;
+  --fluo-yellow:#ccff00;
+  --fluo-gradient:linear-gradient(135deg,var(--fluo-green),var(--fluo-yellow));
+  --fluo-glow:0 0 20px rgba(57,255,20,0.4);
+  --text-main:#ffffff;
+  --text-muted:#8b9bb4;
+  --danger:#ff4d4d;
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0;}
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-body);
-      /* Gradiente di sfondo per far risaltare l'effetto vetro */
-      background-image: radial-gradient(circle at 10% 10%, #1a2344 0%, transparent 40%),
-                        radial-gradient(circle at 90% 90%, #0d1225 0%, transparent 40%);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
+body{
+  font-family:'Inter',system-ui;
+  background-color:var(--bg-body);
+  background-image:
+    radial-gradient(circle at 10% 10%,#1a2344 0%,transparent 40%),
+    radial-gradient(circle at 90% 90%,#0d1225 0%,transparent 40%);
+  color:var(--text-main);
+  min-height:100vh;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+}
 
-    .dashboard {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
+.dashboard{
+  width:100%;
+  max-width:900px;
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+}
 
-    /* --- Top Bar --- */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .user-info h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-    
-    .status-badge {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px);
-      padding: 10px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      border: 1px solid var(--glass-border);
-    }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); transition: 0.3s; }
-    .dot.ok { background: var(--fluo-green); box-shadow: 0 0 10px var(--fluo-green); }
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    /* --- Sezione Sensori Liquid Glass --- */
-    .main-stats {
-      background: var(--glass-bg);
-      backdrop-filter: blur(25px); /* Effetto vetro liquido */
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: 32px;
-      padding: 30px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-    .main-stats h2 { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-    
-    .stats-grid { display: flex; flex-wrap: wrap; gap: 40px; }
-    .stat-item .value { font-size: 56px; font-weight: 700; display: flex; align-items: baseline; gap: 6px; letter-spacing: -2px; }
-    .stat-item .unit { font-size: 20px; color: var(--text-muted); font-weight: 400; }
-    .stat-item .label { font-size: 14px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-    
-    .stat-item.fluo-text .value {
-      background: var(--fluo-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+.status-badge{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(15px);
+  padding:10px 16px;
+  border-radius:20px;
+  font-size:12px;
+  border:1px solid var(--glass-border);
+  cursor:pointer;
+}
 
-    /* --- Devices Grid --- */
-    .section-header { margin-bottom: 10px; }
-    .section-header h3 { font-size: 20px; font-weight: 600; display: inline-block; position: relative; }
-    .section-header h3::after { content: ''; display: block; width: 40%; height: 3px; background: var(--fluo-green); border-radius: 2px; margin-top: 4px; }
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--danger);
+}
+.dot.ok{
+  background:var(--fluo-green);
+  box-shadow:0 0 10px var(--fluo-green);
+}
 
-    .devices-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-    }
+.main-stats{
+  background:var(--glass-bg);
+  backdrop-filter:blur(30px);
+  border-radius:32px;
+  padding:30px;
+  border:1px solid var(--glass-border);
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
 
-    .device-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 32px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--glass-border);
-      min-height: 200px;
-      transition: transform 0.2s ease;
-    }
-    .device-card:active { transform: scale(0.98); }
+.main-stats h2{
+  font-size:14px;
+  color:var(--text-muted);
+  margin-bottom:20px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
 
-    .device-icon {
-      width: 48px; height: 48px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--fluo-yellow);
-      margin-bottom: 20px;
-    }
+.env-tabs{
+  position:relative;
+  display:flex;
+  gap:10px;
+  margin-bottom:25px;
+}
 
-    .device-info h4 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-    .device-info p { font-size: 14px; color: var(--text-muted); }
+.tab{
+  flex:1;
+  text-align:center;
+  padding:10px 0;
+  border-radius:16px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  color:var(--text-muted);
+  position:relative;
+  z-index:2;
+}
 
-    .device-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto; /* Spinge i controlli in basso */
-      padding-top: 20px;
-    }
-    .device-state { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+.tab.active{color:#000;}
 
-    /* --- Toggle Ingrandito --- */
-    .toggle {
-      width: 60px; height: 32px; /* Ingrandito */
-      border-radius: 30px;
-      background: rgba(255,255,255,0.1);
-      position: relative;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid var(--glass-border);
-    }
-    
-    .toggle.on { 
-      background: var(--fluo-gradient); 
-      box-shadow: var(--fluo-glow);
-      border-color: transparent;
-    }
-    
-    .knob {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: #ffffff;
-      position: absolute;
-      top: 3px; left: 4px;
-      transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    
-    .toggle.on .knob { left: 30px; }
+.tab-glow{
+  position:absolute;
+  height:100%;
+  width:50%;
+  background:var(--fluo-gradient);
+  border-radius:16px;
+  top:0;
+  left:0;
+  transition:0.35s cubic-bezier(.6,.2,.2,1);
+  box-shadow:var(--fluo-glow);
+  z-index:1;
+}
 
-    .meta-footer {
-      margin-top: 20px;
-      padding: 20px;
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      opacity: 0.6;
-    }
-    code { color: var(--fluo-green); }
+.stats-wrapper{position:relative;overflow:hidden;}
 
-    /* Responsività per schermi piccoli */
-    @media (max-width: 480px) {
-      .stat-item .value { font-size: 44px; }
-      .dashboard { gap: 20px; }
-    }
-  </style>
+.stats-grid{
+  display:flex;
+  gap:40px;
+  transition:0.4s;
+  opacity:0;
+  transform:translateY(10px);
+  position:absolute;
+  width:100%;
+}
+
+.stats-grid.active{
+  opacity:1;
+  transform:translateY(0);
+  position:relative;
+}
+
+.stat-item .value{
+  font-size:56px;
+  font-weight:700;
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  letter-spacing:-2px;
+}
+
+.stat-item .unit{
+  font-size:20px;
+  color:var(--text-muted);
+}
+
+.stat-item .label{
+  font-size:14px;
+  color:var(--text-muted);
+}
+
+.stat-item.fluo-text .value{
+  background:var(--fluo-gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.devices-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.device-card{
+  background:var(--glass-bg);
+  backdrop-filter:blur(20px);
+  border-radius:32px;
+  padding:24px;
+  border:1px solid var(--glass-border);
+  min-height:200px;
+  display:flex;
+  flex-direction:column;
+}
+
+.toggle{
+  width:60px;height:32px;border-radius:30px;
+  background:rgba(255,255,255,0.1);
+  position:relative;
+  cursor:pointer;
+  border:1px solid var(--glass-border);
+  transition:0.3s;
+}
+
+.toggle.on{
+  background:var(--fluo-gradient);
+  box-shadow:var(--fluo-glow);
+}
+
+.knob{
+  width:24px;height:24px;border-radius:50%;
+  background:#fff;
+  position:absolute;
+  top:3px;left:4px;
+  transition:0.3s cubic-bezier(.68,-0.55,.265,1.55);
+}
+
+.toggle.on .knob{left:30px;}
+</style>
 </head>
+
 <body>
+<div class="dashboard">
 
-  <div class="dashboard">
-    
-    <div class="top-bar">
-      <div class="user-info">
-        <h1>Hello, SYMO</h1>
-      </div>
-      <div class="status-badge" onclick="connect()">
-        <div id="dot" class="dot"></div>
-        <span id="connText">Disconnesso</span>
-      </div>
-    </div>
-
-    <div class="main-stats">
-      <h2>Ambiente</h2>
-      <div class="stats-grid">
-        <div class="stat-item fluo-text">
-          <div class="value"><span id="temp">--.-</span> <span class="unit">°C</span></div>
-          <div class="label">Temperatura</div>
-        </div>
-        <div class="stat-item">
-          <div class="value"><span id="hum">--.-</span> <span class="unit">%</span></div>
-          <div class="label">Umidità</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-header">
-      <h3>I tuoi Dispositivi</h3>
-    </div>
-
-    <div class="devices-grid">
-      <div class="device-card">
-        <div class="device-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
-        </div>
-        <div class="device-info">
-          <h4>Lighting</h4>
-          <p>Luce Stanza</p>
-        </div>
-        <div class="device-controls">
-          <span class="device-state" id="toggleTxt">OFF</span>
-          <div id="toggle" class="toggle">
-            <div class="knob"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="meta-footer">
-      <div>MQTT: <code>symo/room/data</code></div>
-      <div id="lastMsg">Last: —</div>
-    </div>
+<div class="top-bar">
+  <h1>Hello, Symo</h1>
+  <div class="status-badge" onclick="connect()">
+    <div id="dot" class="dot"></div>
+    <span id="connText">Disconnesso</span>
   </div>
+</div>
 
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script>
-    const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud"; 
-    const MQTT_WS_PORT = 8884; 
-    const MQTT_USER = "syymon";  
-    const MQTT_PASS = "Piazzale99";
-    const TOPIC_DATA  = "symo/room/data";
-    const TOPIC_RELAY = "symo/room/relay";
+<div class="main-stats">
+<h2>Ambiente</h2>
 
-    const elTemp = document.getElementById("temp");
-    const elHum  = document.getElementById("hum");
-    const elDot  = document.getElementById("dot");
-    const elConn = document.getElementById("connText");
-    const elLast = document.getElementById("lastMsg");
-    const elToggle = document.getElementById("toggle");
-    const elToggleTxt = document.getElementById("toggleTxt");
+<div class="env-tabs">
+  <div class="tab active" data-tab="inside">Interno</div>
+  <div class="tab" data-tab="outside">Esterno</div>
+  <div class="tab-glow"></div>
+</div>
 
-    let client = null;
-    let relayState = 0;
+<div class="stats-wrapper">
 
-    function setConn(ok, msg){
-      elDot.classList.toggle("ok", !!ok);
-      elConn.textContent = msg;
-    }
+<div class="stats-grid inside active">
+  <div class="stat-item fluo-text">
+    <div class="value"><span id="temp">--.-</span><span class="unit">°C</span></div>
+    <div class="label">Temperatura</div>
+  </div>
+  <div class="stat-item">
+    <div class="value"><span id="hum">--.-</span><span class="unit">%</span></div>
+    <div class="label">Umidità</div>
+  </div>
+</div>
 
-    function setRelayUI(on){
-      relayState = on ? 1 : 0;
-      elToggle.classList.toggle("on", !!on);
-      elToggleTxt.textContent = on ? "ACCESO" : "SPENTO";
-      elToggleTxt.style.color = on ? "var(--fluo-green)" : "var(--text-muted)";
-    }
+<div class="stats-grid outside">
+  <div class="stat-item fluo-text">
+    <div class="value"><span id="extTemp">--.-</span><span class="unit">°C</span></div>
+    <div class="label">Temperatura Esterna</div>
+  </div>
+  <div class="stat-item">
+    <div class="value"><span id="extHum">--.-</span><span class="unit">%</span></div>
+    <div class="label">Umidità Esterna</div>
+  </div>
+</div>
 
-    function connect(){
-      if (client) { try { client.end(true); } catch(e){} client = null; }
-      const url = `wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`;
-      setConn(false, "Connessione...");
-      client = mqtt.connect(url, {
-        username: MQTT_USER, password: MQTT_PASS,
-        clientId: "symo-web-" + Math.random().toString(16).slice(2),
-        clean: true, connectTimeout: 8000, reconnectPeriod: 2000, keepalive: 30
-      });
+</div>
+</div>
 
-      client.on("connect", () => {
-        setConn(true, "Connesso");
-        client.subscribe(TOPIC_DATA);
-      });
+<div class="devices-grid">
+<div class="device-card">
+  <h4>Lighting</h4>
+  <div class="toggle" id="toggle"><div class="knob"></div></div>
+</div>
+</div>
 
-      client.on("message", (topic, payload) => {
-        if (topic !== TOPIC_DATA) return;
-        try {
-          const j = JSON.parse(payload.toString());
-          if (j.temperature) elTemp.textContent = j.temperature.toFixed(1);
-          if (j.humidity) elHum.textContent = j.humidity.toFixed(1);
-          if (typeof j.relay === "number") setRelayUI(j.relay === 1);
-          elLast.textContent = "Last: " + new Date().toLocaleTimeString();
-        } catch(e) {}
-      });
-      client.on("close", () => setConn(false, "Offline"));
-    }
+</div>
 
-    elToggle.addEventListener("click", () => {
-      const next = relayState ? 0 : 1;
-      setRelayUI(next);
-      if (client && client.connected) {
-        client.publish(TOPIC_RELAY, next ? "ON" : "OFF");
-      }
-    });
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+const MQTT_HOST="ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud";
+const MQTT_WS_PORT=8884;
+const MQTT_USER="syymon";
+const MQTT_PASS="Piazzale99";
+const TOPIC_DATA="symo/room/data";
+const TOPIC_RELAY="symo/room/relay";
 
-    connect();
-  </script>
+const LAT=45.4642;
+const LON=9.1900;
+
+let client=null;
+let relayState=0;
+
+function connect(){
+if(client){client.end(true);}
+client=mqtt.connect(`wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`,{
+username:MQTT_USER,password:MQTT_PASS,
+clientId:"symo-web-"+Math.random().toString(16).slice(2)
+});
+client.on("connect",()=>{
+document.getElementById("dot").classList.add("ok");
+document.getElementById("connText").innerText="Connesso";
+client.subscribe(TOPIC_DATA);
+});
+client.on("message",(t,p)=>{
+if(t!==TOPIC_DATA)return;
+const j=JSON.parse(p.toString());
+if(j.temperature)temp.innerText=j.temperature.toFixed(1);
+if(j.humidity)hum.innerText=j.humidity.toFixed(1);
+if(typeof j.relay==="number")setRelay(j.relay===1);
+});
+}
+
+function setRelay(on){
+relayState=on?1:0;
+toggle.classList.toggle("on",on);
+}
+
+toggle.onclick=()=>{
+const next=relayState?0:1;
+setRelay(next);
+if(client&&client.connected){
+client.publish(TOPIC_RELAY,next?"ON":"OFF");
+}
+};
+
+async function fetchWeather(){
+const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m`);
+const d=await r.json();
+extTemp.innerText=d.current_weather.temperature.toFixed(1);
+extHum.innerText=d.hourly.relativehumidity_2m[0];
+}
+fetchWeather();
+setInterval(fetchWeather,600000);
+
+const tabs=document.querySelectorAll(".tab");
+const inside=document.querySelector(".inside");
+const outside=document.querySelector(".outside");
+const glow=document.querySelector(".tab-glow");
+
+tabs.forEach(tab=>{
+tab.onclick=()=>{
+tabs.forEach(t=>t.classList.remove("active"));
+tab.classList.add("active");
+if(tab.dataset.tab==="inside"){
+inside.classList.add("active");
+outside.classList.remove("active");
+glow.style.left="0%";
+}else{
+outside.classList.add("active");
+inside.classList.remove("active");
+glow.style.left="50%";
+}
+};
+});
+
+connect();
+</script>
 </body>
 </html>
