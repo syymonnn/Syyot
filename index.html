@@ -3,30 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SYMO – Room Control (Fluo Edition)</title>
+  <title>SYMO – Liquid Glass Control</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {
-      /* Sfondo scuro originale dalla foto */
-      --bg-body: #111526;
-      --bg-card-gradient: linear-gradient(180deg, rgba(30,41,71,1) 0%, rgba(21,28,49,1) 100%);
+      --bg-body: #080b16;
+      /* Vetro Apple Style: Sfondo semi-trasparente con bordo chiaro */
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
       
-      /* NUOVA Palette Fluo (Verde -> Giallo) */
-      --fluo-green: #39ff14; /* Verde neon puro */
-      --fluo-yellow: #ccff00; /* Giallo-verde lime vibrante */
+      --fluo-green: #39ff14;
+      --fluo-yellow: #ccff00;
       --fluo-gradient: linear-gradient(135deg, var(--fluo-green) 0%, var(--fluo-yellow) 100%);
-      
-      /* Glow effect per elementi attivi */
-      --fluo-glow: 0 0 15px rgba(57, 255, 20, 0.5);
+      --fluo-glow: 0 0 20px rgba(57, 255, 20, 0.4);
 
-      /* Testo e Bordi */
       --text-main: #ffffff;
       --text-muted: #8b9bb4;
-      --border-light: rgba(255, 255, 255, 0.05);
-      
       --danger: #ff4d4d;
-      --success: var(--fluo-green); /* Usiamo il verde fluo per il successo */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,6 +28,9 @@
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background-color: var(--bg-body);
+      /* Gradiente di sfondo per far risaltare l'effetto vetro */
+      background-image: radial-gradient(circle at 10% 10%, #1a2344 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, #0d1225 0%, transparent 40%);
       color: var(--text-main);
       min-height: 100vh;
       padding: 20px;
@@ -41,13 +38,12 @@
       justify-content: center;
     }
 
-    /* Container principale responsivo */
     .dashboard {
       width: 100%;
-      max-width: 1000px;
+      max-width: 900px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 30px;
     }
 
     /* --- Top Bar --- */
@@ -55,120 +51,101 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 10px;
     }
-    .user-info p { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
-    .user-info h1 { font-size: 20px; font-weight: 600; }
+    .user-info h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
     
     .status-badge {
       display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.03);
-      padding: 8px 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      padding: 10px 16px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid var(--border-light);
+      border: 1px solid var(--glass-border);
     }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); }
-    .dot.ok { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); transition: 0.3s; }
+    .dot.ok { background: var(--fluo-green); box-shadow: 0 0 10px var(--fluo-green); }
 
-    /* --- Sezione Sensori --- */
+    /* --- Sezione Sensori Liquid Glass --- */
     .main-stats {
-      background: var(--bg-card-gradient);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      border: 1px solid var(--border-light);
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px); /* Effetto vetro liquido */
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 32px;
+      padding: 30px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
-    .main-stats h2 { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 12px; }
+    .main-stats h2 { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
     
-    .stats-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-    }
-    .stat-item .value { font-size: 48px; font-weight: 700; display: flex; align-items: baseline; gap: 4px; }
-    .stat-item .unit { font-size: 16px; color: var(--text-muted); font-weight: 500; }
-    .stat-item .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .stats-grid { display: flex; flex-wrap: wrap; gap: 40px; }
+    .stat-item .value { font-size: 56px; font-weight: 700; display: flex; align-items: baseline; gap: 6px; letter-spacing: -2px; }
+    .stat-item .unit { font-size: 20px; color: var(--text-muted); font-weight: 400; }
+    .stat-item .label { font-size: 14px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
     
-    /* Applichiamo il gradiente fluo ai numeri */
     .stat-item.fluo-text .value {
       background: var(--fluo-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      display: inline-block; /* Necessario per il gradient text */
     }
 
-    /* --- Sezione Dispositivi --- */
-    .section-header {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      margin-bottom: -8px;
-    }
-    /* Tab attiva con sfondo fluo */
-    .section-header h3 { 
-      font-size: 16px; 
-      font-weight: 600; 
-      padding: 8px 16px; 
-      background: var(--fluo-gradient); 
-      color: #000; /* Testo nero per contrasto sul fluo */
-      border-radius: 20px; 
-      box-shadow: var(--fluo-glow);
-    }
-    .section-header span { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    /* --- Devices Grid --- */
+    .section-header { margin-bottom: 10px; }
+    .section-header h3 { font-size: 20px; font-weight: 600; display: inline-block; position: relative; }
+    .section-header h3::after { content: ''; display: block; width: 40%; height: 3px; background: var(--fluo-green); border-radius: 2px; margin-top: 4px; }
 
     .devices-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
     }
 
     .device-card {
-      background: var(--bg-card-gradient);
-      border-radius: 24px;
-      padding: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      border: 1px solid var(--border-light);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-      min-height: 160px;
+      border: 1px solid var(--glass-border);
+      min-height: 200px;
+      transition: transform 0.2s ease;
     }
+    .device-card:active { transform: scale(0.98); }
 
     .device-icon {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.03);
+      width: 48px; height: 48px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
       display: flex; align-items: center; justify-content: center;
-      color: var(--fluo-yellow); /* Icona gialla fluo */
-      margin-bottom: 16px;
+      color: var(--fluo-yellow);
+      margin-bottom: 20px;
     }
 
-    .device-info { margin-bottom: auto; }
-    .device-info h4 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
-    .device-info p { font-size: 12px; color: var(--text-muted); }
+    .device-info h4 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .device-info p { font-size: 14px; color: var(--text-muted); }
 
     .device-controls {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 20px;
+      margin-top: auto; /* Spinge i controlli in basso */
+      padding-top: 20px;
     }
-    .device-state { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .device-state { font-size: 14px; font-weight: 700; color: var(--text-muted); }
 
-    /* Toggle esatto (Fluo Edition) */
+    /* --- Toggle Ingrandito --- */
     .toggle {
-      width: 44px; height: 24px;
-      border-radius: 24px;
-      background: #0f1629; /* Fondo scuro quando OFF */
+      width: 60px; height: 32px; /* Ingrandito */
+      border-radius: 30px;
+      background: rgba(255,255,255,0.1);
       position: relative;
       cursor: pointer;
-      transition: background 0.3s, box-shadow 0.3s;
-      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--glass-border);
     }
     
-    /* Quando ON: Sfondo diventa il gradiente fluo e aggiungiamo il glow */
     .toggle.on { 
       background: var(--fluo-gradient); 
       box-shadow: var(--fluo-glow);
@@ -176,36 +153,33 @@
     }
     
     .knob {
-      width: 18px; height: 18px;
+      width: 24px; height: 24px;
       border-radius: 50%;
-      background: var(--fluo-green); /* Pomello verde fluo quando OFF */
+      background: #ffffff;
       position: absolute;
-      top: 2px; left: 3px;
-      transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      top: 3px; left: 4px;
+      transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
-    /* Quando ON: Pomello diventa bianco e si sposta */
-    .toggle.on .knob {
-      left: 21px;
-      background: #ffffff;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
-    }
+    .toggle.on .knob { left: 30px; }
 
-    /* --- Meta Info --- */
     .meta-footer {
       margin-top: 20px;
-      padding: 16px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 16px;
-      font-size: 12px;
+      padding: 20px;
+      font-size: 11px;
       color: var(--text-muted);
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
       justify-content: space-between;
-      border: 1px solid var(--border-light);
+      opacity: 0.6;
     }
-    .meta-footer code { background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; color: var(--fluo-yellow); }
+    code { color: var(--fluo-green); }
+
+    /* Responsività per schermi piccoli */
+    @media (max-width: 480px) {
+      .stat-item .value { font-size: 44px; }
+      .dashboard { gap: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -214,17 +188,16 @@
     
     <div class="top-bar">
       <div class="user-info">
-        <p>Dashboard</p>
         <h1>Hello, SYMO</h1>
       </div>
-      <div class="status-badge" onclick="connect()" title="Clicca per riconnettere">
+      <div class="status-badge" onclick="connect()">
         <div id="dot" class="dot"></div>
         <span id="connText">Disconnesso</span>
       </div>
     </div>
 
     <div class="main-stats">
-      <h2>Ambiente Attuale</h2>
+      <h2>Ambiente</h2>
       <div class="stats-grid">
         <div class="stat-item fluo-text">
           <div class="value"><span id="temp">--.-</span> <span class="unit">°C</span></div>
@@ -232,26 +205,23 @@
         </div>
         <div class="stat-item">
           <div class="value"><span id="hum">--.-</span> <span class="unit">%</span></div>
-          <div class="label">Umidità Relativa</div>
+          <div class="label">Umidità</div>
         </div>
       </div>
     </div>
 
     <div class="section-header">
-      <h3>Devices</h3>
-      <span>Rooms</span>
-      <span style="margin-left:auto; color: var(--text-main);">Add +</span>
+      <h3>I tuoi Dispositivi</h3>
     </div>
 
     <div class="devices-grid">
-      
       <div class="device-card">
         <div class="device-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
         </div>
         <div class="device-info">
           <h4>Lighting</h4>
-          <p>sy_room luce</p>
+          <p>Luce Stanza</p>
         </div>
         <div class="device-controls">
           <span class="device-state" id="toggleTxt">OFF</span>
@@ -260,15 +230,12 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="meta-footer">
-      <div>Data: <code>symo/room/data</code></div>
-      <div>Relay: <code>symo/room/relay</code></div>
-      <div>Last msg: <code id="lastMsg">—</code></div>
+      <div>MQTT: <code>symo/room/data</code></div>
+      <div id="lastMsg">Last: —</div>
     </div>
-
   </div>
 
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -277,7 +244,6 @@
     const MQTT_WS_PORT = 8884; 
     const MQTT_USER = "syymon";  
     const MQTT_PASS = "Piazzale99";
-
     const TOPIC_DATA  = "symo/room/data";
     const TOPIC_RELAY = "symo/room/relay";
 
@@ -294,71 +260,50 @@
 
     function setConn(ok, msg){
       elDot.classList.toggle("ok", !!ok);
-      elConn.textContent = msg.charAt(0).toUpperCase() + msg.slice(1);
+      elConn.textContent = msg;
     }
 
     function setRelayUI(on){
       relayState = on ? 1 : 0;
       elToggle.classList.toggle("on", !!on);
-      elToggleTxt.textContent = on ? "ON" : "OFF";
-      // Testo ON diventa bianco brillante, OFF rimane muted
-      elToggleTxt.style.color = on ? "#ffffff" : "var(--text-muted)";
+      elToggleTxt.textContent = on ? "ACCESO" : "SPENTO";
+      elToggleTxt.style.color = on ? "var(--fluo-green)" : "var(--text-muted)";
     }
 
     function connect(){
       if (client) { try { client.end(true); } catch(e){} client = null; }
-
       const url = `wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`;
-      const clientId = "symo-web-" + Math.random().toString(16).slice(2);
-
       setConn(false, "Connessione...");
-
       client = mqtt.connect(url, {
-        username: MQTT_USER,
-        password: MQTT_PASS,
-        clientId,
-        clean: true,
-        connectTimeout: 8000,
-        reconnectPeriod: 2000,
-        keepalive: 30
+        username: MQTT_USER, password: MQTT_PASS,
+        clientId: "symo-web-" + Math.random().toString(16).slice(2),
+        clean: true, connectTimeout: 8000, reconnectPeriod: 2000, keepalive: 30
       });
 
       client.on("connect", () => {
         setConn(true, "Connesso");
-        client.subscribe(TOPIC_DATA, { qos: 0 });
+        client.subscribe(TOPIC_DATA);
       });
-
-      client.on("reconnect", () => setConn(false, "Riconnessione..."));
-      client.on("close", () => setConn(false, "Disconnesso"));
-      client.on("error", (err) => setConn(false, "Errore"));
 
       client.on("message", (topic, payload) => {
         if (topic !== TOPIC_DATA) return;
-        const s = payload.toString();
-        
-        const now = new Date();
-        elLast.textContent = now.getHours().toString().padStart(2,'0') + ':' + 
-                             now.getMinutes().toString().padStart(2,'0') + ':' + 
-                             now.getSeconds().toString().padStart(2,'0');
-
-        try{
-          const j = JSON.parse(s);
-          if (typeof j.temperature === "number") elTemp.textContent = j.temperature.toFixed(1);
-          if (typeof j.humidity === "number")    elHum.textContent  = j.humidity.toFixed(1);
-          if (typeof j.relay === "number")       setRelayUI(j.relay === 1);
-        }catch(e){ }
+        try {
+          const j = JSON.parse(payload.toString());
+          if (j.temperature) elTemp.textContent = j.temperature.toFixed(1);
+          if (j.humidity) elHum.textContent = j.humidity.toFixed(1);
+          if (typeof j.relay === "number") setRelayUI(j.relay === 1);
+          elLast.textContent = "Last: " + new Date().toLocaleTimeString();
+        } catch(e) {}
       });
-    }
-
-    function publishRelay(cmd){
-      if (!client || !client.connected) return;
-      client.publish(TOPIC_RELAY, cmd, { qos: 0, retain: false });
+      client.on("close", () => setConn(false, "Offline"));
     }
 
     elToggle.addEventListener("click", () => {
       const next = relayState ? 0 : 1;
       setRelayUI(next);
-      publishRelay(next ? "ON" : "OFF");
+      if (client && client.connected) {
+        client.publish(TOPIC_RELAY, next ? "ON" : "OFF");
+      }
     });
 
     connect();
