@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SYMO – Room Control</title>
+  <style>
+    :root{
+      --bg1:#040918; --bg2:#0a0e20;
+      --card:#0c122c; --border:#1e2c4e;
+      --text:#ebf5ff; --muted:#96aac8;
+      --cyan:#00f0ff; --green:#20dc96;
+      --danger:#ff4d4d;
+    }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center;
+    }
+    .wrap{ width:min(920px, 94vw); padding:18px; }
+    .header{
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:14px 16px; margin-bottom:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .brand{ display:flex; gap:12px; align-items:baseline; }
+    .brand h1{ font-size:22px; margin:0; letter-spacing:.5px; }
+    .brand span{ font-size:12px; color:var(--muted); letter-spacing:1.4px; }
+    .status{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); }
+    .dot{ width:10px; height:10px; border-radius:50%; background:var(--danger); box-shadow:0 0 0 3px rgba(255,77,77,.15);}
+    .dot.ok{ background:var(--green); box-shadow:0 0 0 3px rgba(32,220,150,.15);}
+
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; padding:14px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      min-height:140px;
+    }
+    .title{ font-size:12px; letter-spacing:1.2px; color:var(--muted); display:flex; align-items:center; gap:8px;}
+    .title .unit{ font-size:12px; color:inherit; opacity:.95; }
+    .value{
+      margin-top:8px;
+      font-size:64px; font-weight:650; line-height:1.0;
+      text-shadow: 1px 1px 0 rgba(0,0,0,.35);
+    }
+    .value.cyan{ color:var(--cyan); }
+    .value.green{ color:var(--green); }
+
+    .row{
+      margin-top:12px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      background: transparent;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .row .label{ font-size:18px; letter-spacing:.2px; }
+    .toggle{
+      width:120px; height:34px; border-radius:999px;
+      border:1px solid var(--muted); position:relative; cursor:pointer;
+      user-select:none;
+    }
+    .toggle.on{ border-color:var(--cyan); }
+    .knob{
+      width:26px; height:26px; border-radius:50%;
+      background:var(--text); position:absolute; top:3px; left:6px;
+      transition: all .18s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+    }
+    .toggle.on .knob{ left:88px; outline:2px solid rgba(0,240,255,.35); }
+    .toggle .txt{
+      position:absolute; top:8px; left:12px; font-size:11px; color:var(--text);
+      opacity:.9;
+    }
+    .toggle.on .txt{ left:12px; content:"ON"; }
+    .meta{ margin-top:12px; color:var(--muted); font-size:12px; display:flex; gap:14px; flex-wrap:wrap; }
+    .meta code{ color:var(--text); background: rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; }
+    .footer{ margin-top:14px; color:var(--muted); font-size:12px; opacity:.9;}
+    .btn{
+      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10);
+      color:var(--text); padding:8px 10px; border-radius:12px;
+      cursor:pointer; font-size:12px;
+    }
+    .btn:hover{ background: rgba(255,255,255,.09); }
+    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } .value{ font-size:56px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <h1>SYMO</h1>
+        <span>ROOM CONTROL</span>
+      </div>
+      <div class="status">
+        <div id="dot" class="dot"></div>
+        <div id="connText">disconnesso</div>
+        <button class="btn" id="reconnectBtn">Reconnect</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="title">TEMPERATURE <span class="unit" style="color:var(--cyan)">°C</span></div>
+        <div id="temp" class="value cyan">--.-</div>
+      </div>
+      <div class="card">
+        <div class="title">HUMIDITY <span class="unit" style="color:var(--green)">%</span></div>
+        <div id="hum" class="value green">--.-</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">sy_room luce</div>
+      <div id="toggle" class="toggle">
+        <div class="txt" id="toggleTxt">OFF</div>
+        <div class="knob"></div>
+      </div>
+    </div>
+
+    <div class="meta">
+      <div>DATA topic: <code>symo/room/data</code></div>
+      <div>RELAY topic: <code>symo/room/relay</code></div>
+      <div>Last msg: <code id="lastMsg">—</code></div>
+    </div>
+
+    <div class="footer">
+      Nota: questa versione mette le credenziali MQTT nel client (comoda, ma non “sicura” se pubblicata).
+    </div>
+  </div>
+
+  <!-- mqtt.js via CDN -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>
+    // =========================
+    // CONFIG (EDITA QUI)
+    // =========================
+    const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud"; // <-- Cluster URL (senza porta)
+    const MQTT_WS_PORT = 8884; // WebSocket Port
+    const MQTT_USER = "syymon";  // <-- credenziale dedicata
+    const MQTT_PASS = "Piazzale99";
+
+    const TOPIC_DATA  = "symo/room/data";
+    const TOPIC_RELAY = "symo/room/relay";
+
+    // =========================
+    // UI refs
+    // =========================
+    const elTemp = document.getElementById("temp");
+    const elHum  = document.getElementById("hum");
+    const elDot  = document.getElementById("dot");
+    const elConn = document.getElementById("connText");
+    const elLast = document.getElementById("lastMsg");
+    const elToggle = document.getElementById("toggle");
+    const elToggleTxt = document.getElementById("toggleTxt");
+    const elReconnect = document.getElementById("reconnectBtn");
+
+    let client = null;
+    let relayState = 0;
+
+    function setConn(ok, msg){
+      elDot.classList.toggle("ok", !!ok);
+      elConn.textContent = msg;
+    }
+
+    function setRelayUI(on){
+      relayState = on ? 1 : 0;
+      elToggle.classList.toggle("on", !!on);
+      elToggleTxt.textContent = on ? "ON" : "OFF";
+    }
+
+    function connect(){
+      if (client) { try { client.end(true); } catch(e){} client = null; }
+
+      const url = `wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`;
+      const clientId = "symo-web-" + Math.random().toString(16).slice(2);
+
+      setConn(false, "connecting...");
+
+      client = mqtt.connect(url, {
+        username: MQTT_USER,
+        password: MQTT_PASS,
+        clientId,
+        clean: true,
+        connectTimeout: 8000,
+        reconnectPeriod: 2000,
+        keepalive: 30
+      });
+
+      client.on("connect", () => {
+        setConn(true, "connesso");
+        client.subscribe(TOPIC_DATA, { qos: 0 });
+      });
+
+      client.on("reconnect", () => setConn(false, "reconnecting..."));
+      client.on("close", () => setConn(false, "disconnesso"));
+      client.on("error", (err) => setConn(false, "errore: " + (err?.message || err)));
+
+      client.on("message", (topic, payload) => {
+        if (topic !== TOPIC_DATA) return;
+        const s = payload.toString();
+        elLast.textContent = new Date().toLocaleString();
+
+        try{
+          const j = JSON.parse(s);
+          if (typeof j.temperature === "number") elTemp.textContent = j.temperature.toFixed(1);
+          if (typeof j.humidity === "number")    elHum.textContent  = j.humidity.toFixed(1);
+          if (typeof j.relay === "number")       setRelayUI(j.relay === 1);
+        }catch(e){
+          // se arriva non-JSON, ignoriamo
+        }
+      });
+    }
+
+    function publishRelay(cmd){
+      if (!client || !client.connected) return;
+      client.publish(TOPIC_RELAY, cmd, { qos: 0, retain: false });
+    }
+
+    elToggle.addEventListener("click", () => {
+      // UI ottimistica + comando
+      const next = relayState ? 0 : 1;
+      setRelayUI(next);
+      publishRelay(next ? "ON" : "OFF");
+    });
+
+    elReconnect.addEventListener("click", connect);
+
+    // start
+    connect();
+  </script>
+</body>
+</html>
