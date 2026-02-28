@@ -5,141 +5,252 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SYMO – Room Control</title>
   <style>
-    :root{
-      --bg1:#040918; --bg2:#0a0e20;
-      --card:#0c122c; --border:#1e2c4e;
-      --text:#ebf5ff; --muted:#96aac8;
-      --cyan:#00f0ff; --green:#20dc96;
-      --danger:#ff4d4d;
-    }
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: linear-gradient(180deg,var(--bg1),var(--bg2));
-      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center;
-    }
-    .wrap{ width:min(920px, 94vw); padding:18px; }
-    .header{
-      display:flex; align-items:center; justify-content:space-between;
-      background:var(--card); border:1px solid var(--border);
-      border-radius:18px; padding:14px 16px; margin-bottom:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .brand{ display:flex; gap:12px; align-items:baseline; }
-    .brand h1{ font-size:22px; margin:0; letter-spacing:.5px; }
-    .brand span{ font-size:12px; color:var(--muted); letter-spacing:1.4px; }
-    .status{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); }
-    .dot{ width:10px; height:10px; border-radius:50%; background:var(--danger); box-shadow:0 0 0 3px rgba(255,77,77,.15);}
-    .dot.ok{ background:var(--green); box-shadow:0 0 0 3px rgba(32,220,150,.15);}
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .card{
-      background:var(--card); border:1px solid var(--border);
-      border-radius:18px; padding:14px 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.2);
-      min-height:140px;
+    :root {
+      /* Colori basati sull'immagine di riferimento */
+      --bg-main: #060913;
+      --bg-card: linear-gradient(145deg, #0e152d, #090e1e);
+      --bg-card-hover: linear-gradient(145deg, #121a38, #0b1124);
+      --border-color: rgba(255, 255, 255, 0.04);
+      --text-main: #ffffff;
+      --text-muted: #8a9bb3;
+      
+      /* Accenti */
+      --accent-cyan: #00d2ff;
+      --accent-blue: #3a7bd5;
+      --glow-cyan: 0 8px 25px rgba(0, 210, 255, 0.25);
+      
+      --danger: #ff4d4d;
+      --success: #20dc96;
     }
-    .title{ font-size:12px; letter-spacing:1.2px; color:var(--muted); display:flex; align-items:center; gap:8px;}
-    .title .unit{ font-size:12px; color:inherit; opacity:.95; }
-    .value{
-      margin-top:8px;
-      font-size:64px; font-weight:650; line-height:1.0;
-      text-shadow: 1px 1px 0 rgba(0,0,0,.35);
-    }
-    .value.cyan{ color:var(--cyan); }
-    .value.green{ color:var(--green); }
 
-    .row{
-      margin-top:12px;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px;
-      background: transparent;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.06);
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-main);
+      background-image: radial-gradient(circle at 50% 0%, #111a3a 0%, transparent 50%);
+      color: var(--text-main); 
+      min-height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
     }
-    .row .label{ font-size:18px; letter-spacing:.2px; }
-    .toggle{
-      width:120px; height:34px; border-radius:999px;
-      border:1px solid var(--muted); position:relative; cursor:pointer;
-      user-select:none;
+
+    /* Layout mobile-first come l'immagine */
+    .wrap { 
+      width: min(100%, 420px); 
+      padding: 24px; 
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    .toggle.on{ border-color:var(--cyan); }
-    .knob{
-      width:26px; height:26px; border-radius:50%;
-      background:var(--text); position:absolute; top:3px; left:6px;
-      transition: all .18s ease;
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+
+    /* --- Header --- */
+    .header {
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      margin-bottom: 10px;
     }
-    .toggle.on .knob{ left:88px; outline:2px solid rgba(0,240,255,.35); }
-    .toggle .txt{
-      position:absolute; top:8px; left:12px; font-size:11px; color:var(--text);
-      opacity:.9;
+    .brand { display: flex; flex-direction: column; gap: 4px; }
+    .brand h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: 0.5px; }
+    .brand span { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    
+    .status-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.05);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border-color);
     }
-    .toggle.on .txt{ left:12px; content:"ON"; }
-    .meta{ margin-top:12px; color:var(--muted); font-size:12px; display:flex; gap:14px; flex-wrap:wrap; }
-    .meta code{ color:var(--text); background: rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; }
-    .footer{ margin-top:14px; color:var(--muted); font-size:12px; opacity:.9;}
-    .btn{
-      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10);
-      color:var(--text); padding:8px 10px; border-radius:12px;
-      cursor:pointer; font-size:12px;
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px var(--danger); transition: 0.3s; }
+    .dot.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    #reconnectBtn { display: none; } /* Nascosto di default, gestibile via JS se serve */
+
+    /* --- Grid Cards --- */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px; 
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      min-height: 150px;
+      transition: background 0.3s;
     }
-    .btn:hover{ background: rgba(255,255,255,.09); }
-    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } .value{ font-size:56px; } }
+    .card:hover { background: var(--bg-card-hover); }
+
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+    .icon-box {
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      background: rgba(0, 210, 255, 0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent-cyan);
+    }
+    .card-title { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+    
+    .value-container { display: flex; align-items: baseline; gap: 4px; }
+    .value {
+      font-size: 42px; 
+      font-weight: 600; 
+      letter-spacing: -1px;
+    }
+    .unit { font-size: 16px; color: var(--text-muted); font-weight: 500; }
+
+    /* --- Toggle Row --- */
+    .control-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .control-info { display: flex; align-items: center; gap: 14px; }
+    .control-info .label { font-size: 16px; font-weight: 600; }
+    .control-info .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: block;}
+
+    /* Switch Style (stile App) */
+    .toggle {
+      width: 64px; height: 34px; 
+      border-radius: 34px;
+      background: #1a2235;
+      position: relative; 
+      cursor: pointer;
+      transition: 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .toggle.on { 
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); 
+      box-shadow: var(--glow-cyan);
+      border-color: transparent;
+    }
+    .knob {
+      width: 26px; height: 26px; 
+      border-radius: 50%;
+      background: #ffffff; 
+      position: absolute; 
+      top: 3px; left: 4px;
+      transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .toggle.on .knob { left: 32px; }
+    .toggle .txt { display: none; } /* Nascosto per un look più pulito, il colore basta */
+
+    /* --- Meta & Footer --- */
+    .meta-box {
+      margin-top: auto;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .meta { font-size: 12px; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px; }
+    .meta div { display: flex; justify-content: space-between; align-items: center; }
+    .meta code { color: var(--accent-cyan); font-family: monospace; font-size: 11px; background: rgba(0,210,255,0.1); padding: 4px 8px; border-radius: 6px; }
+    
+    .footer { text-align: center; margin-top: 10px; color: #4a5a73; font-size: 11px; }
+
   </style>
 </head>
 <body>
   <div class="wrap">
+    
     <div class="header">
       <div class="brand">
         <h1>SYMO</h1>
         <span>ROOM CONTROL</span>
       </div>
-      <div class="status">
+      <div class="status-badge" onclick="connect()" style="cursor:pointer;" title="Clicca per riconnettere">
         <div id="dot" class="dot"></div>
-        <div id="connText">disconnesso</div>
-        <button class="btn" id="reconnectBtn">Reconnect</button>
+        <span id="connText">Disconnesso</span>
       </div>
     </div>
 
     <div class="grid">
+      
       <div class="card">
-        <div class="title">TEMPERATURE <span class="unit" style="color:var(--cyan)">°C</span></div>
-        <div id="temp" class="value cyan">--.-</div>
+        <div class="card-header">
+          <div class="icon-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+          </div>
+          <div class="card-title">Temperature</div>
+        </div>
+        <div class="value-container">
+          <div id="temp" class="value">--.-</div>
+          <div class="unit">°C</div>
+        </div>
       </div>
+
       <div class="card">
-        <div class="title">HUMIDITY <span class="unit" style="color:var(--green)">%</span></div>
-        <div id="hum" class="value green">--.-</div>
+        <div class="card-header">
+          <div class="icon-box" style="color: #20dc96; background: rgba(32, 220, 150, 0.1);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a5 5 0 0 0 5-5c0-2-2.5-7-5-12-2.5 5-5 10-5 12a5 5 0 0 0 5 5z"></path></svg>
+          </div>
+          <div class="card-title">Humidity</div>
+        </div>
+        <div class="value-container">
+          <div id="hum" class="value">--.-</div>
+          <div class="unit">%</div>
+        </div>
       </div>
+
     </div>
 
-    <div class="row">
-      <div class="label">sy_room luce</div>
+    <div class="control-row">
+      <div class="control-info">
+        <div class="icon-box" style="color: #ffca28; background: rgba(255, 202, 40, 0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+        </div>
+        <div>
+          <div class="label">Main Light</div>
+          <span class="sub">sy_room luce</span>
+        </div>
+      </div>
+      
       <div id="toggle" class="toggle">
         <div class="txt" id="toggleTxt">OFF</div>
         <div class="knob"></div>
       </div>
     </div>
 
-    <div class="meta">
-      <div>DATA topic: <code>symo/room/data</code></div>
-      <div>RELAY topic: <code>symo/room/relay</code></div>
-      <div>Last msg: <code id="lastMsg">—</code></div>
+    <div class="meta-box">
+      <div class="meta">
+        <div><span>DATA topic</span> <code>symo/room/data</code></div>
+        <div><span>RELAY topic</span> <code>symo/room/relay</code></div>
+        <div style="margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+          <span>Last msg</span> <code id="lastMsg">—</code>
+        </div>
+      </div>
     </div>
 
     <div class="footer">
-      Nota: questa versione mette le credenziali MQTT nel client (comoda, ma non “sicura” se pubblicata).
+      Nota: credenziali MQTT nel client
     </div>
+
   </div>
 
-  <!-- mqtt.js via CDN -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <script>
     // =========================
     // CONFIG (EDITA QUI)
     // =========================
-    const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud"; // <-- Cluster URL (senza porta)
-    const MQTT_WS_PORT = 8884; // WebSocket Port
-    const MQTT_USER = "syymon";  // <-- credenziale dedicata
+    const MQTT_HOST = "ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud"; 
+    const MQTT_WS_PORT = 8884; 
+    const MQTT_USER = "syymon";  
     const MQTT_PASS = "Piazzale99";
 
     const TOPIC_DATA  = "symo/room/data";
@@ -155,14 +266,14 @@
     const elLast = document.getElementById("lastMsg");
     const elToggle = document.getElementById("toggle");
     const elToggleTxt = document.getElementById("toggleTxt");
-    const elReconnect = document.getElementById("reconnectBtn");
 
     let client = null;
     let relayState = 0;
 
     function setConn(ok, msg){
       elDot.classList.toggle("ok", !!ok);
-      elConn.textContent = msg;
+      // Capitalize prima lettera
+      elConn.textContent = msg.charAt(0).toUpperCase() + msg.slice(1);
     }
 
     function setRelayUI(on){
@@ -171,13 +282,15 @@
       elToggleTxt.textContent = on ? "ON" : "OFF";
     }
 
+    // Ho reso il badge di connessione in alto cliccabile per riconnettersi, 
+    // rimuovendo il bottone brutto di prima.
     function connect(){
       if (client) { try { client.end(true); } catch(e){} client = null; }
 
       const url = `wss://${MQTT_HOST}:${MQTT_WS_PORT}/mqtt`;
       const clientId = "symo-web-" + Math.random().toString(16).slice(2);
 
-      setConn(false, "connecting...");
+      setConn(false, "Connessione...");
 
       client = mqtt.connect(url, {
         username: MQTT_USER,
@@ -190,18 +303,23 @@
       });
 
       client.on("connect", () => {
-        setConn(true, "connesso");
+        setConn(true, "Connesso");
         client.subscribe(TOPIC_DATA, { qos: 0 });
       });
 
-      client.on("reconnect", () => setConn(false, "reconnecting..."));
-      client.on("close", () => setConn(false, "disconnesso"));
-      client.on("error", (err) => setConn(false, "errore: " + (err?.message || err)));
+      client.on("reconnect", () => setConn(false, "Riconnessione..."));
+      client.on("close", () => setConn(false, "Disconnesso"));
+      client.on("error", (err) => setConn(false, "Errore"));
 
       client.on("message", (topic, payload) => {
         if (topic !== TOPIC_DATA) return;
         const s = payload.toString();
-        elLast.textContent = new Date().toLocaleString();
+        
+        // Formatta l'ora in modo più pulito
+        const now = new Date();
+        elLast.textContent = now.getHours().toString().padStart(2,'0') + ':' + 
+                             now.getMinutes().toString().padStart(2,'0') + ':' + 
+                             now.getSeconds().toString().padStart(2,'0');
 
         try{
           const j = JSON.parse(s);
@@ -225,8 +343,6 @@
       setRelayUI(next);
       publishRelay(next ? "ON" : "OFF");
     });
-
-    elReconnect.addEventListener("click", connect);
 
     // start
     connect();
