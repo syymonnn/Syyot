@@ -643,13 +643,15 @@ function updatePresenceUI(){
   const wrap=document.getElementById('presIcoWrap');
   const lbl=document.getElementById('presLabel');
   const sub=document.getElementById('presSub');
-  const ico=document.getElementById('presIco');
 
   /* reset chip classes */
   ['chipPresent','chipMoving','chipNear'].forEach(id=>{
     document.getElementById(id).className='pres-chip';
   });
-  document.getElementById('chipActivityTxt').textContent='Attività: '+(r.act||0);
+
+  /* act = variazione segnale LD2410, range reale ~0-30
+     bps/ema sono contatori cumulativi, ignorati per la UI */
+  const act = r.act || 0;
 
   if(!r.present){
     wrap.className='pres-ico-wrap state-empty';
@@ -657,17 +659,28 @@ function updatePresenceUI(){
     wrap.innerHTML=PICO.empty;
     lbl.textContent='Stanza Vuota';
     sub.textContent='Nessuna presenza rilevata dal radar';
+    document.getElementById('chipActivity').className='pres-chip';
+    document.getElementById('chipActivityTxt').textContent='Nessuna attività';
     return;
   }
 
   document.getElementById('chipPresent').className='pres-chip lit-green';
 
-  if(r.near){
+  /* stato principale basato sui flag hardware LD2410 */
+  if(r.near && r.moving){
+    wrap.className='pres-ico-wrap state-near';
+    lbl.className='pres-label state-near';
+    wrap.innerHTML=PICO.near;
+    lbl.textContent='Presenza Vicina Attiva';
+    sub.textContent='Movimento ravvicinato rilevato';
+    document.getElementById('chipMoving').className='pres-chip lit-yellow';
+    document.getElementById('chipNear').className='pres-chip lit-orange';
+  } else if(r.near){
     wrap.className='pres-ico-wrap state-near';
     lbl.className='pres-label state-near';
     wrap.innerHTML=PICO.near;
     lbl.textContent='Presenza Vicina';
-    sub.textContent='Persona rilevata a distanza ravvicinata';
+    sub.textContent='Persona ferma a distanza ravvicinata';
     document.getElementById('chipNear').className='pres-chip lit-orange';
   } else if(r.moving){
     wrap.className='pres-ico-wrap state-active';
@@ -684,14 +697,16 @@ function updatePresenceUI(){
     sub.textContent='Persona ferma rilevata nella stanza';
   }
 
-  const intensity=r.act;
+  /* act calibrato sul range reale LD2410 (~0-30)
+     sotto 2 = rumore di fondo, 2-8 = leggera, 8-18 = moderata, >18 = alta */
   let actClass='pres-chip';
-  if(intensity>=15) actClass='pres-chip lit-orange';
-  else if(intensity>=5) actClass='pres-chip lit-yellow';
-  else if(intensity>0) actClass='pres-chip lit-green';
+  let actTxt='Attività minima';
+  if(act > 18){actClass='pres-chip lit-orange'; actTxt='Alta attività';}
+  else if(act > 8){actClass='pres-chip lit-yellow'; actTxt='Attività moderata';}
+  else if(act > 2){actClass='pres-chip lit-green'; actTxt='Attività lieve';}
+  else{actTxt='Rumore di fondo';}
   document.getElementById('chipActivity').className=actClass;
-  document.getElementById('chipActivityTxt').textContent=
-    intensity<5?'Attività minima':intensity<15?'Attività moderata':'Alta attività';
+  document.getElementById('chipActivityTxt').textContent=actTxt;
 }
 
 /* MQTT */
@@ -717,13 +732,15 @@ function mqttConnect(){
       if(j.temperature!=null){inT=j.temperature;$T.textContent=j.temperature.toFixed(1);}
       if(j.humidity!=null){inH=j.humidity;$H.textContent=j.humidity.toFixed(1);}
       if(typeof j.relay==='number')setRelay(j.relay===1);
-      /* [NUOVO] aggiornamento radar dal payload MQTT */
-      if(j.present!==undefined){
-        radarState.present=j.present;
-        radarState.near=j.near;
-        radarState.moving=j.moving;
-        radarState.act=j.act||0;
-        radarState.ema=j.ema||0;
+      /* [NUOVO] aggiornamento radar dal payload MQTT LD2410
+         out = pin hardware presenza, present = alias, near/moving = flag diretti
+         bps/ema = contatori cumulativi, ignorati per la UI */
+      if(j.present!==undefined || j.out!==undefined){
+        radarState.present = j.out ?? j.present ?? false;
+        radarState.near    = j.near    ?? false;
+        radarState.moving  = j.moving  ?? false;
+        radarState.act     = j.act     ?? 0;
+        radarState.ema     = j.ema     ?? 0;
         updatePresenceUI();
       }
       $last.textContent='Last: '+new Date().toLocaleTimeString('it-IT');
