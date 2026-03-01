@@ -223,10 +223,37 @@
     .pext{grid-template-columns:1fr;}
     .pcmp{grid-template-columns:1fr;}
     .etmp{font-size:48px;}
-    /* su mobile i panel non sono absolute: scorrono normalmente */
     .panels{overflow:visible;height:auto;min-height:200px;position:static;}
     .panel{position:static;opacity:0;pointer-events:none;transform:none;height:0;overflow:hidden;padding:0;}
     .panel.on{opacity:1;pointer-events:all;height:auto;overflow:visible;padding:13px 17px;}
+  }
+
+  /* ==========================================
+     [NUOVO] PRESENCE BLOCK — radar presenza
+  ========================================== */
+  .presence-block{
+    margin-top:14px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
+  .presence-status{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+    color:var(--mid);
+    transition:.3s;
+  }
+  .presence-status.active{
+    color:var(--green);
+    text-shadow:0 0 8px rgba(57,255,20,.4);
+  }
+  .presence-meta{
+    display:flex;
+    gap:14px;
+    margin-top:4px;
+    font-size:10px;
+    font-weight:600;
+    color:var(--muted);
   }
   </style>
 </head>
@@ -264,6 +291,7 @@
 
   <div class="grid">
 
+    <!-- CARD AMBIENTE INTERNO — invariata + [NUOVO] blocco presenza radar -->
     <div class="cenv glass">
       <div class="ch">
         <span class="clbl">Ambiente Interno</span>
@@ -277,6 +305,14 @@
         <div class="stat">
           <div class="sval"><span class="snum p" id="hum">--.-</span><span class="sunit">%</span></div>
           <div class="slb">Umidità</div>
+        </div>
+      </div>
+      <!-- [NUOVO] Radar presenza — aggiunto sotto .srow, nulla del resto è cambiato -->
+      <div class="presence-block">
+        <div class="presence-status" id="presenceStatus">In attesa radar...</div>
+        <div class="presence-meta">
+          <span id="presenceType">-</span>
+          <span id="presenceLevel">-</span>
         </div>
       </div>
     </div>
@@ -305,7 +341,7 @@
     </div>
 
     <!-- ========================================
-         CARD METEO — 3 TAB SEPARATE E INDIPENDENTI
+         CARD METEO — 2 TAB SEPARATE E INDIPENDENTI
     ======================================== -->
     <div class="cwx glass">
       <div class="tabs">
@@ -525,6 +561,43 @@ function updDelta(){
   }
 }
 
+/* ==========================================
+   [NUOVO] RADAR PRESENZA — stato e UI
+========================================== */
+let radarState={
+  present:false,
+  near:false,
+  moving:false,
+  act:0,
+  ema:0
+};
+const $presenceStatus=document.getElementById('presenceStatus');
+const $presenceType=document.getElementById('presenceType');
+const $presenceLevel=document.getElementById('presenceLevel');
+
+function updatePresenceUI(){
+  const r=radarState;
+  if(!r.present){
+    $presenceStatus.textContent='Stanza Vuota';
+    $presenceStatus.classList.remove('active');
+    $presenceType.textContent='Nessuna presenza';
+    $presenceLevel.textContent='';
+    return;
+  }
+  $presenceStatus.classList.add('active');
+  if(r.moving){
+    $presenceStatus.textContent='Presenza Attiva';
+    $presenceType.textContent=r.near?'Movimento vicino':'Movimento nella stanza';
+  }else{
+    $presenceStatus.textContent='Presenza Statica';
+    $presenceType.textContent=r.near?'Persona vicina':'Persona rilevata';
+  }
+  const intensity=r.act;
+  if(intensity<5){$presenceLevel.textContent='Attività minima';}
+  else if(intensity<15){$presenceLevel.textContent='Attività moderata';}
+  else{$presenceLevel.textContent='Alta attività';}
+}
+
 /* MQTT */
 const HOST='ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud',PORT=8884,TD='symo/room/data',TR='symo/room/relay';
 let mc=null,rs=0;
@@ -548,6 +621,15 @@ function mqttConnect(){
       if(j.temperature!=null){inT=j.temperature;$T.textContent=j.temperature.toFixed(1);}
       if(j.humidity!=null){inH=j.humidity;$H.textContent=j.humidity.toFixed(1);}
       if(typeof j.relay==='number')setRelay(j.relay===1);
+      /* [NUOVO] aggiornamento radar dal payload MQTT */
+      if(j.present!==undefined){
+        radarState.present=j.present;
+        radarState.near=j.near;
+        radarState.moving=j.moving;
+        radarState.act=j.act||0;
+        radarState.ema=j.ema||0;
+        updatePresenceUI();
+      }
       $last.textContent='Last: '+new Date().toLocaleTimeString('it-IT');
       updDelta();
     }catch(e){}
@@ -561,4 +643,3 @@ mqttConnect();
 </script>
 </body>
 </html>
-
