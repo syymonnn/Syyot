@@ -53,10 +53,10 @@
   }
   #grid-lines{
     position:fixed;inset:0;z-index:1;pointer-events:none;
-    background-image:linear-gradient(rgba(57,255,20,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,.022) 1px,transparent 1px);
-    background-size:80px 80px;animation:gridPulse 8s ease-in-out infinite;
+    overflow:hidden;
   }
-  @keyframes gridPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+  #grid-lines canvas{position:absolute;inset:0;width:100%;height:100%;}
+  @keyframes gridPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
   #scan-sweep{
     position:fixed;inset:0;z-index:2;pointer-events:none;
     background:linear-gradient(to bottom,transparent 0%,transparent 48%,rgba(57,255,20,.018) 49%,rgba(57,255,20,.042) 50%,rgba(57,255,20,.018) 51%,transparent 52%,transparent 100%);
@@ -110,7 +110,7 @@
   .dot{width:7px;height:7px;border-radius:50%;background:var(--danger);transition:.3s;flex-shrink:0;}
   .dot.ok{background:var(--green);box-shadow:var(--glows);}
 
-  .grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:10px;}
+  .grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:10px;align-content:start;}
 
   /* SENSORS */
   .cenv{grid-column:1;grid-row:1;border-radius:var(--r);padding:17px 20px;}
@@ -152,7 +152,7 @@
   /* ==========================================
      WEATHER CARD
   ========================================== */
-  .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+  .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
 
   /* TAB BAR */
   .tabs{display:flex;gap:6px;padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;background:rgba(255,255,255,.015);position:relative;}
@@ -170,12 +170,15 @@
   .tab svg{flex-shrink:0;}
 
   /* PANELS */
-  .panels{flex:1;min-height:0;position:relative;overflow:hidden;}
-  .panel{position:absolute;inset:0;padding:13px 17px;opacity:0;transform:translateY(5px);pointer-events:none;transition:opacity .25s,transform .25s;}
-  .panel.on{opacity:1;transform:translateY(0);pointer-events:all;}
+  .panels{position:relative;}
+  .panel{display:none !important;padding:13px 17px;}
+  .panel.on{display:block !important;}
+  .panel.pext.on{display:grid !important;}
+  .panel.pcmp.on{display:grid !important;}
+  .panel.ppres.on{display:flex !important;}
 
   /* PANEL ESTERNO */
-  .pext{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px;}
+  .pext{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:18px;}
   .extl{}
   .eloc{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
   .eloc svg{color:var(--green);flex-shrink:0;}
@@ -191,7 +194,7 @@
   .wdv{font-size:15px;font-weight:700;}
 
   /* PANEL CONFRONTO */
-  .pcmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:stretch;}
+  .pcmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
   .ccard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--rs);padding:13px 15px;display:flex;flex-direction:column;gap:9px;}
   .ctop{display:flex;justify-content:space-between;align-items:center;}
   .cnm{font-size:11px;font-weight:600;color:var(--mid);display:flex;align-items:center;gap:6px;}
@@ -223,15 +226,18 @@
     .pext{grid-template-columns:1fr;}
     .pcmp{grid-template-columns:1fr;}
     .etmp{font-size:48px;}
-    .panels{overflow:visible;height:auto;min-height:200px;position:static;}
-    .panel{position:static;opacity:0;pointer-events:none;transform:none;height:0;overflow:hidden;padding:0;}
-    .panel.on{opacity:1;pointer-events:all;height:auto;overflow:visible;padding:13px 17px;}
+    .panels{overflow:visible;height:auto;position:static;}
+    .panel{display:none !important;padding:13px 17px;}
+    .panel.on{display:block !important;}
+    .panel.pext.on{display:grid !important;}
+    .panel.pcmp.on{display:grid !important;}
+    .panel.ppres.on{display:flex !important;}
   }
 
   /* ==========================================
      [NUOVO] PANEL PRESENZA — radar tab
   ========================================== */
-  .ppres{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;}
+  .ppres{display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 17px;}
   .pres-hero{display:flex;align-items:center;gap:22px;}
   .pres-ico-wrap{
     width:80px;height:80px;border-radius:50%;
@@ -278,7 +284,7 @@
 
 <!-- SCI-FI BG — SEMPRE VISIBILE -->
 <div id="scifi-bg"></div>
-<div id="grid-lines"></div>
+<div id="grid-lines"><canvas id="pgrid"></canvas></div>
 <div id="scan-sweep"></div>
 <div id="corners"></div>
 <div id="particles"></div>
@@ -726,6 +732,102 @@ function mqttConnect(){
   });
   mc.on('close',()=>setConn(false,'Offline'));
 }
+
+/* ==========================================
+   PERSPECTIVE GRID — griglia in prospettiva sul fondo
+========================================== */
+(function(){
+  const canvas = document.getElementById('pgrid');
+  const ctx = canvas.getContext('2d');
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); draw(); });
+
+  function draw(){
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    /* punto di fuga: centro-basso */
+    const vpX = W * 0.5;
+    const vpY = H * 0.78;
+
+    /* numero di linee verticali e orizzontali */
+    const vLines = 18;
+    const hLines = 10;
+
+    /* la griglia parte a 55% dell'altezza e arriva al fondo */
+    const gridTop = H * 0.52;
+    const gridBot = H;
+
+    /* colore base linee */
+    const r=57, g=255, b=20;
+
+    /* --- LINEE ORIZZONTALI --- */
+    for(let i = 0; i <= hLines; i++){
+      /* distribuzione logaritmica: più dense in basso */
+      const t = Math.pow(i / hLines, 1.8);
+      const y = gridTop + (gridBot - gridTop) * t;
+
+      /* opacità: zero in cima, massima in fondo */
+      const alpha = t * 0.055;
+
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    /* --- LINEE VERTICALI in prospettiva --- */
+    for(let i = 0; i <= vLines; i++){
+      const t = i / vLines; /* 0 = sinistra, 1 = destra */
+      /* in basso le linee sono distribuite uniformemente */
+      const xBot = W * t;
+      /* in alto convergono verso il punto di fuga */
+      const xTop = vpX + (xBot - vpX) * ((gridTop - vpY) / (gridBot - vpY));
+
+      /* opacità: quasi zero ai bordi, leggermente più visibile al centro */
+      const distCenter = Math.abs(t - 0.5) * 2; /* 0=centro 1=bordo */
+      const alpha = (1 - distCenter * 0.6) * 0.038;
+
+      /* gradiente verticale: trasparente in alto, visibile in basso */
+      const grad = ctx.createLinearGradient(xTop, gridTop, xBot, gridBot);
+      grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},${alpha})`);
+
+      ctx.beginPath();
+      ctx.moveTo(xTop, gridTop);
+      ctx.lineTo(xBot, gridBot);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    /* sfumatura finale sopra la griglia per dissolverla morbidamente */
+    const fade = ctx.createLinearGradient(0, gridTop - 60, 0, gridTop + 80);
+    fade.addColorStop(0, 'rgba(3,5,8,1)');
+    fade.addColorStop(1, 'rgba(3,5,8,0)');
+    ctx.fillStyle = fade;
+    ctx.fillRect(0, gridTop - 60, W, 140);
+  }
+
+  draw();
+
+  /* lieve pulse di opacità */
+  let pulse = 0;
+  function animate(){
+    pulse += 0.012;
+    canvas.style.opacity = 0.7 + Math.sin(pulse) * 0.3;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
 
 fetchWx();
 setInterval(fetchWx,600000);
