@@ -229,32 +229,49 @@
   }
 
   /* ==========================================
-     [NUOVO] PRESENCE BLOCK — radar presenza
+     [NUOVO] PANEL PRESENZA — radar tab
   ========================================== */
-  .presence-block{
-    margin-top:14px;
-    padding-top:10px;
-    border-top:1px solid rgba(255,255,255,.06);
+  .ppres{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;}
+  .pres-hero{display:flex;align-items:center;gap:22px;}
+  .pres-ico-wrap{
+    width:80px;height:80px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.10);
+    transition:background .4s,border-color .4s,box-shadow .4s;
+    position:relative;
   }
-  .presence-status{
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.5px;
-    color:var(--mid);
-    transition:.3s;
+  .pres-ico-wrap.state-empty{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
+  .pres-ico-wrap.state-static{background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.28);box-shadow:0 0 28px rgba(57,255,20,.12);}
+  .pres-ico-wrap.state-active{background:rgba(204,255,0,.09);border-color:rgba(204,255,0,.35);box-shadow:0 0 36px rgba(204,255,0,.18);}
+  .pres-ico-wrap.state-near{background:rgba(255,180,0,.09);border-color:rgba(255,180,0,.38);box-shadow:0 0 36px rgba(255,180,0,.20);}
+  /* pulse ring per stati attivi */
+  .pres-ico-wrap.state-static::after,
+  .pres-ico-wrap.state-active::after,
+  .pres-ico-wrap.state-near::after{
+    content:'';position:absolute;inset:-8px;border-radius:50%;
+    border:1.5px solid currentColor;opacity:0;
+    animation:presRing 2.2s ease-out infinite;
   }
-  .presence-status.active{
-    color:var(--green);
-    text-shadow:0 0 8px rgba(57,255,20,.4);
-  }
-  .presence-meta{
-    display:flex;
-    gap:14px;
-    margin-top:4px;
-    font-size:10px;
-    font-weight:600;
-    color:var(--muted);
-  }
+  .pres-ico-wrap.state-static{color:rgba(57,255,20,.4);}
+  .pres-ico-wrap.state-active{color:rgba(204,255,0,.4);}
+  .pres-ico-wrap.state-near{color:rgba(255,180,0,.5);}
+  @keyframes presRing{0%{inset:-2px;opacity:.7;}100%{inset:-20px;opacity:0;}}
+  .pres-ico-wrap svg{transition:opacity .35s;}
+
+  .pres-info{}
+  .pres-label{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1;transition:color .35s;}
+  .pres-label.state-empty{color:var(--mid);}
+  .pres-label.state-static{color:var(--green);filter:drop-shadow(0 0 8px rgba(57,255,20,.4));}
+  .pres-label.state-active{color:var(--yellow);filter:drop-shadow(0 0 8px rgba(204,255,0,.4));}
+  .pres-label.state-near{color:#ffb400;filter:drop-shadow(0 0 8px rgba(255,180,0,.4));}
+  .pres-sub{font-size:12px;color:var(--mid);margin-top:5px;font-weight:500;}
+
+  .pres-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .pres-chip{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--rp);font-size:11px;font-weight:600;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--mid);transition:all .35s;}
+  .pres-chip.lit-green{background:rgba(57,255,20,.08);border-color:rgba(57,255,20,.25);color:var(--green);}
+  .pres-chip.lit-yellow{background:rgba(204,255,0,.08);border-color:rgba(204,255,0,.25);color:var(--yellow);}
+  .pres-chip.lit-orange{background:rgba(255,180,0,.08);border-color:rgba(255,180,0,.28);color:#ffb400;}
+  .pres-chip svg{flex-shrink:0;}
   </style>
 </head>
 <body>
@@ -307,14 +324,6 @@
           <div class="slb">Umidità</div>
         </div>
       </div>
-      <!-- [NUOVO] Radar presenza — aggiunto sotto .srow, nulla del resto è cambiato -->
-      <div class="presence-block">
-        <div class="presence-status" id="presenceStatus">In attesa radar...</div>
-        <div class="presence-meta">
-          <span id="presenceType">-</span>
-          <span id="presenceLevel">-</span>
-        </div>
-      </div>
     </div>
 
     <div class="cdev glass">
@@ -362,6 +371,14 @@
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>Confronto
+        </button>
+
+        <!-- TAB 3: PRESENZA -->
+        <button class="tab" id="tab-prs" onclick="swTab('prs')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>Presenza
         </button>
 
       </div>
@@ -449,6 +466,41 @@
           </div>
         </div>
 
+        <!-- PANEL 3: PRESENZA RADAR -->
+        <div class="panel ppres" id="panel-prs">
+          <div class="pres-hero">
+            <div class="pres-ico-wrap state-empty" id="presIcoWrap">
+              <!-- icona cambiata via JS -->
+              <svg id="presIco" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="pres-info">
+              <div class="pres-label state-empty" id="presLabel">In attesa radar...</div>
+              <div class="pres-sub" id="presSub">Connetti MQTT per rilevare la presenza</div>
+            </div>
+          </div>
+          <div class="pres-chips">
+            <div class="pres-chip" id="chipPresent">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>
+              Presenza
+            </div>
+            <div class="pres-chip" id="chipMoving">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+              Movimento
+            </div>
+            <div class="pres-chip" id="chipNear">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/></svg>
+              Vicino
+            </div>
+            <div class="pres-chip" id="chipActivity">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span id="chipActivityTxt">Attività: --</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -476,7 +528,7 @@
 /* ==========================================
    2 TAB: Esterno e Confronto
 ========================================== */
-const TABS=['ext','cmp'];
+const TABS=['ext','cmp','prs'];
 
 function swTab(n){
   TABS.forEach(k=>{
@@ -562,7 +614,7 @@ function updDelta(){
 }
 
 /* ==========================================
-   [NUOVO] RADAR PRESENZA — stato e UI
+   [NUOVO] RADAR PRESENZA — stato e UI con icone
 ========================================== */
 let radarState={
   present:false,
@@ -571,31 +623,69 @@ let radarState={
   act:0,
   ema:0
 };
-const $presenceStatus=document.getElementById('presenceStatus');
-const $presenceType=document.getElementById('presenceType');
-const $presenceLevel=document.getElementById('presenceLevel');
+
+/* SVG icone per i diversi stati presenza */
+const PICO={
+  empty:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  static:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><circle cx="12" cy="7" r="1.5" fill="var(--green)"/></svg>`,
+  moving:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M3 12h14"/><path d="M11 20l-4-4 4-4"/><path d="M21 8v8"/></svg>`,
+  near:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ffb400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/><path d="M9.2 9.2a4 4 0 0 0 0 5.6"/><path d="M14.8 9.2a4 4 0 0 1 0 5.6"/></svg>`,
+};
 
 function updatePresenceUI(){
   const r=radarState;
+  const wrap=document.getElementById('presIcoWrap');
+  const lbl=document.getElementById('presLabel');
+  const sub=document.getElementById('presSub');
+  const ico=document.getElementById('presIco');
+
+  /* reset chip classes */
+  ['chipPresent','chipMoving','chipNear'].forEach(id=>{
+    document.getElementById(id).className='pres-chip';
+  });
+  document.getElementById('chipActivityTxt').textContent='Attività: '+(r.act||0);
+
   if(!r.present){
-    $presenceStatus.textContent='Stanza Vuota';
-    $presenceStatus.classList.remove('active');
-    $presenceType.textContent='Nessuna presenza';
-    $presenceLevel.textContent='';
+    wrap.className='pres-ico-wrap state-empty';
+    lbl.className='pres-label state-empty';
+    wrap.innerHTML=PICO.empty;
+    lbl.textContent='Stanza Vuota';
+    sub.textContent='Nessuna presenza rilevata dal radar';
     return;
   }
-  $presenceStatus.classList.add('active');
-  if(r.moving){
-    $presenceStatus.textContent='Presenza Attiva';
-    $presenceType.textContent=r.near?'Movimento vicino':'Movimento nella stanza';
-  }else{
-    $presenceStatus.textContent='Presenza Statica';
-    $presenceType.textContent=r.near?'Persona vicina':'Persona rilevata';
+
+  document.getElementById('chipPresent').className='pres-chip lit-green';
+
+  if(r.near){
+    wrap.className='pres-ico-wrap state-near';
+    lbl.className='pres-label state-near';
+    wrap.innerHTML=PICO.near;
+    lbl.textContent='Presenza Vicina';
+    sub.textContent='Persona rilevata a distanza ravvicinata';
+    document.getElementById('chipNear').className='pres-chip lit-orange';
+  } else if(r.moving){
+    wrap.className='pres-ico-wrap state-active';
+    lbl.className='pres-label state-active';
+    wrap.innerHTML=PICO.moving;
+    lbl.textContent='Presenza Attiva';
+    sub.textContent='Movimento rilevato nella stanza';
+    document.getElementById('chipMoving').className='pres-chip lit-yellow';
+  } else {
+    wrap.className='pres-ico-wrap state-static';
+    lbl.className='pres-label state-static';
+    wrap.innerHTML=PICO.static;
+    lbl.textContent='Presenza Statica';
+    sub.textContent='Persona ferma rilevata nella stanza';
   }
+
   const intensity=r.act;
-  if(intensity<5){$presenceLevel.textContent='Attività minima';}
-  else if(intensity<15){$presenceLevel.textContent='Attività moderata';}
-  else{$presenceLevel.textContent='Alta attività';}
+  let actClass='pres-chip';
+  if(intensity>=15) actClass='pres-chip lit-orange';
+  else if(intensity>=5) actClass='pres-chip lit-yellow';
+  else if(intensity>0) actClass='pres-chip lit-green';
+  document.getElementById('chipActivity').className=actClass;
+  document.getElementById('chipActivityTxt').textContent=
+    intensity<5?'Attività minima':intensity<15?'Attività moderata':'Alta attività';
 }
 
 /* MQTT */
