@@ -690,7 +690,7 @@ function setRelay(on){
 function toggleRelay(){
   const n=rs?0:1;
   setRelay(n===1);
-  if(mc?.connected)mc.publish(TR,n?'L1_ON':'L1_OFF');
+  if(mc?.connected)mc.publish(TR,n?'ON':'OFF');
 }
 
 /* Relay 2 */
