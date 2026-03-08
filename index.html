@@ -24,9 +24,6 @@
   html,body{height:100%;overflow:hidden}
   body{font-family:'Sora',system-ui,sans-serif;background:#030508;color:var(--txt);height:100vh;display:flex;flex-direction:column;}
 
-  /* ==========================================
-     SCI-FI BG — SEMPRE VISIBILE
-  ========================================== */
   #scifi-bg{position:fixed;inset:0;z-index:0;background:#030508;overflow:hidden;}
   #scifi-bg::before{
     content:'';position:absolute;inset:0;
@@ -75,7 +72,6 @@
   }
   #sl{position:fixed;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
 
-  /* ORBS */
   #ov{position:fixed;inset:0;z-index:5;pointer-events:none;
     background:radial-gradient(ellipse 65% 55% at 10% 8%,rgba(18,65,8,.32) 0%,transparent 52%),
                radial-gradient(ellipse 55% 50% at 90% 92%,rgba(8,52,4,.28) 0%,transparent 52%),
@@ -87,15 +83,9 @@
   .oc{width:360px;height:360px;bottom:-95px;left:33%;background:radial-gradient(circle,rgba(12,50,200,.05) 0%,transparent 70%);animation-duration:32s;animation-delay:-16s;}
   @keyframes od{0%{transform:translate(0,0) scale(1);}25%{transform:translate(26px,-20px) scale(1.05);}50%{transform:translate(-14px,36px) scale(.94);}75%{transform:translate(-34px,-11px) scale(1.03);}100%{transform:translate(0,0) scale(1);}}
 
-  /* ==========================================
-     LIQUID GLASS
-  ========================================== */
   .glass{background:var(--lg);backdrop-filter:var(--lblur);-webkit-backdrop-filter:var(--lblur);border:1px solid var(--lbd);box-shadow:var(--lsh);position:relative;}
   .glass::before{content:'';position:absolute;top:0;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,var(--lbdt) 30%,rgba(255,255,255,.28) 50%,var(--lbdt) 70%,transparent);border-radius:inherit;pointer-events:none;z-index:1;}
 
-  /* ==========================================
-     APP LAYOUT
-  ========================================== */
   .app{position:relative;z-index:10;flex:1;display:flex;flex-direction:column;padding:16px 18px 12px;gap:10px;min-height:0;}
   .app>*{opacity:0;transform:translateY(14px);animation:fu .55s cubic-bezier(.22,.8,.2,1) forwards;}
   .app>*:nth-child(1){animation-delay:.05s}.app>*:nth-child(2){animation-delay:.13s}.app>*:nth-child(3){animation-delay:.21s}
@@ -112,7 +102,6 @@
 
   .grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:10px;align-content:start;}
 
-  /* SENSORS */
   .cenv{grid-column:1;grid-row:1;border-radius:var(--r);padding:17px 20px;}
   .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;}
   .clbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.6px;}
@@ -129,7 +118,6 @@
   .sunit{font-size:15px;font-weight:300;color:var(--mid);-webkit-text-fill-color:var(--mid);}
   .slb{font-size:11px;font-weight:500;color:var(--mid);margin-top:4px;}
 
-  /* DEVICES */
   .cdev{grid-column:2;grid-row:1;border-radius:var(--r);padding:17px 20px;}
   .ditem{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:var(--rs);padding:11px 13px;transition:border-color .35s,box-shadow .35s,background .35s;}
   .ditem.on{border-color:rgba(57,255,20,.32);box-shadow:0 0 24px rgba(57,255,20,.10),inset 0 0 18px rgba(57,255,20,.04);background:rgba(57,255,20,.04);}
@@ -149,12 +137,8 @@
   .tgl.burst .tring{animation:rb .5s ease-out forwards;}
   @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.8);opacity:1;}100%{inset:-9px;border-color:rgba(57,255,20,0);opacity:0;}}
 
-  /* ==========================================
-     WEATHER CARD
-  ========================================== */
   .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
 
-  /* TAB BAR */
   .tabs{display:flex;gap:6px;padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;background:rgba(255,255,255,.015);position:relative;}
   .tabs::after{content:'';position:absolute;bottom:0;left:4%;right:4%;height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.13),transparent);}
   .tab{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--rp);font-size:11px;font-weight:600;color:var(--mid);cursor:pointer;border:1px solid transparent;background:transparent;font-family:'Sora',sans-serif;transition:all .22s cubic-bezier(.4,0,.2,1);position:relative;}
@@ -169,7 +153,6 @@
   .tab.active::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:28px;height:2.5px;background:var(--grad);border-radius:3px;box-shadow:var(--glows);}
   .tab svg{flex-shrink:0;}
 
-  /* PANELS */
   .panels{position:relative;}
   .panel{display:none !important;padding:13px 17px;}
   .panel.on{display:block !important;}
@@ -177,7 +160,6 @@
   .panel.pcmp.on{display:grid !important;}
   .panel.ppres.on{display:flex !important;}
 
-  /* PANEL ESTERNO */
   .pext{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:18px;}
   .extl{}
   .eloc{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
@@ -193,7 +175,6 @@
   .wdl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px;}
   .wdv{font-size:15px;font-weight:700;}
 
-  /* PANEL CONFRONTO */
   .pcmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
   .ccard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--rs);padding:13px 15px;display:flex;flex-direction:column;gap:9px;}
   .ctop{display:flex;justify-content:space-between;align-items:center;}
@@ -210,13 +191,9 @@
   .cftit{font-size:14px;font-weight:700;margin-bottom:3px;}
   .cfdsc{font-size:11px;color:var(--mid);line-height:1.5;}
 
-  /* FOOTER */
   .foot{flex-shrink:0;display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;padding:0 2px;opacity:.38;}
   code{color:var(--green);}
 
-  /* ==========================================
-     MOBILE — scroll abilitato
-  ========================================== */
   @media(max-width:640px){
     html,body{overflow:auto;height:auto;min-height:100vh;}
     .grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
@@ -234,9 +211,6 @@
     .panel.ppres.on{display:flex !important;}
   }
 
-  /* ==========================================
-     [NUOVO] PANEL PRESENZA — radar tab
-  ========================================== */
   .ppres{display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 17px;}
   .pres-hero{display:flex;align-items:center;gap:22px;}
   .pres-ico-wrap{
@@ -250,7 +224,6 @@
   .pres-ico-wrap.state-static{background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.28);box-shadow:0 0 28px rgba(57,255,20,.12);}
   .pres-ico-wrap.state-active{background:rgba(204,255,0,.09);border-color:rgba(204,255,0,.35);box-shadow:0 0 36px rgba(204,255,0,.18);}
   .pres-ico-wrap.state-near{background:rgba(255,180,0,.09);border-color:rgba(255,180,0,.38);box-shadow:0 0 36px rgba(255,180,0,.20);}
-  /* pulse ring per stati attivi */
   .pres-ico-wrap.state-static::after,
   .pres-ico-wrap.state-active::after,
   .pres-ico-wrap.state-near::after{
@@ -282,7 +255,6 @@
 </head>
 <body>
 
-<!-- SCI-FI BG — SEMPRE VISIBILE -->
 <div id="scifi-bg"></div>
 <div id="grid-lines"><canvas id="pgrid"></canvas></div>
 <div id="scan-sweep"></div>
@@ -314,7 +286,7 @@
 
   <div class="grid">
 
-    <!-- CARD AMBIENTE INTERNO — invariata + [NUOVO] blocco presenza radar -->
+    <!-- CARD AMBIENTE INTERNO -->
     <div class="cenv glass">
       <div class="ch">
         <span class="clbl">Ambiente Interno</span>
@@ -332,11 +304,14 @@
       </div>
     </div>
 
+    <!-- CARD DISPOSITIVI -->
     <div class="cdev glass">
       <div class="ch">
         <span class="clbl">Dispositivi</span>
-        <span style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px">1 ONLINE</span>
+        <span style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px">2 ONLINE</span>
       </div>
+
+      <!-- RELAY 1 — Luce atmosfera -->
       <div id="ditem" class="ditem">
         <div class="dico">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -344,7 +319,7 @@
             <path d="M9 18h6"/><path d="M10 22h4"/>
           </svg>
         </div>
-        <div style="flex:1"><div class="dnm">Lighting</div><div class="dsb">Luce Stanza</div></div>
+        <div style="flex:1"><div class="dnm">Lighting</div><div class="dsb">Luce atmosfera</div></div>
         <div class="dr">
           <span class="dst" id="dtxt">SPENTO</span>
           <div id="tgl" class="tgl" onclick="toggleRelay()">
@@ -353,15 +328,40 @@
           </div>
         </div>
       </div>
+
+      <!-- RELAY 2 — Luce stanza -->
+      <div id="ditem2" class="ditem" style="margin-top:10px">
+        <div class="dico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v3"/>
+            <path d="M12 19v3"/>
+            <path d="M4.22 4.22l2.12 2.12"/>
+            <path d="M17.66 17.66l2.12 2.12"/>
+            <path d="M2 12h3"/>
+            <path d="M19 12h3"/>
+            <path d="M4.22 19.78l2.12-2.12"/>
+            <path d="M17.66 6.34l2.12-2.12"/>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="dnm">Lighting 2</div>
+          <div class="dsb">Luce stanza</div>
+        </div>
+        <div class="dr">
+          <span class="dst" id="dtxt2">SPENTO</span>
+          <div id="tgl2" class="tgl" onclick="toggleRelay2()">
+            <div class="knob"></div>
+            <div class="tring"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ========================================
-         CARD METEO — 2 TAB SEPARATE E INDIPENDENTI
-    ======================================== -->
+    <!-- CARD METEO -->
     <div class="cwx glass">
       <div class="tabs">
-
-        <!-- TAB 1: ESTERNO -->
         <button class="tab active" id="tab-ext" onclick="swTab('ext')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -371,22 +371,17 @@
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
           </svg>Esterno
         </button>
-
-        <!-- TAB 2: CONFRONTO -->
         <button class="tab" id="tab-cmp" onclick="swTab('cmp')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>Confronto
         </button>
-
-        <!-- TAB 3: PRESENZA -->
         <button class="tab" id="tab-prs" onclick="swTab('prs')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>Presenza
         </button>
-
       </div>
 
       <div class="panels">
@@ -433,7 +428,7 @@
           </div>
         </div>
 
-        <!-- PANEL 2: CONFRONTO (tab separata, div separato) -->
+        <!-- PANEL 2: CONFRONTO -->
         <div class="panel pcmp" id="panel-cmp">
           <div class="ccard">
             <div class="ctop">
@@ -472,11 +467,10 @@
           </div>
         </div>
 
-        <!-- PANEL 3: PRESENZA RADAR -->
+        <!-- PANEL 3: PRESENZA -->
         <div class="panel ppres" id="panel-prs">
           <div class="pres-hero">
             <div class="pres-ico-wrap state-empty" id="presIcoWrap">
-              <!-- icona cambiata via JS -->
               <svg id="presIco" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
@@ -531,11 +525,8 @@
   }
 })();
 
-/* ==========================================
-   2 TAB: Esterno e Confronto
-========================================== */
+/* TABS */
 const TABS=['ext','cmp','prs'];
-
 function swTab(n){
   TABS.forEach(k=>{
     document.getElementById('tab-'+k).classList.toggle('active',k===n);
@@ -619,18 +610,9 @@ function updDelta(){
   }
 }
 
-/* ==========================================
-   [NUOVO] RADAR PRESENZA — stato e UI con icone
-========================================== */
-let radarState={
-  present:false,
-  near:false,
-  moving:false,
-  act:0,
-  ema:0
-};
+/* RADAR PRESENZA */
+let radarState={present:false,near:false,moving:false,act:0,ema:0};
 
-/* SVG icone per i diversi stati presenza */
 const PICO={
   empty:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   static:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><circle cx="12" cy="7" r="1.5" fill="var(--green)"/></svg>`,
@@ -643,82 +625,88 @@ function updatePresenceUI(){
   const wrap=document.getElementById('presIcoWrap');
   const lbl=document.getElementById('presLabel');
   const sub=document.getElementById('presSub');
-
-  /* reset chip classes */
-  ['chipPresent','chipMoving','chipNear'].forEach(id=>{
-    document.getElementById(id).className='pres-chip';
-  });
-
-  /* act = variazione segnale LD2410, range reale ~0-30
-     bps/ema sono contatori cumulativi, ignorati per la UI */
-  const act = r.act || 0;
-
+  ['chipPresent','chipMoving','chipNear'].forEach(id=>{document.getElementById(id).className='pres-chip';});
+  const act=r.act||0;
   if(!r.present){
-    wrap.className='pres-ico-wrap state-empty';
-    lbl.className='pres-label state-empty';
-    wrap.innerHTML=PICO.empty;
-    lbl.textContent='Stanza Vuota';
+    wrap.className='pres-ico-wrap state-empty';lbl.className='pres-label state-empty';
+    wrap.innerHTML=PICO.empty;lbl.textContent='Stanza Vuota';
     sub.textContent='Nessuna presenza rilevata dal radar';
     document.getElementById('chipActivity').className='pres-chip';
-    document.getElementById('chipActivityTxt').textContent='Nessuna attività';
-    return;
+    document.getElementById('chipActivityTxt').textContent='Nessuna attività';return;
   }
-
   document.getElementById('chipPresent').className='pres-chip lit-green';
-
-  /* stato principale basato sui flag hardware LD2410 */
-  if(r.near && r.moving){
-    wrap.className='pres-ico-wrap state-near';
-    lbl.className='pres-label state-near';
-    wrap.innerHTML=PICO.near;
-    lbl.textContent='Presenza Vicina Attiva';
+  if(r.near&&r.moving){
+    wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
+    wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina Attiva';
     sub.textContent='Movimento ravvicinato rilevato';
     document.getElementById('chipMoving').className='pres-chip lit-yellow';
     document.getElementById('chipNear').className='pres-chip lit-orange';
-  } else if(r.near){
-    wrap.className='pres-ico-wrap state-near';
-    lbl.className='pres-label state-near';
-    wrap.innerHTML=PICO.near;
-    lbl.textContent='Presenza Vicina';
+  }else if(r.near){
+    wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
+    wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina';
     sub.textContent='Persona ferma a distanza ravvicinata';
     document.getElementById('chipNear').className='pres-chip lit-orange';
-  } else if(r.moving){
-    wrap.className='pres-ico-wrap state-active';
-    lbl.className='pres-label state-active';
-    wrap.innerHTML=PICO.moving;
-    lbl.textContent='Presenza Attiva';
+  }else if(r.moving){
+    wrap.className='pres-ico-wrap state-active';lbl.className='pres-label state-active';
+    wrap.innerHTML=PICO.moving;lbl.textContent='Presenza Attiva';
     sub.textContent='Movimento rilevato nella stanza';
     document.getElementById('chipMoving').className='pres-chip lit-yellow';
-  } else {
-    wrap.className='pres-ico-wrap state-static';
-    lbl.className='pres-label state-static';
-    wrap.innerHTML=PICO.static;
-    lbl.textContent='Presenza Statica';
+  }else{
+    wrap.className='pres-ico-wrap state-static';lbl.className='pres-label state-static';
+    wrap.innerHTML=PICO.static;lbl.textContent='Presenza Statica';
     sub.textContent='Persona ferma rilevata nella stanza';
   }
-
-  /* act calibrato sul range reale LD2410 (~0-30)
-     sotto 2 = rumore di fondo, 2-8 = leggera, 8-18 = moderata, >18 = alta */
-  let actClass='pres-chip';
-  let actTxt='Attività minima';
-  if(act > 18){actClass='pres-chip lit-orange'; actTxt='Alta attività';}
-  else if(act > 8){actClass='pres-chip lit-yellow'; actTxt='Attività moderata';}
-  else if(act > 2){actClass='pres-chip lit-green'; actTxt='Attività lieve';}
+  let actClass='pres-chip',actTxt='Attività minima';
+  if(act>18){actClass='pres-chip lit-orange';actTxt='Alta attività';}
+  else if(act>8){actClass='pres-chip lit-yellow';actTxt='Attività moderata';}
+  else if(act>2){actClass='pres-chip lit-green';actTxt='Attività lieve';}
   else{actTxt='Rumore di fondo';}
   document.getElementById('chipActivity').className=actClass;
   document.getElementById('chipActivityTxt').textContent=actTxt;
 }
 
-/* MQTT */
+/* ==========================================
+   MQTT
+========================================== */
 const HOST='ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud',PORT=8884,TD='symo/room/data',TR='symo/room/relay';
-let mc=null,rs=0;
+let mc=null,rs=0,rs2=0;
+
 const $dot=document.getElementById('dot'),$conn=document.getElementById('connText');
 const $T=document.getElementById('temp'),$H=document.getElementById('hum'),$last=document.getElementById('lastMsg');
 const $tgl=document.getElementById('tgl'),$dtxt=document.getElementById('dtxt'),$di=document.getElementById('ditem');
+const $tgl2=document.getElementById('tgl2'),$dtxt2=document.getElementById('dtxt2'),$di2=document.getElementById('ditem2');
 
 function setConn(ok,msg){$dot.classList.toggle('ok',ok);$conn.textContent=msg;}
-function setRelay(on){rs=on?1:0;$tgl.classList.toggle('on',on);$di.classList.toggle('on',on);$dtxt.textContent=on?'ACCESO':'SPENTO';$tgl.classList.remove('burst');void $tgl.offsetWidth;$tgl.classList.add('burst');setTimeout(()=>$tgl.classList.remove('burst'),520);}
-function toggleRelay(){const n=rs?0:1;setRelay(n===1);if(mc?.connected)mc.publish(TR,n?'ON':'OFF');}
+
+/* Relay 1 */
+function setRelay(on){
+  rs=on?1:0;
+  $tgl.classList.toggle('on',on);
+  $di.classList.toggle('on',on);
+  $dtxt.textContent=on?'ACCESO':'SPENTO';
+  $tgl.classList.remove('burst');void $tgl.offsetWidth;$tgl.classList.add('burst');
+  setTimeout(()=>$tgl.classList.remove('burst'),520);
+}
+function toggleRelay(){
+  const n=rs?0:1;
+  setRelay(n===1);
+  if(mc?.connected)mc.publish(TR,n?'L1_ON':'L1_OFF');
+}
+
+/* Relay 2 */
+function setRelay2(on){
+  rs2=on?1:0;
+  $tgl2.classList.toggle('on',on);
+  $di2.classList.toggle('on',on);
+  $dtxt2.textContent=on?'ACCESO':'SPENTO';
+  $tgl2.classList.remove('burst');void $tgl2.offsetWidth;$tgl2.classList.add('burst');
+  setTimeout(()=>$tgl2.classList.remove('burst'),520);
+}
+function toggleRelay2(){
+  const n=rs2?0:1;
+  setRelay2(n===1);
+  if(mc?.connected)mc.publish(TR,n?'L2_ON':'L2_OFF');
+}
 
 function mqttConnect(){
   if(mc){try{mc.end(true);}catch(e){}mc=null;}
@@ -732,15 +720,13 @@ function mqttConnect(){
       if(j.temperature!=null){inT=j.temperature;$T.textContent=j.temperature.toFixed(1);}
       if(j.humidity!=null){inH=j.humidity;$H.textContent=j.humidity.toFixed(1);}
       if(typeof j.relay==='number')setRelay(j.relay===1);
-      /* [NUOVO] aggiornamento radar dal payload MQTT LD2410
-         out = pin hardware presenza, present = alias, near/moving = flag diretti
-         bps/ema = contatori cumulativi, ignorati per la UI */
-      if(j.present!==undefined || j.out!==undefined){
-        radarState.present = j.out ?? j.present ?? false;
-        radarState.near    = j.near    ?? false;
-        radarState.moving  = j.moving  ?? false;
-        radarState.act     = j.act     ?? 0;
-        radarState.ema     = j.ema     ?? 0;
+      if(typeof j.relay2==='number')setRelay2(j.relay2===1);
+      if(j.present!==undefined||j.out!==undefined){
+        radarState.present=j.out??j.present??false;
+        radarState.near=j.near??false;
+        radarState.moving=j.moving??false;
+        radarState.act=j.act??0;
+        radarState.ema=j.ema??0;
         updatePresenceUI();
       }
       $last.textContent='Last: '+new Date().toLocaleTimeString('it-IT');
@@ -750,99 +736,46 @@ function mqttConnect(){
   mc.on('close',()=>setConn(false,'Offline'));
 }
 
-/* ==========================================
-   PERSPECTIVE GRID — griglia in prospettiva sul fondo
-========================================== */
+/* PERSPECTIVE GRID */
 (function(){
-  const canvas = document.getElementById('pgrid');
-  const ctx = canvas.getContext('2d');
-
-  function resize(){
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+  const canvas=document.getElementById('pgrid');
+  const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
   resize();
-  window.addEventListener('resize', () => { resize(); draw(); });
-
+  window.addEventListener('resize',()=>{resize();draw();});
   function draw(){
-    const W = canvas.width;
-    const H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-
-    /* punto di fuga: centro-basso */
-    const vpX = W * 0.5;
-    const vpY = H * 0.78;
-
-    /* numero di linee verticali e orizzontali */
-    const vLines = 18;
-    const hLines = 10;
-
-    /* la griglia parte a 55% dell'altezza e arriva al fondo */
-    const gridTop = H * 0.52;
-    const gridBot = H;
-
-    /* colore base linee */
-    const r=57, g=255, b=20;
-
-    /* --- LINEE ORIZZONTALI --- */
-    for(let i = 0; i <= hLines; i++){
-      /* distribuzione logaritmica: più dense in basso */
-      const t = Math.pow(i / hLines, 1.8);
-      const y = gridTop + (gridBot - gridTop) * t;
-
-      /* opacità: zero in cima, massima in fondo */
-      const alpha = t * 0.055;
-
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    const vpX=W*0.5,vpY=H*0.78;
+    const vLines=18,hLines=10;
+    const gridTop=H*0.52,gridBot=H;
+    const r=57,g=255,b=20;
+    for(let i=0;i<=hLines;i++){
+      const t=Math.pow(i/hLines,1.8);
+      const y=gridTop+(gridBot-gridTop)*t;
+      const alpha=t*0.055;
+      ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);
+      ctx.strokeStyle=`rgba(${r},${g},${b},${alpha})`;ctx.lineWidth=1;ctx.stroke();
     }
-
-    /* --- LINEE VERTICALI in prospettiva --- */
-    for(let i = 0; i <= vLines; i++){
-      const t = i / vLines; /* 0 = sinistra, 1 = destra */
-      /* in basso le linee sono distribuite uniformemente */
-      const xBot = W * t;
-      /* in alto convergono verso il punto di fuga */
-      const xTop = vpX + (xBot - vpX) * ((gridTop - vpY) / (gridBot - vpY));
-
-      /* opacità: quasi zero ai bordi, leggermente più visibile al centro */
-      const distCenter = Math.abs(t - 0.5) * 2; /* 0=centro 1=bordo */
-      const alpha = (1 - distCenter * 0.6) * 0.038;
-
-      /* gradiente verticale: trasparente in alto, visibile in basso */
-      const grad = ctx.createLinearGradient(xTop, gridTop, xBot, gridBot);
-      grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
-      grad.addColorStop(1, `rgba(${r},${g},${b},${alpha})`);
-
-      ctx.beginPath();
-      ctx.moveTo(xTop, gridTop);
-      ctx.lineTo(xBot, gridBot);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+    for(let i=0;i<=vLines;i++){
+      const t=i/vLines;
+      const xBot=W*t;
+      const xTop=vpX+(xBot-vpX)*((gridTop-vpY)/(gridBot-vpY));
+      const distCenter=Math.abs(t-0.5)*2;
+      const alpha=(1-distCenter*0.6)*0.038;
+      const grad=ctx.createLinearGradient(xTop,gridTop,xBot,gridBot);
+      grad.addColorStop(0,`rgba(${r},${g},${b},0)`);
+      grad.addColorStop(1,`rgba(${r},${g},${b},${alpha})`);
+      ctx.beginPath();ctx.moveTo(xTop,gridTop);ctx.lineTo(xBot,gridBot);
+      ctx.strokeStyle=grad;ctx.lineWidth=1;ctx.stroke();
     }
-
-    /* sfumatura finale sopra la griglia per dissolverla morbidamente */
-    const fade = ctx.createLinearGradient(0, gridTop - 60, 0, gridTop + 80);
-    fade.addColorStop(0, 'rgba(3,5,8,1)');
-    fade.addColorStop(1, 'rgba(3,5,8,0)');
-    ctx.fillStyle = fade;
-    ctx.fillRect(0, gridTop - 60, W, 140);
+    const fade=ctx.createLinearGradient(0,gridTop-60,0,gridTop+80);
+    fade.addColorStop(0,'rgba(3,5,8,1)');fade.addColorStop(1,'rgba(3,5,8,0)');
+    ctx.fillStyle=fade;ctx.fillRect(0,gridTop-60,W,140);
   }
-
   draw();
-
-  /* lieve pulse di opacità */
-  let pulse = 0;
-  function animate(){
-    pulse += 0.012;
-    canvas.style.opacity = 0.7 + Math.sin(pulse) * 0.3;
-    requestAnimationFrame(animate);
-  }
+  let pulse=0;
+  function animate(){pulse+=0.012;canvas.style.opacity=0.7+Math.sin(pulse)*0.3;requestAnimationFrame(animate);}
   animate();
 })();
 
