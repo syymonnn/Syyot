@@ -129,6 +129,10 @@
   .sched-apply:hover{background:linear-gradient(135deg,rgba(57,255,20,.26),rgba(204,255,0,.20));box-shadow:var(--glows);}
   .sched-status{font-size:10px;color:var(--muted);margin-top:7px;text-align:center;min-height:14px;font-family:'DM Mono',monospace;}
   .sched-status.ok{color:var(--green);}
+  .sched-sync{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:4px;}
+  .sched-sync-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+  .sched-sync.synced{color:var(--green);}
+  .sched-sync.synced .sched-sync-dot{background:var(--green);box-shadow:var(--glows);}
 
   /* ── METEO CARD ── */
   .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
@@ -359,6 +363,7 @@
           </div>
         </div>
         <button class="sched-apply" onclick="saveSchedule()">Salva programmazione</button>
+        <div class="sched-sync" id="schedSync"><div class="sched-sync-dot"></div><span id="schedSyncTxt">In attesa sync...</span></div>
         <div class="sched-status" id="schedStatus"></div>
       </div>
 
@@ -448,10 +453,10 @@
   </div>
 
   <div class="foot">
-    <span>MQTT <code>symo/room/data</code> &middot; 45.6855N 8.4604E &middot; Borgomanero</span>
+    <span>MQTT <code>symo/room</code> · Borgomanero</span>
     <span id="lastMsg">Last: -</span>
   </div>
-</div>
+
 
 <script>
 /* PARTICLES */
@@ -548,24 +553,36 @@ function updDelta(){
 
 /* ==========================================
    SCHEDULER ORARIO
-   Salva in localStorage, sopravvive al refresh
+   Sync via MQTT retained — topic symo/room/schedule
+   Qualsiasi dispositivo che si connette riceve
+   automaticamente la programmazione salvata.
 ========================================== */
 const SCHED_KEYS=['l1-on','l1-off','l2-on','l2-off'];
-let schedEnabled={};   // key → bool
-let schedTimers={};    // key → intervalID
+let schedEnabled={};
+let schedTimers={};
+const TS='symo/room/schedule';
 
-function loadSchedule(){
+function setSyncStatus(ok,txt){
+  const el=document.getElementById('schedSync');
+  el.classList.toggle('synced',ok);
+  document.getElementById('schedSyncTxt').textContent=txt;
+}
+
+function applyScheduleData(data){
   SCHED_KEYS.forEach(k=>{
-    const saved=localStorage.getItem('sched-'+k);
-    if(saved){
-      try{
-        const o=JSON.parse(saved);
-        if(o.time)document.getElementById('s-'+k).value=o.time;
-        schedEnabled[k]=!!o.enabled;
-      }catch(e){schedEnabled[k]=false;}
+    if(data[k]){
+      if(data[k].time)document.getElementById('s-'+k).value=data[k].time;
+      schedEnabled[k]=!!data[k].enabled;
     }else{schedEnabled[k]=false;}
     renderSchedEn(k);
   });
+  startAllTimers();
+  setSyncStatus(true,'Sync · '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}));
+}
+
+function loadSchedule(){
+  // La programmazione arriva dal broker MQTT (retained) — nessun localStorage
+  SCHED_KEYS.forEach(k=>{schedEnabled[k]=false;renderSchedEn(k);});
   startAllTimers();
 }
 
@@ -582,15 +599,23 @@ function toggleSched(k){
 }
 
 function saveSchedule(){
+  const payload={};
   SCHED_KEYS.forEach(k=>{
-    const time=document.getElementById('s-'+k).value;
-    localStorage.setItem('sched-'+k,JSON.stringify({time,enabled:schedEnabled[k]}));
+    payload[k]={time:document.getElementById('s-'+k).value,enabled:!!schedEnabled[k]};
   });
+  if(mc?.connected){
+    mc.publish(TS,JSON.stringify(payload),{retain:true,qos:1});
+    const st=document.getElementById('schedStatus');
+    st.textContent='✓ Salvato e sincronizzato su tutti i dispositivi';
+    st.className='sched-status ok';
+    setTimeout(()=>{st.textContent=nextFireInfo();st.className='sched-status';},2500);
+  }else{
+    const st=document.getElementById('schedStatus');
+    st.textContent='⚠ Connetti MQTT per salvare';
+    st.className='sched-status';
+    setTimeout(()=>{st.textContent='';},2500);
+  }
   startAllTimers();
-  const st=document.getElementById('schedStatus');
-  st.textContent='✓ Salvato — programmazione attiva';
-  st.className='sched-status ok';
-  setTimeout(()=>{st.textContent=nextFireInfo();st.className='sched-status';},2500);
 }
 
 function nextFireInfo(){
@@ -749,14 +774,11 @@ function mqttConnect(){
   mc.on('connect',()=>{
     setConn(true,'Connesso');
     mc.subscribe(TD);
-    // mostra prossimo timer dopo connessione
-    setTimeout(()=>{
-      const st=document.getElementById('schedStatus');
-      const info=nextFireInfo();
-      if(info){st.textContent=info;st.className='sched-status';}
-    },500);
+    mc.subscribe(TS);  // riceve subito la programmazione retained
+    setSyncStatus(false,'Caricamento schedule...');
   });
   mc.on('message',(t,p)=>{
+    if(t===TS){try{applyScheduleData(JSON.parse(p.toString()));}catch(e){}return;}
     if(t!==TD)return;
     try{
       const j=JSON.parse(p.toString());
@@ -776,7 +798,7 @@ function mqttConnect(){
       updDelta();
     }catch(e){}
   });
-  mc.on('close',()=>setConn(false,'Offline'));
+  mc.on('close',()=>{setConn(false,'Offline');setSyncStatus(false,'Offline');});
 }
 
 /* PERSPECTIVE GRID */
