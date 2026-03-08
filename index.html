@@ -373,11 +373,38 @@
     100%{transform:scale(1);}
   }
   .sched-sync-dot.synced{animation:syncTick .5s ease-out;}
+  /* ── WOW: AURORA bands ── */
+  #aurora{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+  .aurora-band{position:absolute;left:-20%;right:-20%;height:180px;border-radius:50%;filter:blur(60px);opacity:0;animation:auroraDrift linear infinite;}
+  .ab1{top:5%;background:linear-gradient(180deg,transparent,rgba(57,255,20,.06),transparent);animation-duration:18s;animation-delay:0s;}
+  .ab2{top:25%;background:linear-gradient(180deg,transparent,rgba(0,200,255,.04),transparent);animation-duration:24s;animation-delay:-8s;}
+  .ab3{top:55%;background:linear-gradient(180deg,transparent,rgba(204,255,0,.05),transparent);animation-duration:20s;animation-delay:-4s;}
+  @keyframes auroraDrift{0%{opacity:0;transform:translateX(-30px) scaleY(1);}15%{opacity:1;}50%{transform:translateX(30px) scaleY(1.3);}85%{opacity:.8;}100%{opacity:0;transform:translateX(-30px) scaleY(1);}}
+  /* ── WOW: GLITCH sul titolo ── */
+  @keyframes glitch{0%,90%,100%{clip-path:none;transform:none;opacity:1;}92%{clip-path:inset(20% 0 60% 0);transform:translate(-3px,0);opacity:.85;}94%{clip-path:inset(60% 0 10% 0);transform:translate(3px,0);opacity:.9;}96%{clip-path:none;transform:translate(0,0);opacity:1;}98%{clip-path:inset(40% 0 40% 0);transform:translate(-2px,1px);opacity:.8;}}
+  h1 em{animation:glitch 7s steps(1) infinite;}
+  /* ── WOW: DATA RAIN canvas ── */
+  #datarain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.15;}
+  /* ── WOW: card pulse on data receive ── */
+  @keyframes cardPing{0%{box-shadow:var(--lsh),0 0 0 0 rgba(57,255,20,.4);}60%{box-shadow:var(--lsh),0 0 0 8px rgba(57,255,20,0);}100%{box-shadow:var(--lsh);}}
+  .cenv.ping{animation:cardPing .6s ease-out;}
+  /* ── WOW: numero roll ── */
+  @keyframes numRoll{0%{transform:translateY(-5px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+  .snum.roll{animation:numRoll .22s cubic-bezier(.22,.8,.2,1);}
+  /* ── WOW: relay burst ring upgrade ── */
+  @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.9);opacity:1;}100%{inset:-14px;border-color:rgba(57,255,20,0);opacity:0;}}
+  /* ── WOW: sonar presence ── */
+  .sonar-ring{position:absolute;border-radius:50%;border:1px solid rgba(57,255,20,.3);animation:sonarExpand 2.4s ease-out infinite;}
+  .sonar-ring:nth-child(2){animation-delay:.8s;}.sonar-ring:nth-child(3){animation-delay:1.6s;}
+  @keyframes sonarExpand{0%{width:16px;height:16px;opacity:.9;}100%{width:110px;height:110px;opacity:0;}}
+
   </style>
 </head>
 <body>
 
 <div id="scifi-bg"></div>
+<canvas id="datarain"></canvas>
+<div id="aurora"><div class="aurora-band ab1"></div><div class="aurora-band ab2"></div><div class="aurora-band ab3"></div></div>
 <div id="grid-lines"><canvas id="pgrid"></canvas></div>
 <div id="scan-sweep"></div>
 <div id="scan-sweep2"></div>
@@ -418,7 +445,7 @@
   <div class="grid">
 
     <!-- CARD AMBIENTE -->
-    <div class="cenv glass" style="position:relative;">
+    <div class="cenv glass" id="cenv-card" style="position:relative;">
       <div class="stream-bar" id="envStream"></div>
       <div class="ch">
         <span class="clbl">Ambiente</span>
@@ -608,6 +635,9 @@
         <div class="panel ppres" id="panel-prs">
           <div class="pres-hero">
             <div class="pres-ico-wrap state-empty" id="presIcoWrap">
+              <div class="sonar-ring" id="sonarR1" style="display:none"></div>
+              <div class="sonar-ring" id="sonarR2" style="display:none;animation-delay:.8s"></div>
+              <div class="sonar-ring" id="sonarR3" style="display:none;animation-delay:1.6s"></div>
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div>
@@ -754,9 +784,12 @@ function updatePresenceUI(){
     wrap.innerHTML=PICO.empty;lbl.textContent='Stanza Vuota';
     sub.textContent='Nessuna presenza rilevata dal radar';
     document.getElementById('chipActivity').className='pres-chip';
-    document.getElementById('chipActivityTxt').textContent='Nessuna attività';return;
+    document.getElementById('chipActivityTxt').textContent='Nessuna attività';
+    if(typeof setSonar==='function')setSonar(false);
+    return;
   }
   document.getElementById('chipPresent').className='pres-chip lit-green';
+  if(typeof setSonar==='function')setSonar(true);
   if(r.near&&r.moving){
     wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
     wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina Attiva';
@@ -798,6 +831,7 @@ function updatePresenceUI(){
 const SCHED_KEYS=['l1-on','l1-off','l2-on','l2-off'];
 let schedEnabled={};
 let schedTimers={};
+let schedFallbackTimer=null;
 const TS='symo/room/schedule';
 
 function setSyncStatus(ok,txt){
@@ -813,6 +847,7 @@ function setSyncStatus(ok,txt){
 }
 
 function applyScheduleData(data){
+  if(schedFallbackTimer){clearTimeout(schedFallbackTimer);schedFallbackTimer=null;}
   SCHED_KEYS.forEach(k=>{
     if(data[k]){
       if(data[k].time)document.getElementById('s-'+k).value=data[k].time;
@@ -1026,11 +1061,11 @@ function mqttConnect(){
     mc.subscribe(TD);
     mc.subscribe(TS,{qos:1});  // qos:1 garantisce la consegna del retained
     setSyncStatus(false,'Caricamento schedule...');
-    // fallback: se dopo 5s non arriva il retained, mostra avviso
-    setTimeout(()=>{
+    // fallback: se dopo 10s non arriva il retained, mostra avviso
+    schedFallbackTimer=setTimeout(()=>{
       const s=document.getElementById('schedSyncTxt');
       if(s&&s.textContent==='Caricamento schedule...')setSyncStatus(false,'Nessuna programmazione salvata');
-    },5000);
+    },10000);
     // Richiedi subito lo stato dei relay al broker
     setTimeout(()=>{ if(mc?.connected)mc.publish('symo/room/relay2','STATUS',{qos:0}); },1200);
   });
@@ -1039,8 +1074,8 @@ function mqttConnect(){
     if(t!==TD)return;
     try{
       const j=JSON.parse(p.toString());
-      if(j.temperature!=null){inT=j.temperature;$T.textContent=j.temperature.toFixed(1);flashEl($T);}
-      if(j.humidity!=null){inH=j.humidity;$H.textContent=j.humidity.toFixed(1);flashEl($H);}
+      if(j.temperature!=null){inT=j.temperature;rollNum($T,j.temperature,1);pingCard('cenv-card');}
+      if(j.humidity!=null){inH=j.humidity;rollNum($H,j.humidity,1);}
       // stream bar sul card ambiente
       const sb=document.getElementById('envStream');
       if(sb){sb.classList.remove('run');void sb.offsetWidth;sb.classList.add('run');}
@@ -1105,6 +1140,54 @@ function mqttConnect(){
   function animate(){pulse+=0.012;canvas.style.opacity=0.7+Math.sin(pulse)*0.3;requestAnimationFrame(animate);}
   animate();
 })();
+
+/* DATA RAIN */
+(function(){
+  const c=document.getElementById('datarain');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const cols=Math.floor(window.innerWidth/18);
+  const drops=Array.from({length:cols},()=>Math.random()*-50);
+  const chars='01アイウエオカキクケコサシスセソ∆∑Ω∞⌘⟨⟩';
+  function draw(){
+    ctx.fillStyle='rgba(3,5,8,0.18)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.font='10px DM Mono,monospace';
+    drops.forEach((y,i)=>{
+      const ch=chars[Math.floor(Math.random()*chars.length)];
+      const alpha=Math.random()>.7?0.55:0.18;
+      ctx.fillStyle=`rgba(57,255,20,${alpha})`;
+      ctx.fillText(ch,i*18,y*18);
+      if(y*18>c.height&&Math.random()>.97)drops[i]=0;
+      drops[i]+=0.35;
+    });
+  }
+  setInterval(draw,90);
+})();
+
+/* CARD PING on new MQTT data */
+function pingCard(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.remove('ping');void el.offsetWidth;el.classList.add('ping');
+}
+
+/* NUMBER ROLL animation */
+function rollNum(el,val,decimals){
+  if(!el)return;
+  el.classList.remove('roll');void el.offsetWidth;el.classList.add('roll');
+  el.textContent=typeof decimals==='number'?val.toFixed(decimals):val;
+}
+
+/* SONAR rings toggle */
+function setSonar(on){
+  ['sonarR1','sonarR2','sonarR3'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=on?'block':'none';
+  });
+}
 
 fetchWx();
 setInterval(fetchWx,600000);
