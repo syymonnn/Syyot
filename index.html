@@ -21,8 +21,8 @@
     --lblur:blur(38px) saturate(200%);
     --r:16px;--rs:10px;--rp:999px;
   }
-  html,body{height:100%;width:100%;-webkit-overflow-scrolling:touch;}
-  body{font-family:'Sora',system-ui,sans-serif;background:#030508;color:var(--txt);min-height:100dvh;width:100%;display:flex;flex-direction:column;}
+  html{height:100%;width:100%;}
+  body{font-family:'Sora',system-ui,sans-serif;background:#030508;color:var(--txt);min-height:100dvh;width:100%;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   /* ── SCI-FI BG ── */
   #scifi-bg{position:fixed;inset:0;z-index:0;background:#030508;overflow:hidden;}
   #scifi-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(0,255,100,.09) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 20%,rgba(0,180,255,.08) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 50% 90%,rgba(100,0,255,.07) 0%,transparent 50%);animation:meshDrift 10s ease-in-out infinite alternate;}
@@ -69,8 +69,8 @@
 
 /* ── MOBILE FIRST: layout verticale ── */
 .app{position:relative;z-index:10;display:flex;flex-direction:column;padding:10px 12px 20px;gap:8px;min-height:100dvh;}
-.app>*{opacity:0;transform:translateY(10px);animation:fu .45s cubic-bezier(.22,.8,.2,1) forwards;}
-.app>*:nth-child(1){animation-delay:.05s}.app>*:nth-child(2){animation-delay:.10s}.app>*:nth-child(3){animation-delay:.15s}.app>*:nth-child(4){animation-delay:.20s}.app>*:nth-child(5){animation-delay:.25s}
+.app>.ani{opacity:0;transform:translateY(10px);animation:fu .45s cubic-bezier(.22,.8,.2,1) forwards;}
+.app>.ani:nth-child(1){animation-delay:.05s}.app>.ani:nth-child(2){animation-delay:.10s}.app>.ani:nth-child(3){animation-delay:.15s}.app>.ani:nth-child(4){animation-delay:.20s}.app>.ani:nth-child(5){animation-delay:.25s}
 @keyframes fu{to{opacity:1;transform:translateY(0)}}
 
 /* TOPBAR */
@@ -248,8 +248,7 @@ code{color:var(–green);}
 
 /* ── DESKTOP: torna al layout a 2 colonne fisso (solo schermi grandi) ── */
 @media (min-width:768px) and (min-height:600px){
-html,body{overflow:hidden;height:100%;width:100%;}
-body{position:fixed;inset:0;}
+html,body{overflow:hidden;height:100%;width:100%;position:fixed;inset:0;}
 .app{
 position:fixed;inset:0;min-height:unset;
 display:grid;
@@ -295,7 +294,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- TOPBAR -->
 
-  <div class="topbar">
+  <div class="topbar ani">
     <div>
       <div class="eye">Room control</div>
       <h1>Hello, <em>Symo</em></h1>
@@ -314,7 +313,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD AMBIENTE -->
 
-  <div class="cenv glass" id="cenv-card">
+  <div class="cenv glass ani" id="cenv-card">
     <div class="stream-bar" id="envStream"></div>
     <div class="ch">
       <span class="clbl">Ambiente</span>
@@ -334,7 +333,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD DISPOSITIVI -->
 
-  <div class="cdev glass">
+  <div class="cdev glass ani">
     <div class="ch" style="margin-bottom:0"><span class="clbl">Dispositivi</span></div>
     <div id="ditem" class="ditem">
       <div class="dico">
@@ -402,7 +401,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD METEO -->
 
-  <div class="cwx glass">
+  <div class="cwx glass ani">
     <div class="tabs">
       <button class="tab active" id="tab-ext" onclick="swTab('ext')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Esterno
@@ -479,7 +478,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
     </div>
   </div>
 
-  <div class="foot">
+  <div class="foot ani">
     <span>MQTT <code>symo/room</code> · Borgomanero</span>
     <span id="lastMsg">Last: -</span>
   </div>
@@ -744,7 +743,7 @@ function mqttConnect(){
 
 function setSonar(on){['sonarR1','sonarR2','sonarR3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=on?'block':'none';});}
 
-loadSchedule();fetchWx();setInterval(fetchWx,600000);mqttConnect();
+loadSchedule();fetchWx();setInterval(fetchWx,600000);mqttConnect();setTimeout(()=>{document.querySelectorAll('.ani').forEach(el=>el.classList.remove('ani'));},1500);
 </script>
 
 </body>
