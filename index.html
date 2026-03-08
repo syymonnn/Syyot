@@ -69,9 +69,6 @@
 
 /* ── MOBILE FIRST: layout verticale ── */
 .app{position:relative;z-index:10;display:flex;flex-direction:column;padding:10px 12px 20px;gap:8px;min-height:100dvh;}
-.app>.ani{opacity:0;transform:translateY(10px);animation:fu .45s cubic-bezier(.22,.8,.2,1) forwards;}
-.app>.ani:nth-child(1){animation-delay:.05s}.app>.ani:nth-child(2){animation-delay:.10s}.app>.ani:nth-child(3){animation-delay:.15s}.app>.ani:nth-child(4){animation-delay:.20s}.app>.ani:nth-child(5){animation-delay:.25s}
-@keyframes fu{to{opacity:1;transform:translateY(0)}}
 
 /* TOPBAR */
 /* ── TOPBAR ── */
@@ -294,7 +291,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- TOPBAR -->
 
-  <div class="topbar ani">
+  <div class="topbar">
     <div>
       <div class="eye">Room control</div>
       <h1>Hello, <em>Symo</em></h1>
@@ -313,7 +310,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD AMBIENTE -->
 
-  <div class="cenv glass ani" id="cenv-card">
+  <div class="cenv glass" id="cenv-card">
     <div class="stream-bar" id="envStream"></div>
     <div class="ch">
       <span class="clbl">Ambiente</span>
@@ -333,7 +330,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD DISPOSITIVI -->
 
-  <div class="cdev glass ani">
+  <div class="cdev glass">
     <div class="ch" style="margin-bottom:0"><span class="clbl">Dispositivi</span></div>
     <div id="ditem" class="ditem">
       <div class="dico">
@@ -401,7 +398,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
 
   <!-- CARD METEO -->
 
-  <div class="cwx glass ani">
+  <div class="cwx glass">
     <div class="tabs">
       <button class="tab active" id="tab-ext" onclick="swTab('ext')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Esterno
@@ -478,7 +475,7 @@ padding:10px 12px 8px;gap:7px;overflow:hidden;
     </div>
   </div>
 
-  <div class="foot ani">
+  <div class="foot">
     <span>MQTT <code>symo/room</code> · Borgomanero</span>
     <span id="lastMsg">Last: -</span>
   </div>
@@ -743,7 +740,7 @@ function mqttConnect(){
 
 function setSonar(on){['sonarR1','sonarR2','sonarR3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=on?'block':'none';});}
 
-loadSchedule();fetchWx();setInterval(fetchWx,600000);mqttConnect();setTimeout(()=>{document.querySelectorAll('.ani').forEach(el=>el.classList.remove('ani'));},1500);
+loadSchedule();fetchWx();setInterval(fetchWx,600000);mqttConnect();
 </script>
 
 </body>
