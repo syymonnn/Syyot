@@ -67,7 +67,7 @@
   #grid-lines{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
   #grid-lines canvas{position:absolute;inset:0;width:100%;height:100%;}
 
-  /* ── SCAN SWEEP — più visibile e più veloce ── */
+  /* ── SCAN SWEEP ── */
   #scan-sweep{
     position:fixed;inset:0;z-index:2;pointer-events:none;
     background:linear-gradient(to bottom,
@@ -78,7 +78,6 @@
   }
   @keyframes scanDown{0%{transform:translateY(-100vh);}100%{transform:translateY(100vh);}}
 
-  /* ── SECONDO SWEEP sfasato ── */
   #scan-sweep2{
     position:fixed;inset:0;z-index:2;pointer-events:none;
     background:linear-gradient(to bottom,
@@ -96,7 +95,7 @@
   #corners::after{bottom:10px;right:10px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;animation-delay:1.5s;}
   @keyframes cornerPulse{0%{opacity:.3;}100%{opacity:1;filter:drop-shadow(0 0 6px rgba(57,255,20,.6));}}
 
-  /* ── PARTICLES — più numerose e veloci ── */
+  /* ── PARTICLES ── */
   #particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
   .pt{position:absolute;border-radius:50%;background:var(--green);animation:ptFloat linear infinite;opacity:0;}
   @keyframes ptFloat{
@@ -115,7 +114,7 @@
     animation:noiseShift 0.15s steps(1) infinite;}
   @keyframes noiseShift{0%{transform:translate(0,0);}25%{transform:translate(-2px,1px);}50%{transform:translate(1px,-1px);}75%{transform:translate(-1px,2px);}100%{transform:translate(2px,0);}}
 
-  /* ── ORBS — più grandi e vivaci ── */
+  /* ── ORBS ── */
   #ov{position:fixed;inset:0;z-index:5;pointer-events:none;
     background:
       radial-gradient(ellipse 65% 55% at 10% 8%,rgba(18,65,8,.32) 0%,transparent 52%),
@@ -152,7 +151,7 @@
   .glass{background:var(--lg);backdrop-filter:var(--lblur);-webkit-backdrop-filter:var(--lblur);border:1px solid var(--lbd);box-shadow:var(--lsh);position:relative;}
   .glass::before{content:'';position:absolute;top:0;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,var(--lbdt) 30%,rgba(255,255,255,.28) 50%,var(--lbdt) 70%,transparent);border-radius:inherit;pointer-events:none;z-index:1;}
 
-  /* ── APP LAYOUT — fixed, no scroll ── */
+  /* ── APP LAYOUT ── */
   .app{
     position:fixed;inset:0;z-index:10;
     display:flex;flex-direction:column;
@@ -218,7 +217,7 @@
   .tgl.on .knob{left:23px;}
   .tring{position:absolute;inset:0;border-radius:var(--rp);border:2px solid transparent;pointer-events:none;}
   .tgl.burst .tring{animation:rb .5s ease-out forwards;}
-  @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.8);opacity:1;}100%{inset:-9px;border-color:rgba(57,255,20,0);opacity:0;}}
+  @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.9);opacity:1;}100%{inset:-14px;border-color:rgba(57,255,20,0);opacity:0;}}
 
   /* ── SCHEDULER ── */
   .sched-wrap{flex:1;min-height:0;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:var(--rs);padding:9px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
@@ -327,7 +326,7 @@
   .foot{flex-shrink:0;display:flex;justify-content:space-between;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;padding:0 2px;opacity:.32;}
   code{color:var(--green);}
 
-  /* ── WOW: valore che cambia flash ── */
+  /* ── ANIMATIONS ── */
   @keyframes valFlash{
     0%{filter:brightness(1);}
     25%{filter:brightness(2.2) drop-shadow(0 0 12px var(--green));}
@@ -335,31 +334,26 @@
   }
   .snum.flash{animation:valFlash .45s ease-out;}
 
-  /* ── WOW: relay ON — halo animato sul ditem ── */
   @keyframes haloBreath{
     0%,100%{box-shadow:0 0 18px rgba(57,255,20,.10),inset 0 0 14px rgba(57,255,20,.04);}
     50%{box-shadow:0 0 38px rgba(57,255,20,.22),inset 0 0 24px rgba(57,255,20,.08);}
   }
   .ditem.on{animation:haloBreath 2.8s ease-in-out infinite;}
 
-  /* ── WOW: toggle knob micro-bounce ── */
   @keyframes knobBounce{
     0%{transform:scale(1);}40%{transform:scale(1.25);}70%{transform:scale(.88);}100%{transform:scale(1);}
   }
   .tgl.bounce .knob{animation:knobBounce .4s cubic-bezier(.4,0,.2,1);}
 
-  /* ── WOW: card glass hover lift ── */
   .glass{transition:box-shadow .3s,transform .2s;}
   .glass:hover{box-shadow:var(--lsh),0 0 0 1px rgba(57,255,20,.08);transform:translateY(-1px);}
 
-  /* ── WOW: data stream — ticker di valori sulle card ── */
   .stream-bar{position:absolute;bottom:0;left:0;right:0;height:1.5px;border-radius:0 0 var(--r) var(--r);
     background:linear-gradient(90deg,transparent 0%,var(--green) 50%,transparent 100%);
     background-size:200% 100%;opacity:0;pointer-events:none;}
   @keyframes streamRun{0%{background-position:200% 0;opacity:.7;}100%{background-position:-200% 0;opacity:0;}}
   .stream-bar.run{animation:streamRun .8s ease-out forwards;}
 
-  /* ── WOW: MQTT connect — splash di particelle ── */
   @keyframes connSplash{
     0%{transform:scale(.7);opacity:0;}
     50%{transform:scale(1.12);opacity:1;}
@@ -367,33 +361,31 @@
   }
   .dot.ok{animation:connSplash .4s cubic-bezier(.34,1.56,.64,1) forwards,lp 2s infinite .5s;}
 
-  /* ── WOW: scheduler sync tick ── */
   @keyframes syncTick{
     0%{transform:scale(1);}50%{transform:scale(1.4) rotate(10deg);filter:drop-shadow(0 0 4px var(--green));}
     100%{transform:scale(1);}
   }
   .sched-sync-dot.synced{animation:syncTick .5s ease-out;}
-  /* ── WOW: AURORA bands ── */
+
+  /* ── AURORA ── */
   #aurora{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
   .aurora-band{position:absolute;left:-20%;right:-20%;height:180px;border-radius:50%;filter:blur(60px);opacity:0;animation:auroraDrift linear infinite;}
   .ab1{top:5%;background:linear-gradient(180deg,transparent,rgba(57,255,20,.06),transparent);animation-duration:18s;animation-delay:0s;}
   .ab2{top:25%;background:linear-gradient(180deg,transparent,rgba(0,200,255,.04),transparent);animation-duration:24s;animation-delay:-8s;}
   .ab3{top:55%;background:linear-gradient(180deg,transparent,rgba(204,255,0,.05),transparent);animation-duration:20s;animation-delay:-4s;}
   @keyframes auroraDrift{0%{opacity:0;transform:translateX(-30px) scaleY(1);}15%{opacity:1;}50%{transform:translateX(30px) scaleY(1.3);}85%{opacity:.8;}100%{opacity:0;transform:translateX(-30px) scaleY(1);}}
-  /* ── WOW: GLITCH sul titolo ── */
+
   @keyframes glitch{0%,90%,100%{clip-path:none;transform:none;opacity:1;}92%{clip-path:inset(20% 0 60% 0);transform:translate(-3px,0);opacity:.85;}94%{clip-path:inset(60% 0 10% 0);transform:translate(3px,0);opacity:.9;}96%{clip-path:none;transform:translate(0,0);opacity:1;}98%{clip-path:inset(40% 0 40% 0);transform:translate(-2px,1px);opacity:.8;}}
   h1 em{animation:glitch 7s steps(1) infinite;}
-  /* ── WOW: DATA RAIN canvas ── */
+
   #datarain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.15;}
-  /* ── WOW: card pulse on data receive ── */
+
   @keyframes cardPing{0%{box-shadow:var(--lsh),0 0 0 0 rgba(57,255,20,.4);}60%{box-shadow:var(--lsh),0 0 0 8px rgba(57,255,20,0);}100%{box-shadow:var(--lsh);}}
   .cenv.ping{animation:cardPing .6s ease-out;}
-  /* ── WOW: numero roll ── */
+
   @keyframes numRoll{0%{transform:translateY(-5px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
   .snum.roll{animation:numRoll .22s cubic-bezier(.22,.8,.2,1);}
-  /* ── WOW: relay burst ring upgrade ── */
-  @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.9);opacity:1;}100%{inset:-14px;border-color:rgba(57,255,20,0);opacity:0;}}
-  /* ── WOW: sonar presence ── */
+
   .sonar-ring{position:absolute;border-radius:50%;border:1px solid rgba(57,255,20,.3);animation:sonarExpand 2.4s ease-out infinite;}
   .sonar-ring:nth-child(2){animation-delay:.8s;}.sonar-ring:nth-child(3){animation-delay:1.6s;}
   @keyframes sonarExpand{0%{width:16px;height:16px;opacity:.9;}100%{width:110px;height:110px;opacity:0;}}
@@ -666,7 +658,7 @@
 </div><!-- /app -->
 
 <script>
-/* PARTICLES — più numerose */
+/* ── PARTICLES ── */
 (function(){
   const c=document.getElementById('particles');
   for(let i=0;i<35;i++){
@@ -678,7 +670,7 @@
   }
 })();
 
-/* TABS */
+/* ── TABS ── */
 const TABS=['ext','cmp','prs'];
 function swTab(n){
   TABS.forEach(k=>{
@@ -688,7 +680,7 @@ function swTab(n){
   if(n==='cmp')updDelta();
 }
 
-/* WEATHER */
+/* ── WEATHER ── */
 const LAT=45.6855,LON=8.4604;
 const WMO={0:'Sereno',1:'Parz. nuvoloso',2:'Nuvoloso',3:'Coperto',45:'Nebbia',48:'Nebbia ghiacciata',51:'Pioggerella',53:'Pioggerella',55:'Pioggerella intensa',61:'Pioggia leggera',63:'Pioggia',65:'Pioggia intensa',71:'Neve leggera',73:'Neve',75:'Neve intensa',80:'Rovesci',81:'Rovesci',82:'Rovesci forti',95:'Temporale',96:'Temporale+grandine',99:'Temporale forte'};
 function mkS(b,s='#ccff00'){return`<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="${s}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;}
@@ -762,7 +754,7 @@ function updDelta(){
   }
 }
 
-/* RADAR PRESENZA */
+/* ── RADAR PRESENZA (unica dichiarazione) ── */
 let radarState={present:false,near:false,moving:false,act:0,ema:0};
 
 const PICO={
@@ -785,11 +777,11 @@ function updatePresenceUI(){
     sub.textContent='Nessuna presenza rilevata dal radar';
     document.getElementById('chipActivity').className='pres-chip';
     document.getElementById('chipActivityTxt').textContent='Nessuna attività';
-    if(typeof setSonar==='function')setSonar(false);
+    setSonar(false);
     return;
   }
   document.getElementById('chipPresent').className='pres-chip lit-green';
-  if(typeof setSonar==='function')setSonar(true);
+  setSonar(true);
   if(r.near&&r.moving){
     wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
     wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina Attiva';
@@ -820,14 +812,7 @@ function updatePresenceUI(){
   document.getElementById('chipActivityTxt').textContent=actTxt;
 }
 
-
-
-/* ==========================================
-   SCHEDULER ORARIO
-   Sync via MQTT retained — topic symo/room/schedule
-   Qualsiasi dispositivo che si connette riceve
-   automaticamente la programmazione salvata.
-========================================== */
+/* ── SCHEDULER ── */
 const SCHED_KEYS=['l1-on','l1-off','l2-on','l2-off'];
 let schedEnabled={};
 let schedTimers={};
@@ -860,7 +845,6 @@ function applyScheduleData(data){
 }
 
 function loadSchedule(){
-  // La programmazione arriva dal broker MQTT (retained) — nessun localStorage
   SCHED_KEYS.forEach(k=>{schedEnabled[k]=false;renderSchedEn(k);});
   startAllTimers();
 }
@@ -919,7 +903,6 @@ function nextFireInfo(){
 function startAllTimers(){
   Object.values(schedTimers).forEach(id=>clearInterval(id));
   schedTimers={};
-  // Controlla ogni minuto
   schedTimers['_tick']=setInterval(checkSchedule,15000);
   checkSchedule();
 }
@@ -932,12 +915,10 @@ function checkSchedule(){
     if(!schedEnabled[k])return;
     const t=document.getElementById('s-'+k).value;
     if(t!==cur)return;
-    // Evita doppio trigger nello stesso minuto
     const lastFire=schedTimers['last-'+k];
     const nowMin=now.getHours()*60+now.getMinutes();
     if(lastFire===nowMin)return;
     schedTimers['last-'+k]=nowMin;
-    // Esegui azione
     if(k==='l1-on'){setRelay(true);mc.publish(TR,'ON');}
     else if(k==='l1-off'){setRelay(false);mc.publish(TR,'OFF');}
     else if(k==='l2-on'){setRelay2(true);mc.publish(TR2,'ON');}
@@ -950,67 +931,12 @@ function checkSchedule(){
   });
 }
 
-/* RADAR PRESENZA */
-let radarState={present:false,near:false,moving:false,act:0,ema:0};
-const PICO={
-  empty:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  static:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><circle cx="12" cy="7" r="1.5" fill="var(--green)"/></svg>`,
-  moving:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M3 12h14"/><path d="M11 20l-4-4 4-4"/><path d="M21 8v8"/></svg>`,
-  near:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ffb400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/><path d="M9.2 9.2a4 4 0 0 0 0 5.6"/><path d="M14.8 9.2a4 4 0 0 1 0 5.6"/></svg>`,
-};
-function updatePresenceUI(){
-  const r=radarState;
-  const wrap=document.getElementById('presIcoWrap');
-  const lbl=document.getElementById('presLabel');
-  const sub=document.getElementById('presSub');
-  ['chipPresent','chipMoving','chipNear'].forEach(id=>{document.getElementById(id).className='pres-chip';});
-  const act=r.act||0;
-  if(!r.present){
-    wrap.className='pres-ico-wrap state-empty';lbl.className='pres-label state-empty';
-    wrap.innerHTML=PICO.empty;lbl.textContent='Stanza Vuota';
-    sub.textContent='Nessuna presenza rilevata dal radar';
-    document.getElementById('chipActivity').className='pres-chip';
-    document.getElementById('chipActivityTxt').textContent='Nessuna attività';return;
-  }
-  document.getElementById('chipPresent').className='pres-chip lit-green';
-  if(r.near&&r.moving){
-    wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
-    wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina Attiva';
-    sub.textContent='Movimento ravvicinato rilevato';
-    document.getElementById('chipMoving').className='pres-chip lit-yellow';
-    document.getElementById('chipNear').className='pres-chip lit-orange';
-  }else if(r.near){
-    wrap.className='pres-ico-wrap state-near';lbl.className='pres-label state-near';
-    wrap.innerHTML=PICO.near;lbl.textContent='Presenza Vicina';
-    sub.textContent='Persona ferma a distanza ravvicinata';
-    document.getElementById('chipNear').className='pres-chip lit-orange';
-  }else if(r.moving){
-    wrap.className='pres-ico-wrap state-active';lbl.className='pres-label state-active';
-    wrap.innerHTML=PICO.moving;lbl.textContent='Presenza Attiva';
-    sub.textContent='Movimento rilevato nella stanza';
-    document.getElementById('chipMoving').className='pres-chip lit-yellow';
-  }else{
-    wrap.className='pres-ico-wrap state-static';lbl.className='pres-label state-static';
-    wrap.innerHTML=PICO.static;lbl.textContent='Presenza Statica';
-    sub.textContent='Persona ferma rilevata nella stanza';
-  }
-  let actClass='pres-chip',actTxt='Attività minima';
-  if(act>18){actClass='pres-chip lit-orange';actTxt='Alta attività';}
-  else if(act>8){actClass='pres-chip lit-yellow';actTxt='Attività moderata';}
-  else if(act>2){actClass='pres-chip lit-green';actTxt='Attività lieve';}
-  else{actTxt='Rumore di fondo';}
-  document.getElementById('chipActivity').className=actClass;
-  document.getElementById('chipActivityTxt').textContent=actTxt;
-}
-
-/* ==========================================
-   MQTT — topic separati per i due relay
-========================================== */
+/* ── MQTT ── */
 const HOST='ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud';
 const PORT=8884;
 const TD='symo/room/data';
-const TR='symo/room/relay';   // relay 1
-const TR2='symo/room/relay2'; // relay 2 — topic separato
+const TR='symo/room/relay';
+const TR2='symo/room/relay2';
 
 let mc=null,rs=0,rs2=0;
 const $dot=document.getElementById('dot'),$conn=document.getElementById('connText');
@@ -1020,11 +946,9 @@ const $tgl2=document.getElementById('tgl2'),$dtxt2=document.getElementById('dtxt
 
 function setConn(ok,msg){$dot.classList.toggle('ok',ok);$conn.textContent=msg;}
 
-/* WOW helpers */
 function flashEl(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),500);}
 function bounceTgl(tgl){tgl.classList.remove('bounce');void tgl.offsetWidth;tgl.classList.add('bounce');setTimeout(()=>tgl.classList.remove('bounce'),450);}
 
-/* Relay 1 */
 function setRelay(on){
   rs=on?1:0;
   $tgl.classList.toggle('on',on);$di.classList.toggle('on',on);
@@ -1038,7 +962,6 @@ function toggleRelay(){
   if(mc?.connected)mc.publish(TR,n?'ON':'OFF');
 }
 
-/* Relay 2 */
 function setRelay2(on){
   rs2=on?1:0;
   $tgl2.classList.toggle('on',on);$di2.classList.toggle('on',on);
@@ -1059,14 +982,12 @@ function mqttConnect(){
   mc.on('connect',()=>{
     setConn(true,'Connesso');
     mc.subscribe(TD);
-    mc.subscribe(TS,{qos:1});  // qos:1 garantisce la consegna del retained
+    mc.subscribe(TS,{qos:1});
     setSyncStatus(false,'Caricamento schedule...');
-    // fallback: se dopo 10s non arriva il retained, mostra avviso
     schedFallbackTimer=setTimeout(()=>{
       const s=document.getElementById('schedSyncTxt');
       if(s&&s.textContent==='Caricamento schedule...')setSyncStatus(false,'Nessuna programmazione salvata');
     },10000);
-    // Richiedi subito lo stato dei relay al broker
     setTimeout(()=>{ if(mc?.connected)mc.publish('symo/room/relay2','STATUS',{qos:0}); },1200);
   });
   mc.on('message',(t,p)=>{
@@ -1076,7 +997,6 @@ function mqttConnect(){
       const j=JSON.parse(p.toString());
       if(j.temperature!=null){inT=j.temperature;rollNum($T,j.temperature,1);pingCard('cenv-card');}
       if(j.humidity!=null){inH=j.humidity;rollNum($H,j.humidity,1);}
-      // stream bar sul card ambiente
       const sb=document.getElementById('envStream');
       if(sb){sb.classList.remove('run');void sb.offsetWidth;sb.classList.add('run');}
       if(typeof j.relay==='number')setRelay(j.relay===1);
@@ -1096,9 +1016,7 @@ function mqttConnect(){
   mc.on('close',()=>{setConn(false,'Offline');setSyncStatus(false,'Offline');});
 }
 
-
-
-/* PERSPECTIVE GRID */
+/* ── PERSPECTIVE GRID ── */
 (function(){
   const canvas=document.getElementById('pgrid');
   const ctx=canvas.getContext('2d');
@@ -1141,7 +1059,7 @@ function mqttConnect(){
   animate();
 })();
 
-/* DATA RAIN */
+/* ── DATA RAIN ── */
 (function(){
   const c=document.getElementById('datarain');
   if(!c)return;
@@ -1167,21 +1085,19 @@ function mqttConnect(){
   setInterval(draw,90);
 })();
 
-/* CARD PING on new MQTT data */
+/* ── HELPERS ── */
 function pingCard(id){
   const el=document.getElementById(id);
   if(!el)return;
   el.classList.remove('ping');void el.offsetWidth;el.classList.add('ping');
 }
 
-/* NUMBER ROLL animation */
 function rollNum(el,val,decimals){
   if(!el)return;
   el.classList.remove('roll');void el.offsetWidth;el.classList.add('roll');
   el.textContent=typeof decimals==='number'?val.toFixed(decimals):val;
 }
 
-/* SONAR rings toggle */
 function setSonar(on){
   ['sonarR1','sonarR2','sonarR3'].forEach(id=>{
     const el=document.getElementById(id);
@@ -1189,6 +1105,8 @@ function setSonar(on){
   });
 }
 
+/* ── INIT ── */
+loadSchedule();
 fetchWx();
 setInterval(fetchWx,600000);
 mqttConnect();
