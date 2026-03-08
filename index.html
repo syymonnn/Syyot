@@ -15,8 +15,7 @@
     --glow:0 0 30px rgba(57,255,20,.50);--glows:0 0 12px rgba(57,255,20,.35);
     --danger:#ff3d5a;--txt:#e8f0ff;--mid:#5a7090;--muted:#2e4258;
     --lg:rgba(8,14,30,0.55);
-    --lbd:rgba(255,255,255,0.09);
-    --lbdt:rgba(255,255,255,0.22);
+    --lbd:rgba(255,255,255,0.09);--lbdt:rgba(255,255,255,0.22);
     --lsh:0 8px 40px rgba(0,0,0,.65),0 1px 0 rgba(255,255,255,.08) inset;
     --lblur:blur(38px) saturate(200%);
     --r:20px;--rs:12px;--rp:999px;
@@ -25,40 +24,13 @@
   body{font-family:'Sora',system-ui,sans-serif;background:#030508;color:var(--txt);height:100vh;display:flex;flex-direction:column;}
 
   #scifi-bg{position:fixed;inset:0;z-index:0;background:#030508;overflow:hidden;}
-  #scifi-bg::before{
-    content:'';position:absolute;inset:0;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 50%,rgba(0,255,100,.05) 0%,transparent 60%),
-      radial-gradient(ellipse 60% 80% at 80% 20%,rgba(0,180,255,.045) 0%,transparent 55%),
-      radial-gradient(ellipse 50% 50% at 50% 90%,rgba(100,0,255,.04) 0%,transparent 50%);
-    animation:meshDrift 18s ease-in-out infinite alternate;
-  }
-  #scifi-bg::after{
-    content:'';position:absolute;inset:0;
-    background:
-      radial-gradient(ellipse 70% 40% at 70% 30%,rgba(57,255,20,.035) 0%,transparent 50%),
-      radial-gradient(ellipse 40% 70% at 10% 80%,rgba(204,255,0,.028) 0%,transparent 50%);
-    animation:meshDrift2 24s ease-in-out infinite alternate;
-  }
-  @keyframes meshDrift{
-    0%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-20px) scale(1.04);}
-    66%{transform:translate(-20px,35px) scale(.97);}100%{transform:translate(15px,10px) scale(1.02);}
-  }
-  @keyframes meshDrift2{
-    0%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,25px) scale(1.06);}
-    100%{transform:translate(25px,-30px) scale(.96);}
-  }
-  #grid-lines{
-    position:fixed;inset:0;z-index:1;pointer-events:none;
-    overflow:hidden;
-  }
+  #scifi-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(0,255,100,.05) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 20%,rgba(0,180,255,.045) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 50% 90%,rgba(100,0,255,.04) 0%,transparent 50%);animation:meshDrift 18s ease-in-out infinite alternate;}
+  #scifi-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 70% 30%,rgba(57,255,20,.035) 0%,transparent 50%),radial-gradient(ellipse 40% 70% at 10% 80%,rgba(204,255,0,.028) 0%,transparent 50%);animation:meshDrift2 24s ease-in-out infinite alternate;}
+  @keyframes meshDrift{0%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-20px) scale(1.04);}66%{transform:translate(-20px,35px) scale(.97);}100%{transform:translate(15px,10px) scale(1.02);}}
+  @keyframes meshDrift2{0%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,25px) scale(1.06);}100%{transform:translate(25px,-30px) scale(.96);}}
+  #grid-lines{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
   #grid-lines canvas{position:absolute;inset:0;width:100%;height:100%;}
-  @keyframes gridPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
-  #scan-sweep{
-    position:fixed;inset:0;z-index:2;pointer-events:none;
-    background:linear-gradient(to bottom,transparent 0%,transparent 48%,rgba(57,255,20,.018) 49%,rgba(57,255,20,.042) 50%,rgba(57,255,20,.018) 51%,transparent 52%,transparent 100%);
-    animation:scanDown 12s linear infinite;
-  }
+  #scan-sweep{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,transparent 0%,transparent 48%,rgba(57,255,20,.018) 49%,rgba(57,255,20,.042) 50%,rgba(57,255,20,.018) 51%,transparent 52%,transparent 100%);animation:scanDown 12s linear infinite;}
   @keyframes scanDown{0%{transform:translateY(-100vh);}100%{transform:translateY(100vh);}}
   #corners{position:fixed;inset:0;z-index:2;pointer-events:none;}
   #corners::before,#corners::after{content:'';position:absolute;width:60px;height:60px;border-color:rgba(57,255,20,.18);border-style:solid;}
@@ -66,16 +38,9 @@
   #corners::after{bottom:12px;right:12px;border-width:0 2px 2px 0;border-radius:0 0 4px 0;}
   #particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
   .pt{position:absolute;border-radius:50%;background:var(--green);animation:ptFloat linear infinite;opacity:0;}
-  @keyframes ptFloat{
-    0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:.55;}
-    90%{opacity:.15;}100%{transform:translateY(-20px) scale(1.4);opacity:0;}
-  }
+  @keyframes ptFloat{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:.55;}90%{opacity:.15;}100%{transform:translateY(-20px) scale(1.4);opacity:0;}}
   #sl{position:fixed;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
-
-  #ov{position:fixed;inset:0;z-index:5;pointer-events:none;
-    background:radial-gradient(ellipse 65% 55% at 10% 8%,rgba(18,65,8,.32) 0%,transparent 52%),
-               radial-gradient(ellipse 55% 50% at 90% 92%,rgba(8,52,4,.28) 0%,transparent 52%),
-               linear-gradient(to bottom,rgba(3,5,8,.65) 0%,rgba(3,5,8,.1) 35%,rgba(3,5,8,.1) 65%,rgba(3,5,8,.68) 100%);}
+  #ov{position:fixed;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 65% 55% at 10% 8%,rgba(18,65,8,.32) 0%,transparent 52%),radial-gradient(ellipse 55% 50% at 90% 92%,rgba(8,52,4,.28) 0%,transparent 52%),linear-gradient(to bottom,rgba(3,5,8,.65) 0%,rgba(3,5,8,.1) 35%,rgba(3,5,8,.1) 65%,rgba(3,5,8,.68) 100%);}
   #orbs{position:fixed;inset:0;z-index:6;pointer-events:none;overflow:hidden;}
   .orb{position:absolute;border-radius:50%;filter:blur(100px);animation:od linear infinite;}
   .oa{width:620px;height:620px;top:-210px;left:-160px;background:radial-gradient(circle,rgba(57,255,20,.09) 0%,transparent 70%);animation-duration:26s;}
@@ -137,19 +102,41 @@
   .tgl.burst .tring{animation:rb .5s ease-out forwards;}
   @keyframes rb{0%{inset:0;border-color:rgba(57,255,20,.8);opacity:1;}100%{inset:-9px;border-color:rgba(57,255,20,0);opacity:0;}}
 
-  .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
+  /* ── SCHEDULER ── */
+  .sched-wrap{margin-top:11px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:var(--rs);padding:11px 13px;}
+  .sched-title{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+  .sched-title svg{color:var(--green);}
+  .sched-rows{display:flex;flex-direction:column;gap:7px;}
+  .sched-row{display:flex;align-items:center;gap:8px;}
+  .sched-lbl{font-size:10px;font-weight:600;color:var(--mid);width:38px;flex-shrink:0;}
+  .sched-sel{display:flex;gap:5px;flex:1;}
+  .sched-time{
+    flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);
+    border-radius:8px;color:var(--txt);font-family:'DM Mono',monospace;font-size:12px;
+    padding:5px 8px;outline:none;transition:.2s;
+    color-scheme:dark;
+  }
+  .sched-time:focus{border-color:rgba(57,255,20,.4);box-shadow:0 0 0 2px rgba(57,255,20,.10);}
+  .sched-en{width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s;}
+  .sched-en.on{background:rgba(57,255,20,.15);border-color:rgba(57,255,20,.4);}
+  .sched-en svg{pointer-events:none;}
+  .sched-apply{
+    margin-top:9px;width:100%;padding:7px;border-radius:8px;border:none;
+    background:linear-gradient(135deg,rgba(57,255,20,.18),rgba(204,255,0,.14));
+    border:1px solid rgba(57,255,20,.28);color:var(--green);font-family:'Sora',sans-serif;
+    font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:.2s;
+  }
+  .sched-apply:hover{background:linear-gradient(135deg,rgba(57,255,20,.26),rgba(204,255,0,.20));box-shadow:var(--glows);}
+  .sched-status{font-size:10px;color:var(--muted);margin-top:7px;text-align:center;min-height:14px;font-family:'DM Mono',monospace;}
+  .sched-status.ok{color:var(--green);}
 
+  /* ── METEO CARD ── */
+  .cwx{grid-column:1/-1;grid-row:2;border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden;}
   .tabs{display:flex;gap:6px;padding:10px 13px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;background:rgba(255,255,255,.015);position:relative;}
   .tabs::after{content:'';position:absolute;bottom:0;left:4%;right:4%;height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.13),transparent);}
   .tab{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--rp);font-size:11px;font-weight:600;color:var(--mid);cursor:pointer;border:1px solid transparent;background:transparent;font-family:'Sora',sans-serif;transition:all .22s cubic-bezier(.4,0,.2,1);position:relative;}
   .tab:hover:not(.active){color:rgba(255,255,255,.55);background:rgba(255,255,255,.04);}
-  .tab.active{
-    background:linear-gradient(160deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.07) 60%,rgba(255,255,255,.04) 100%);
-    backdrop-filter:blur(30px) saturate(220%);-webkit-backdrop-filter:blur(30px) saturate(220%);
-    border-color:rgba(255,255,255,.20);color:#fff;
-    box-shadow:0 4px 22px rgba(0,0,0,.40),0 0 0 1px rgba(255,255,255,.06) inset,0 1.5px 0 rgba(255,255,255,.20) inset,0 -1px 0 rgba(0,0,0,.30) inset;
-    text-shadow:0 1px 3px rgba(0,0,0,.5);
-  }
+  .tab.active{background:linear-gradient(160deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.07) 60%,rgba(255,255,255,.04) 100%);backdrop-filter:blur(30px) saturate(220%);-webkit-backdrop-filter:blur(30px) saturate(220%);border-color:rgba(255,255,255,.20);color:#fff;box-shadow:0 4px 22px rgba(0,0,0,.40),0 0 0 1px rgba(255,255,255,.06) inset,0 1.5px 0 rgba(255,255,255,.20) inset,0 -1px 0 rgba(0,0,0,.30) inset;text-shadow:0 1px 3px rgba(0,0,0,.5);}
   .tab.active::after{content:'';position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:28px;height:2.5px;background:var(--grad);border-radius:3px;box-shadow:var(--glows);}
   .tab svg{flex-shrink:0;}
 
@@ -161,7 +148,6 @@
   .panel.ppres.on{display:flex !important;}
 
   .pext{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:18px;}
-  .extl{}
   .eloc{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
   .eloc svg{color:var(--green);flex-shrink:0;}
   .ecity{font-size:12px;font-weight:600;color:var(--mid);}
@@ -197,11 +183,8 @@
   @media(max-width:640px){
     html,body{overflow:auto;height:auto;min-height:100vh;}
     .grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
-    .cenv{grid-column:1;grid-row:1;}
-    .cdev{grid-column:1;grid-row:2;}
-    .cwx{grid-column:1;grid-row:3;min-height:380px;}
-    .pext{grid-template-columns:1fr;}
-    .pcmp{grid-template-columns:1fr;}
+    .cenv{grid-column:1;grid-row:1;}.cdev{grid-column:1;grid-row:2;}.cwx{grid-column:1;grid-row:3;min-height:380px;}
+    .pext{grid-template-columns:1fr;}.pcmp{grid-template-columns:1fr;}
     .etmp{font-size:48px;}
     .panels{overflow:visible;height:auto;position:static;}
     .panel{display:none !important;padding:13px 17px;}
@@ -213,38 +196,18 @@
 
   .ppres{display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 17px;}
   .pres-hero{display:flex;align-items:center;gap:22px;}
-  .pres-ico-wrap{
-    width:80px;height:80px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
-    background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.10);
-    transition:background .4s,border-color .4s,box-shadow .4s;
-    position:relative;
-  }
+  .pres-ico-wrap{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.10);transition:background .4s,border-color .4s,box-shadow .4s;position:relative;}
   .pres-ico-wrap.state-empty{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);}
   .pres-ico-wrap.state-static{background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.28);box-shadow:0 0 28px rgba(57,255,20,.12);}
   .pres-ico-wrap.state-active{background:rgba(204,255,0,.09);border-color:rgba(204,255,0,.35);box-shadow:0 0 36px rgba(204,255,0,.18);}
   .pres-ico-wrap.state-near{background:rgba(255,180,0,.09);border-color:rgba(255,180,0,.38);box-shadow:0 0 36px rgba(255,180,0,.20);}
-  .pres-ico-wrap.state-static::after,
-  .pres-ico-wrap.state-active::after,
-  .pres-ico-wrap.state-near::after{
-    content:'';position:absolute;inset:-8px;border-radius:50%;
-    border:1.5px solid currentColor;opacity:0;
-    animation:presRing 2.2s ease-out infinite;
-  }
-  .pres-ico-wrap.state-static{color:rgba(57,255,20,.4);}
-  .pres-ico-wrap.state-active{color:rgba(204,255,0,.4);}
-  .pres-ico-wrap.state-near{color:rgba(255,180,0,.5);}
+  .pres-ico-wrap.state-static::after,.pres-ico-wrap.state-active::after,.pres-ico-wrap.state-near::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1.5px solid currentColor;opacity:0;animation:presRing 2.2s ease-out infinite;}
+  .pres-ico-wrap.state-static{color:rgba(57,255,20,.4);}.pres-ico-wrap.state-active{color:rgba(204,255,0,.4);}.pres-ico-wrap.state-near{color:rgba(255,180,0,.5);}
   @keyframes presRing{0%{inset:-2px;opacity:.7;}100%{inset:-20px;opacity:0;}}
   .pres-ico-wrap svg{transition:opacity .35s;}
-
-  .pres-info{}
   .pres-label{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1;transition:color .35s;}
-  .pres-label.state-empty{color:var(--mid);}
-  .pres-label.state-static{color:var(--green);filter:drop-shadow(0 0 8px rgba(57,255,20,.4));}
-  .pres-label.state-active{color:var(--yellow);filter:drop-shadow(0 0 8px rgba(204,255,0,.4));}
-  .pres-label.state-near{color:#ffb400;filter:drop-shadow(0 0 8px rgba(255,180,0,.4));}
+  .pres-label.state-empty{color:var(--mid);}.pres-label.state-static{color:var(--green);filter:drop-shadow(0 0 8px rgba(57,255,20,.4));}.pres-label.state-active{color:var(--yellow);filter:drop-shadow(0 0 8px rgba(204,255,0,.4));}.pres-label.state-near{color:#ffb400;filter:drop-shadow(0 0 8px rgba(255,180,0,.4));}
   .pres-sub{font-size:12px;color:var(--mid);margin-top:5px;font-weight:500;}
-
   .pres-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
   .pres-chip{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--rp);font-size:11px;font-weight:600;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--mid);transition:all .35s;}
   .pres-chip.lit-green{background:rgba(57,255,20,.08);border-color:rgba(57,255,20,.25);color:var(--green);}
@@ -260,7 +223,6 @@
 <div id="scan-sweep"></div>
 <div id="corners"></div>
 <div id="particles"></div>
-
 <div id="ov"></div>
 <div id="orbs"><div class="orb oa"></div><div class="orb ob"></div><div class="orb oc"></div></div>
 <div id="sl"></div>
@@ -286,7 +248,7 @@
 
   <div class="grid">
 
-    <!-- CARD AMBIENTE INTERNO -->
+    <!-- CARD AMBIENTE -->
     <div class="cenv glass">
       <div class="ch">
         <span class="clbl">Ambiente Interno</span>
@@ -311,7 +273,7 @@
         <span style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px">2 ONLINE</span>
       </div>
 
-      <!-- RELAY 1 — Luce atmosfera -->
+      <!-- RELAY 1 -->
       <div id="ditem" class="ditem">
         <div class="dico">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -323,70 +285,102 @@
         <div class="dr">
           <span class="dst" id="dtxt">SPENTO</span>
           <div id="tgl" class="tgl" onclick="toggleRelay()">
-            <div class="knob"></div>
-            <div class="tring"></div>
+            <div class="knob"></div><div class="tring"></div>
           </div>
         </div>
       </div>
 
-      <!-- RELAY 2 — Luce stanza -->
+      <!-- RELAY 2 -->
       <div id="ditem2" class="ditem" style="margin-top:10px">
         <div class="dico">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v3"/>
-            <path d="M12 19v3"/>
-            <path d="M4.22 4.22l2.12 2.12"/>
-            <path d="M17.66 17.66l2.12 2.12"/>
-            <path d="M2 12h3"/>
-            <path d="M19 12h3"/>
-            <path d="M4.22 19.78l2.12-2.12"/>
-            <path d="M17.66 6.34l2.12-2.12"/>
+            <path d="M12 2v3"/><path d="M12 19v3"/>
+            <path d="M4.22 4.22l2.12 2.12"/><path d="M17.66 17.66l2.12 2.12"/>
+            <path d="M2 12h3"/><path d="M19 12h3"/>
+            <path d="M4.22 19.78l2.12-2.12"/><path d="M17.66 6.34l2.12-2.12"/>
           </svg>
         </div>
-        <div style="flex:1">
-          <div class="dnm">Lighting 2</div>
-          <div class="dsb">Luce stanza</div>
-        </div>
+        <div style="flex:1"><div class="dnm">Lighting 2</div><div class="dsb">Luce stanza</div></div>
         <div class="dr">
           <span class="dst" id="dtxt2">SPENTO</span>
           <div id="tgl2" class="tgl" onclick="toggleRelay2()">
-            <div class="knob"></div>
-            <div class="tring"></div>
+            <div class="knob"></div><div class="tring"></div>
           </div>
         </div>
       </div>
 
-    </div>
+      <!-- SCHEDULER -->
+      <div class="sched-wrap">
+        <div class="sched-title">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Programmazione automatica
+        </div>
+        <div class="sched-rows">
+          <!-- L1 ON -->
+          <div class="sched-row">
+            <span class="sched-lbl" style="color:var(--green)">L1 ON</span>
+            <div class="sched-sel">
+              <input type="time" class="sched-time" id="s-l1-on" value="20:00">
+            </div>
+            <div class="sched-en" id="en-l1-on" onclick="toggleSched('l1-on')" title="Abilita">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <!-- L1 OFF -->
+          <div class="sched-row">
+            <span class="sched-lbl" style="color:var(--danger)">L1 OFF</span>
+            <div class="sched-sel">
+              <input type="time" class="sched-time" id="s-l1-off" value="23:30">
+            </div>
+            <div class="sched-en" id="en-l1-off" onclick="toggleSched('l1-off')" title="Abilita">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <!-- L2 ON -->
+          <div class="sched-row">
+            <span class="sched-lbl" style="color:var(--yellow)">L2 ON</span>
+            <div class="sched-sel">
+              <input type="time" class="sched-time" id="s-l2-on" value="20:00">
+            </div>
+            <div class="sched-en" id="en-l2-on" onclick="toggleSched('l2-on')" title="Abilita">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <!-- L2 OFF -->
+          <div class="sched-row">
+            <span class="sched-lbl" style="color:var(--danger)">L2 OFF</span>
+            <div class="sched-sel">
+              <input type="time" class="sched-time" id="s-l2-off" value="23:30">
+            </div>
+            <div class="sched-en" id="en-l2-off" onclick="toggleSched('l2-off')" title="Abilita">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+        <button class="sched-apply" onclick="saveSchedule()">Salva programmazione</button>
+        <div class="sched-status" id="schedStatus"></div>
+      </div>
+
+    </div><!-- /cdev -->
 
     <!-- CARD METEO -->
     <div class="cwx glass">
       <div class="tabs">
         <button class="tab active" id="tab-ext" onclick="swTab('ext')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>Esterno
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Esterno
         </button>
         <button class="tab" id="tab-cmp" onclick="swTab('cmp')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>Confronto
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Confronto
         </button>
         <button class="tab" id="tab-prs" onclick="swTab('prs')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>Presenza
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Presenza
         </button>
       </div>
 
       <div class="panels">
 
-        <!-- PANEL 1: ESTERNO -->
+        <!-- PANEL ESTERNO -->
         <div class="panel pext on" id="panel-ext">
           <div class="extl">
             <div class="eloc">
@@ -395,12 +389,7 @@
             </div>
             <div class="emain">
               <div class="eico" id="wIco">
-                <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-                  <circle cx="22" cy="22" r="17" stroke="rgba(57,255,20,.18)" stroke-width="2"/>
-                  <path d="M22 5 A17 17 0 0 1 39 22" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite"/>
-                  </path>
-                </svg>
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="17" stroke="rgba(57,255,20,.18)" stroke-width="2"/><path d="M22 5 A17 17 0 0 1 39 22" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 22 22" to="360 22 22" dur="1s" repeatCount="indefinite"/></path></svg>
               </div>
               <div>
                 <div class="etmp" id="wTmp">--°</div>
@@ -409,72 +398,36 @@
             </div>
           </div>
           <div class="extr">
-            <div class="wdt">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><path d="M12 2C12 2 5 9.5 5 14.5a7 7 0 0 0 14 0C19 9.5 12 2 12 2z"/></svg>
-              <div><div class="wdl">Umidita</div><div class="wdv" id="wHum">--%</div></div>
-            </div>
-            <div class="wdt">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
-              <div><div class="wdl">Vento</div><div class="wdv" id="wWnd">-- km/h</div></div>
-            </div>
-            <div class="wdt">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-              <div><div class="wdl">Percepita</div><div class="wdv" id="wFls">--</div></div>
-            </div>
-            <div class="wdt">
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
-              <div><div class="wdl">UV Index</div><div class="wdv" id="wUV">--</div></div>
-            </div>
+            <div class="wdt"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><path d="M12 2C12 2 5 9.5 5 14.5a7 7 0 0 0 14 0C19 9.5 12 2 12 2z"/></svg><div><div class="wdl">Umidita</div><div class="wdv" id="wHum">--%</div></div></div>
+            <div class="wdt"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg><div><div class="wdl">Vento</div><div class="wdv" id="wWnd">-- km/h</div></div></div>
+            <div class="wdt"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg><div><div class="wdl">Percepita</div><div class="wdv" id="wFls">--</div></div></div>
+            <div class="wdt"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg><div><div class="wdl">UV Index</div><div class="wdv" id="wUV">--</div></div></div>
           </div>
         </div>
 
-        <!-- PANEL 2: CONFRONTO -->
+        <!-- PANEL CONFRONTO -->
         <div class="panel pcmp" id="panel-cmp">
           <div class="ccard">
-            <div class="ctop">
-              <span class="cnm">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-                Temperatura
-              </span>
-              <span class="cdiff" id="dTD">-</span>
-            </div>
+            <div class="ctop"><span class="cnm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Temperatura</span><span class="cdiff" id="dTD">-</span></div>
             <div class="bbg"><div class="bf g" id="dTB"></div></div>
-            <div class="cvls">
-              <span class="cvi">Int: <span id="dTi">--</span>°</span>
-              <span class="cvo">Est: <span id="dTo">--</span>°</span>
-            </div>
+            <div class="cvls"><span class="cvi">Int: <span id="dTi">--</span>°</span><span class="cvo">Est: <span id="dTo">--</span>°</span></div>
           </div>
           <div class="ccard">
-            <div class="ctop">
-              <span class="cnm">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 9.5 5 14.5a7 7 0 0 0 14 0C19 9.5 12 2 12 2z"/></svg>
-                Umidita
-              </span>
-              <span class="cdiff" id="dHD">-</span>
-            </div>
+            <div class="ctop"><span class="cnm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C12 2 5 9.5 5 14.5a7 7 0 0 0 14 0C19 9.5 12 2 12 2z"/></svg>Umidita</span><span class="cdiff" id="dHD">-</span></div>
             <div class="bbg"><div class="bf b" id="dHB"></div></div>
-            <div class="cvls">
-              <span class="cvi">Int: <span id="dHi">--</span>%</span>
-              <span class="cvo">Est: <span id="dHo">--</span>%</span>
-            </div>
+            <div class="cvls"><span class="cvi">Int: <span id="dHi">--</span>%</span><span class="cvo">Est: <span id="dHo">--</span>%</span></div>
           </div>
           <div class="ccard">
-            <div class="cfrow">
-              <div id="cIco"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="9" y1="15" x2="15" y2="15"/><circle cx="9" cy="9" r="1" fill="var(--mid)"/><circle cx="15" cy="9" r="1" fill="var(--mid)"/></svg></div>
-              <div><div class="cftit" id="cLbl">In attesa...</div></div>
-            </div>
+            <div class="cfrow"><div id="cIco"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="9" y1="15" x2="15" y2="15"/><circle cx="9" cy="9" r="1" fill="var(--mid)"/><circle cx="15" cy="9" r="1" fill="var(--mid)"/></svg></div><div><div class="cftit" id="cLbl">In attesa...</div></div></div>
             <div class="cfdsc" id="cDsc">Connetti MQTT per l'analisi del comfort ambientale</div>
           </div>
         </div>
 
-        <!-- PANEL 3: PRESENZA -->
+        <!-- PANEL PRESENZA -->
         <div class="panel ppres" id="panel-prs">
           <div class="pres-hero">
             <div class="pres-ico-wrap state-empty" id="presIcoWrap">
-              <svg id="presIco" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
             <div class="pres-info">
               <div class="pres-label state-empty" id="presLabel">In attesa radar...</div>
@@ -482,22 +435,10 @@
             </div>
           </div>
           <div class="pres-chips">
-            <div class="pres-chip" id="chipPresent">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>
-              Presenza
-            </div>
-            <div class="pres-chip" id="chipMoving">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-              Movimento
-            </div>
-            <div class="pres-chip" id="chipNear">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/></svg>
-              Vicino
-            </div>
-            <div class="pres-chip" id="chipActivity">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              <span id="chipActivityTxt">Attività: --</span>
-            </div>
+            <div class="pres-chip" id="chipPresent"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>Presenza</div>
+            <div class="pres-chip" id="chipMoving"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Movimento</div>
+            <div class="pres-chip" id="chipNear"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/></svg>Vicino</div>
+            <div class="pres-chip" id="chipActivity"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="chipActivityTxt">Attività: --</span></div>
           </div>
         </div>
 
@@ -517,8 +458,7 @@
 (function(){
   const c=document.getElementById('particles');
   for(let i=0;i<20;i++){
-    const p=document.createElement('div');
-    p.className='pt';
+    const p=document.createElement('div');p.className='pt';
     const sz=Math.random()*2.5+1;
     p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*15}s;box-shadow:0 0 ${sz*3}px var(--green);`;
     c.appendChild(p);
@@ -538,7 +478,6 @@ function swTab(n){
 /* WEATHER */
 const LAT=45.6855,LON=8.4604;
 const WMO={0:'Sereno',1:'Parz. nuvoloso',2:'Nuvoloso',3:'Coperto',45:'Nebbia',48:'Nebbia ghiacciata',51:'Pioggerella',53:'Pioggerella',55:'Pioggerella intensa',61:'Pioggia leggera',63:'Pioggia',65:'Pioggia intensa',71:'Neve leggera',73:'Neve',75:'Neve intensa',80:'Rovesci',81:'Rovesci',82:'Rovesci forti',95:'Temporale',96:'Temporale+grandine',99:'Temporale forte'};
-
 function mkS(b,s='#ccff00'){return`<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${s}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;}
 function wIco(code){const c=code??0;
   if(c===0)return mkS('<circle cx="12" cy="12" r="4" fill="rgba(204,255,0,.12)"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="4" y1="4" x2="6.1" y2="6.1"/><line x1="17.9" y1="17.9" x2="20" y2="20"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/><line x1="4" y1="20" x2="6.1" y2="17.9"/><line x1="17.9" y1="6.1" x2="20" y2="4"/>');
@@ -549,7 +488,6 @@ function wIco(code){const c=code??0;
   if(c<=75)return mkS('<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5 5-5-5"/><path d="M17 17l-5-5-5 5"/><line x1="4" y1="12" x2="20" y2="12"/>','rgba(190,210,255,.8)');
   return mkS('<path d="M19 16.5A5 5 0 0 0 18 6.5h-1.3A8 8 0 1 0 4 15" stroke="rgba(255,255,255,.45)"/><polyline points="13 11 9 17 15 17 11 23" stroke="#ccff00"/>');
 }
-
 let outT=null,outH=null;
 async function fetchWx(){
   try{
@@ -566,7 +504,6 @@ async function fetchWx(){
     updDelta();
   }catch(e){document.getElementById('wCnd').textContent='Errore di rete';}
 }
-
 let inT=null,inH=null;
 const CICO={
   great:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="var(--green)"/><circle cx="15" cy="9" r="1.2" fill="var(--green)"/></svg>',
@@ -574,7 +511,6 @@ const CICO={
   hot:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><circle cx="9" cy="9" r="1.2" fill="var(--danger)"/><circle cx="15" cy="9" r="1.2" fill="var(--danger)"/></svg>',
   ok:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="9" y1="15" x2="15" y2="15"/><circle cx="9" cy="9" r="1.2" fill="var(--yellow)"/><circle cx="15" cy="9" r="1.2" fill="var(--yellow)"/></svg>',
 };
-
 function updDelta(){
   document.getElementById('dTi').textContent=inT!==null?inT.toFixed(1):'--';
   document.getElementById('dTo').textContent=outT!==null?outT.toFixed(1):'--';
@@ -610,16 +546,114 @@ function updDelta(){
   }
 }
 
+/* ==========================================
+   SCHEDULER ORARIO
+   Salva in localStorage, sopravvive al refresh
+========================================== */
+const SCHED_KEYS=['l1-on','l1-off','l2-on','l2-off'];
+let schedEnabled={};   // key → bool
+let schedTimers={};    // key → intervalID
+
+function loadSchedule(){
+  SCHED_KEYS.forEach(k=>{
+    const saved=localStorage.getItem('sched-'+k);
+    if(saved){
+      try{
+        const o=JSON.parse(saved);
+        if(o.time)document.getElementById('s-'+k).value=o.time;
+        schedEnabled[k]=!!o.enabled;
+      }catch(e){schedEnabled[k]=false;}
+    }else{schedEnabled[k]=false;}
+    renderSchedEn(k);
+  });
+  startAllTimers();
+}
+
+function renderSchedEn(k){
+  const el=document.getElementById('en-'+k);
+  el.classList.toggle('on',!!schedEnabled[k]);
+  const svg=el.querySelector('svg');
+  svg.querySelector('polyline').setAttribute('stroke',schedEnabled[k]?'var(--green)':'var(--muted)');
+}
+
+function toggleSched(k){
+  schedEnabled[k]=!schedEnabled[k];
+  renderSchedEn(k);
+}
+
+function saveSchedule(){
+  SCHED_KEYS.forEach(k=>{
+    const time=document.getElementById('s-'+k).value;
+    localStorage.setItem('sched-'+k,JSON.stringify({time,enabled:schedEnabled[k]}));
+  });
+  startAllTimers();
+  const st=document.getElementById('schedStatus');
+  st.textContent='✓ Salvato — programmazione attiva';
+  st.className='sched-status ok';
+  setTimeout(()=>{st.textContent=nextFireInfo();st.className='sched-status';},2500);
+}
+
+function nextFireInfo(){
+  const now=new Date();
+  let best=null,bestKey=null;
+  SCHED_KEYS.forEach(k=>{
+    if(!schedEnabled[k])return;
+    const t=document.getElementById('s-'+k).value;
+    if(!t)return;
+    const[hh,mm]=t.split(':').map(Number);
+    const d=new Date();d.setHours(hh,mm,0,0);
+    if(d<=now)d.setDate(d.getDate()+1);
+    if(!best||d<best){best=d;bestKey=k;}
+  });
+  if(!best)return'Nessuna programmazione attiva';
+  const diff=Math.round((best-now)/60000);
+  const h=Math.floor(diff/60),m=diff%60;
+  const lbl={l1:'L1','l1-on':'L1 ON','l1-off':'L1 OFF','l2-on':'L2 ON','l2-off':'L2 OFF'}[bestKey]||bestKey;
+  return`Prossima: ${lbl} tra ${h>0?h+'h ':''}${m}min`;
+}
+
+function startAllTimers(){
+  Object.values(schedTimers).forEach(id=>clearInterval(id));
+  schedTimers={};
+  // Controlla ogni minuto
+  schedTimers['_tick']=setInterval(checkSchedule,15000);
+  checkSchedule();
+}
+
+function checkSchedule(){
+  if(!mc?.connected)return;
+  const now=new Date();
+  const cur=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  SCHED_KEYS.forEach(k=>{
+    if(!schedEnabled[k])return;
+    const t=document.getElementById('s-'+k).value;
+    if(t!==cur)return;
+    // Evita doppio trigger nello stesso minuto
+    const lastFire=schedTimers['last-'+k];
+    const nowMin=now.getHours()*60+now.getMinutes();
+    if(lastFire===nowMin)return;
+    schedTimers['last-'+k]=nowMin;
+    // Esegui azione
+    if(k==='l1-on'){setRelay(true);mc.publish(TR,'ON');}
+    else if(k==='l1-off'){setRelay(false);mc.publish(TR,'OFF');}
+    else if(k==='l2-on'){setRelay2(true);mc.publish(TR2,'ON');}
+    else if(k==='l2-off'){setRelay2(false);mc.publish(TR2,'OFF');}
+    const st=document.getElementById('schedStatus');
+    const labels={'l1-on':'L1 acceso','l1-off':'L1 spento','l2-on':'L2 acceso','l2-off':'L2 spento'};
+    st.textContent='⚡ Automatico: '+labels[k]+' alle '+t;
+    st.className='sched-status ok';
+    setTimeout(()=>{st.textContent='';st.className='sched-status';},4000);
+  });
+}
+
 /* RADAR PRESENZA */
 let radarState={present:false,near:false,moving:false,act:0,ema:0};
-
 const PICO={
   empty:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   static:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><circle cx="12" cy="7" r="1.5" fill="var(--green)"/></svg>`,
   moving:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M3 12h14"/><path d="M11 20l-4-4 4-4"/><path d="M21 8v8"/></svg>`,
   near:`<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ffb400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/><path d="M9.2 9.2a4 4 0 0 0 0 5.6"/><path d="M14.8 9.2a4 4 0 0 1 0 5.6"/></svg>`,
 };
-
 function updatePresenceUI(){
   const r=radarState;
   const wrap=document.getElementById('presIcoWrap');
@@ -666,11 +700,15 @@ function updatePresenceUI(){
 }
 
 /* ==========================================
-   MQTT
+   MQTT — topic separati per i due relay
 ========================================== */
-const HOST='ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud',PORT=8884,TD='symo/room/data',TR='symo/room/relay';
-let mc=null,rs=0,rs2=0;
+const HOST='ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud';
+const PORT=8884;
+const TD='symo/room/data';
+const TR='symo/room/relay';   // relay 1
+const TR2='symo/room/relay2'; // relay 2 — topic separato
 
+let mc=null,rs=0,rs2=0;
 const $dot=document.getElementById('dot'),$conn=document.getElementById('connText');
 const $T=document.getElementById('temp'),$H=document.getElementById('hum'),$last=document.getElementById('lastMsg');
 const $tgl=document.getElementById('tgl'),$dtxt=document.getElementById('dtxt'),$di=document.getElementById('ditem');
@@ -681,38 +719,43 @@ function setConn(ok,msg){$dot.classList.toggle('ok',ok);$conn.textContent=msg;}
 /* Relay 1 */
 function setRelay(on){
   rs=on?1:0;
-  $tgl.classList.toggle('on',on);
-  $di.classList.toggle('on',on);
+  $tgl.classList.toggle('on',on);$di.classList.toggle('on',on);
   $dtxt.textContent=on?'ACCESO':'SPENTO';
   $tgl.classList.remove('burst');void $tgl.offsetWidth;$tgl.classList.add('burst');
   setTimeout(()=>$tgl.classList.remove('burst'),520);
 }
 function toggleRelay(){
-  const n=rs?0:1;
-  setRelay(n===1);
+  const n=rs?0:1;setRelay(n===1);
   if(mc?.connected)mc.publish(TR,n?'ON':'OFF');
 }
 
 /* Relay 2 */
 function setRelay2(on){
   rs2=on?1:0;
-  $tgl2.classList.toggle('on',on);
-  $di2.classList.toggle('on',on);
+  $tgl2.classList.toggle('on',on);$di2.classList.toggle('on',on);
   $dtxt2.textContent=on?'ACCESO':'SPENTO';
   $tgl2.classList.remove('burst');void $tgl2.offsetWidth;$tgl2.classList.add('burst');
   setTimeout(()=>$tgl2.classList.remove('burst'),520);
 }
 function toggleRelay2(){
-  const n=rs2?0:1;
-  setRelay2(n===1);
-  if(mc?.connected)mc.publish(TR,n?'L2_ON':'L2_OFF');
+  const n=rs2?0:1;setRelay2(n===1);
+  if(mc?.connected)mc.publish(TR2,n?'ON':'OFF');
 }
 
 function mqttConnect(){
   if(mc){try{mc.end(true);}catch(e){}mc=null;}
   setConn(false,'Connessione...');
   mc=mqtt.connect(`wss://${HOST}:${PORT}/mqtt`,{username:'syymon',password:'Piazzale99',clientId:'symo-'+Math.random().toString(16).slice(2),clean:true,connectTimeout:8000,reconnectPeriod:2000,keepalive:30});
-  mc.on('connect',()=>{setConn(true,'Connesso');mc.subscribe(TD);});
+  mc.on('connect',()=>{
+    setConn(true,'Connesso');
+    mc.subscribe(TD);
+    // mostra prossimo timer dopo connessione
+    setTimeout(()=>{
+      const st=document.getElementById('schedStatus');
+      const info=nextFireInfo();
+      if(info){st.textContent=info;st.className='sched-status';}
+    },500);
+  });
   mc.on('message',(t,p)=>{
     if(t!==TD)return;
     try{
@@ -741,8 +784,7 @@ function mqttConnect(){
   const canvas=document.getElementById('pgrid');
   const ctx=canvas.getContext('2d');
   function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
-  resize();
-  window.addEventListener('resize',()=>{resize();draw();});
+  resize();window.addEventListener('resize',()=>{resize();draw();});
   function draw(){
     const W=canvas.width,H=canvas.height;
     ctx.clearRect(0,0,W,H);
@@ -753,16 +795,14 @@ function mqttConnect(){
     for(let i=0;i<=hLines;i++){
       const t=Math.pow(i/hLines,1.8);
       const y=gridTop+(gridBot-gridTop)*t;
-      const alpha=t*0.055;
       ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);
-      ctx.strokeStyle=`rgba(${r},${g},${b},${alpha})`;ctx.lineWidth=1;ctx.stroke();
+      ctx.strokeStyle=`rgba(${r},${g},${b},${t*0.055})`;ctx.lineWidth=1;ctx.stroke();
     }
     for(let i=0;i<=vLines;i++){
       const t=i/vLines;
       const xBot=W*t;
       const xTop=vpX+(xBot-vpX)*((gridTop-vpY)/(gridBot-vpY));
-      const distCenter=Math.abs(t-0.5)*2;
-      const alpha=(1-distCenter*0.6)*0.038;
+      const alpha=(1-Math.abs(t-0.5)*2*0.6)*0.038;
       const grad=ctx.createLinearGradient(xTop,gridTop,xBot,gridBot);
       grad.addColorStop(0,`rgba(${r},${g},${b},0)`);
       grad.addColorStop(1,`rgba(${r},${g},${b},${alpha})`);
@@ -779,8 +819,10 @@ function mqttConnect(){
   animate();
 })();
 
+/* INIT */
 fetchWx();
 setInterval(fetchWx,600000);
+loadSchedule();
 mqttConnect();
 </script>
 </body>
