@@ -173,6 +173,35 @@
             height: 100%;
         }
 
+        /* ── SCAN LINE (RE-IMPLEMENTED) ── */
+        .scan-line {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 8px var(--primary);
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            animation: scanLineAnim 8s linear infinite;
+        }
+
+        .sl2 {
+            animation-duration: 12s;
+            animation-delay: -3s;
+            opacity: 0.15;
+            background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+        }
+
+        @keyframes scanLineAnim {
+            0% { top: -2%; opacity: 0; }
+            5% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+            95% { opacity: 0.2; }
+            100% { top: 102%; opacity: 0; }
+        }
+
 
         /* ── CORNERS ── */
         #corners {
@@ -1270,6 +1299,7 @@
             letter-spacing: -3px;
             line-height: 1;
             background: var(--grad);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 12px rgba(57, 255, 20, .3));
@@ -2030,6 +2060,8 @@
         <div class="aurora-band ab3"></div>
     </div>
     <div id="grid-lines"><canvas id="pgrid"></canvas></div>
+    <div class="scan-line"></div>
+    <div class="scan-line sl2"></div>
     <div id="corners"></div>
     <div id="particles"></div>
     <div id="noise"></div>
