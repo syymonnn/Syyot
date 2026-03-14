@@ -36,11 +36,11 @@
             --muted: #5d7094;
             
             /* Glassmorphism minimal */
-            --lg: rgba(10, 15, 30, 0.25);
+            --lg: rgba(10, 15, 30, 0.12);
             --lbd: rgba(255, 255, 255, 0.08);
             --lbdt: rgba(255, 255, 255, 0.15);
             --lsh: 0 24px 48px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
-            --lblur: blur(48px) saturate(180%) brightness(1.1);
+            --lblur: blur(14px) saturate(180%) brightness(1.1);
             
             --r: 24px;
             --rs: 12px;
@@ -52,20 +52,20 @@
             --primary: #2159ff;
         
             --green: var(--primary);
-            --yellow: #00aee7;
+            --yellow: #008cc0;
             --grad: linear-gradient(135deg, #3041ff, #23a6ff);
             --glow: 0 0 20px rgba(48, 65, 255, .25);
             --glows: 0 0 10px rgba(35, 166, 255, .24);
             --danger: #d11b4d;
-            --txt: #102346;
-            --mid: #4d638a;
-            --muted: #7c8fb2;
+            --txt: #0a1120;
+            --mid: #384e75;
+            --muted: #51678a;
             
-            --lg: rgba(255, 255, 255, 0.4);
+            --lg: rgba(255, 255, 255, 0.22);
             --lbd: rgba(0, 0, 0, 0.05);
             --lbdt: rgba(255, 255, 255, 0.38);
             --lsh: 0 12px 32px rgba(13, 45, 116, 0.08), 0 1px 0 rgba(255, 255, 255, 0.9) inset;
-            --lblur: blur(40px) saturate(160%) brightness(1.05);
+            --lblur: blur(12px) saturate(160%) brightness(1.05);
             
             --r: 24px;
             --rs: 12px;
@@ -712,6 +712,10 @@
 
         .snum {
             color: var(--txt);
+            text-shadow: none;
+        }
+
+        html:not(.light) .snum {
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
@@ -1039,12 +1043,14 @@
 
         .sched-time {
             flex: 1;
-            background: rgba(255, 255, 255, .06);
-            border: 1px solid rgba(255, 255, 255, .10);
-            border-radius: 6px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .1);
             color: var(--txt);
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 4px 6px;
+            border-radius: 6px;
             padding: 5px 7px;
             outline: none;
             transition: .2s;
@@ -2711,21 +2717,27 @@
             const textColor = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)';
             const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
             const tempColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#bbff00';
+            const humColor = '#48d5ff'; // Cyan for humidity
 
             const labels = historyData.map(d => {
                 const dt = new Date(d.time);
                 return dt.getHours().toString().padStart(2, '0') + ':' + dt.getMinutes().toString().padStart(2, '0');
             });
             const temps = historyData.map(d => d.temp);
+            const hums = historyData.map(d => d.hum);
 
             if (chartInst) {
                 chartInst.data.labels = labels;
                 chartInst.data.datasets[0].data = temps;
+                chartInst.data.datasets[1].data = hums;
+                
                 // Aggiorna colore in base a tema/reattività
                 chartInst.data.datasets[0].borderColor = tempColor;
-                chartInst.data.datasets[0].backgroundColor = tempColor + '15'; // 15 appeso per alpha in hex
+                chartInst.data.datasets[0].backgroundColor = tempColor + '15'; 
+                
                 chartInst.options.scales.x.ticks.color = textColor;
                 chartInst.options.scales.y.ticks.color = textColor;
+                chartInst.options.scales.y1.ticks.color = textColor;
                 chartInst.options.scales.x.grid.color = gridColor;
                 chartInst.options.scales.y.grid.color = gridColor;
                 chartInst.update();
@@ -2737,26 +2749,47 @@
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Temperatura (°C)',
-                        data: temps,
-                        borderColor: tempColor,
-                        backgroundColor: tempColor + '15',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        pointHoverRadius: 4,
-                        fill: true,
-                        tension: 0.4
-                    }]
+                    datasets: [
+                        {
+                            label: 'Temperatura (°C)',
+                            data: temps,
+                            borderColor: tempColor,
+                            backgroundColor: tempColor + '15',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Umidità (%)',
+                            data: hums,
+                            borderColor: humColor,
+                            backgroundColor: humColor + '10',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
-                        legend: { display: false },
+                        legend: { 
+                            display: true, 
+                            labels: { color: textColor, boxWidth: 12, font: {family: 'Inter', size: 10} } 
+                        },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
                             backgroundColor: 'rgba(0,0,0,0.8)',
                             titleFont: { family: 'Space Grotesk' },
                             bodyFont: { family: 'Space Grotesk' }
@@ -2768,7 +2801,17 @@
                             ticks: { maxTicksLimit: 6, color: textColor, font: { size: 10 } }
                         },
                         y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
                             grid: { color: gridColor, drawBorder: false },
+                            ticks: { color: textColor, font: { size: 10 } }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false }, // avoid overlapping grid lines
                             ticks: { color: textColor, font: { size: 10 } }
                         }
                     }
