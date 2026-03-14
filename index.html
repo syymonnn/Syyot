@@ -105,7 +105,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(73, 39, 255, .20) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(0, 133, 255, .16) 0%, transparent 55%), radial-gradient(ellipse 50% 50% at 50% 90%, rgba(16, 215, 255, .12) 0%, transparent 50%);
+            background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(73, 39, 255, .20) 0%, rgba(73, 39, 255, 0) 60%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(0, 133, 255, .16) 0%, rgba(0, 133, 255, 0) 55%), radial-gradient(ellipse 50% 50% at 50% 90%, rgba(16, 215, 255, .12) 0%, rgba(16, 215, 255, 0) 50%);
             animation: meshDrift 22s ease-in-out infinite alternate;
         }
 
@@ -113,16 +113,16 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse 70% 40% at 70% 30%, rgba(124, 77, 255, .20) 0%, transparent 50%), radial-gradient(ellipse 40% 70% at 10% 80%, rgba(77, 117, 255, .15) 0%, transparent 50%);
+            background: radial-gradient(ellipse 70% 40% at 70% 30%, rgba(124, 77, 255, .20) 0%, rgba(124, 77, 255, 0) 50%), radial-gradient(ellipse 40% 70% at 10% 80%, rgba(77, 117, 255, .15) 0%, rgba(77, 117, 255, 0) 50%);
             animation: meshDrift2 28s ease-in-out infinite alternate;
         }
 
         html.light #scifi-bg::before {
-            background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(16, 185, 129, .12) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(14, 165, 233, .10) 0%, transparent 55%), radial-gradient(ellipse 50% 50% at 50% 90%, rgba(167, 139, 250, .09) 0%, transparent 50%);
+            background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(16, 185, 129, .12) 0%, rgba(16, 185, 129, 0) 60%), radial-gradient(ellipse 60% 80% at 80% 20%, rgba(14, 165, 233, .10) 0%, rgba(14, 165, 233, 0) 55%), radial-gradient(ellipse 50% 50% at 50% 90%, rgba(167, 139, 250, .09) 0%, rgba(167, 139, 250, 0) 50%);
         }
 
         html.light #scifi-bg::after {
-            background: radial-gradient(ellipse 70% 40% at 70% 30%, rgba(22, 163, 74, .08) 0%, transparent 50%), radial-gradient(ellipse 40% 70% at 10% 80%, rgba(14, 165, 233, .07) 0%, transparent 50%);
+            background: radial-gradient(ellipse 70% 40% at 70% 30%, rgba(22, 163, 74, .08) 0%, rgba(22, 163, 74, 0) 50%), radial-gradient(ellipse 40% 70% at 10% 80%, rgba(14, 165, 233, .07) 0%, rgba(14, 165, 233, 0) 50%);
         }
 
         @keyframes meshDrift {
@@ -179,17 +179,17 @@
             inset: 0;
             z-index: 2;
             pointer-events: none;
-            background: linear-gradient(to bottom, transparent 0%, transparent 46%, rgba(57, 255, 20, .025) 48%, rgba(57, 255, 20, .07) 50%, rgba(57, 255, 20, .025) 52%, transparent 54%, transparent 100%);
+            background: linear-gradient(to bottom, rgba(57, 255, 20, 0) 0%, rgba(57, 255, 20, 0) 46%, rgba(57, 255, 20, .025) 48%, rgba(57, 255, 20, .07) 50%, rgba(57, 255, 20, .025) 52%, rgba(57, 255, 20, 0) 54%, rgba(57, 255, 20, 0) 100%);
             animation: scanDown 6s linear infinite;
         }
 
         @keyframes scanDown {
             0% {
-                transform: translateY(-100vh);
+                transform: translateY(-100%);
             }
 
             100% {
-                transform: translateY(100vh);
+                transform: translateY(100%);
             }
         }
 
@@ -198,7 +198,7 @@
             inset: 0;
             z-index: 2;
             pointer-events: none;
-            background: linear-gradient(to bottom, transparent 0%, transparent 46%, rgba(204, 255, 0, .015) 48%, rgba(204, 255, 0, .04) 50%, rgba(204, 255, 0, .015) 52%, transparent 54%, transparent 100%);
+            background: linear-gradient(to bottom, rgba(204, 255, 0, 0) 0%, rgba(204, 255, 0, 0) 46%, rgba(204, 255, 0, .015) 48%, rgba(204, 255, 0, .04) 50%, rgba(204, 255, 0, .015) 52%, rgba(204, 255, 0, 0) 54%, rgba(204, 255, 0, 0) 100%);
             animation: scanDown 9s linear infinite;
             animation-delay: -4s;
         }
@@ -333,7 +333,7 @@
             inset: 0;
             z-index: 5;
             pointer-events: none;
-            background: radial-gradient(ellipse 65% 55% at 10% 8%, rgba(18, 65, 8, .32) 0%, transparent 52%), radial-gradient(ellipse 55% 50% at 90% 92%, rgba(8, 52, 4, .28) 0%, transparent 52%), linear-gradient(to bottom, rgba(3, 5, 8, .65) 0%, rgba(3, 5, 8, .08) 35%, rgba(3, 5, 8, .08) 65%, rgba(3, 5, 8, .68) 100%);
+            background: radial-gradient(ellipse 65% 55% at 10% 8%, rgba(18, 65, 8, .32) 0%, rgba(18, 65, 8, 0) 52%), radial-gradient(ellipse 55% 50% at 90% 92%, rgba(8, 52, 4, .28) 0%, rgba(8, 52, 4, 0) 52%), linear-gradient(to bottom, rgba(3, 5, 8, .65) 0%, rgba(3, 5, 8, .08) 35%, rgba(3, 5, 8, .08) 65%, rgba(3, 5, 8, .68) 100%);
         }
 
         #orbs {
@@ -356,7 +356,7 @@
             height: 500px;
             top: -180px;
             left: -130px;
-            background: radial-gradient(circle, rgba(57, 255, 20, .16) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(57, 255, 20, .16) 0%, rgba(57, 255, 20, 0) 70%);
             animation-duration: 22s;
         }
 
@@ -365,7 +365,7 @@
             height: 380px;
             top: 38%;
             right: -150px;
-            background: radial-gradient(circle, rgba(124, 58, 237, .14) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(124, 58, 237, .14) 0%, rgba(124, 58, 237, 0) 70%);
             animation-duration: 18s;
             animation-delay: -5s;
         }
@@ -375,7 +375,7 @@
             height: 300px;
             bottom: -80px;
             left: 33%;
-            background: radial-gradient(circle, rgba(6, 182, 212, .11) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(6, 182, 212, .11) 0%, rgba(6, 182, 212, 0) 70%);
             animation-duration: 26s;
             animation-delay: -10s;
         }
@@ -385,25 +385,25 @@
             height: 220px;
             top: 50%;
             left: 10%;
-            background: radial-gradient(circle, rgba(57, 255, 20, .09) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(57, 255, 20, .09) 0%, rgba(57, 255, 20, 0) 70%);
             animation-duration: 22s;
             animation-delay: -7s;
         }
 
         html.light .oa {
-            background: radial-gradient(circle, rgba(16, 185, 129, .14) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(16, 185, 129, .14) 0%, rgba(16, 185, 129, 0) 70%);
         }
 
         html.light .ob {
-            background: radial-gradient(circle, rgba(167, 139, 250, .12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(167, 139, 250, .12) 0%, rgba(167, 139, 250, 0) 70%);
         }
 
         html.light .oc {
-            background: radial-gradient(circle, rgba(14, 165, 233, .10) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(14, 165, 233, .10) 0%, rgba(14, 165, 233, 0) 70%);
         }
 
         html.light .od2 {
-            background: radial-gradient(circle, rgba(22, 163, 74, .08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(22, 163, 74, .08) 0%, rgba(22, 163, 74, 0) 70%);
         }
 
         @keyframes od {
