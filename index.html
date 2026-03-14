@@ -173,35 +173,6 @@
             height: 100%;
         }
 
-        /* ── SCAN SWEEP ── */
-        #scan-sweep {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            background: linear-gradient(to bottom, rgba(57, 255, 20, 0) 0%, rgba(57, 255, 20, 0) 46%, rgba(57, 255, 20, .025) 48%, rgba(57, 255, 20, .07) 50%, rgba(57, 255, 20, .025) 52%, rgba(57, 255, 20, 0) 54%, rgba(57, 255, 20, 0) 100%);
-            animation: scanDown 6s linear infinite;
-        }
-
-        @keyframes scanDown {
-            0% {
-                transform: translateY(-100%);
-            }
-
-            100% {
-                transform: translateY(100%);
-            }
-        }
-
-        #scan-sweep2 {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            pointer-events: none;
-            background: linear-gradient(to bottom, rgba(204, 255, 0, 0) 0%, rgba(204, 255, 0, 0) 46%, rgba(204, 255, 0, .015) 48%, rgba(204, 255, 0, .04) 50%, rgba(204, 255, 0, .015) 52%, rgba(204, 255, 0, 0) 54%, rgba(204, 255, 0, 0) 100%);
-            animation: scanDown 9s linear infinite;
-            animation-delay: -4s;
-        }
 
         /* ── CORNERS ── */
         #corners {
@@ -1822,11 +1793,6 @@
         /* ── MOBILE IMPROVEMENTS ── */
         @media (max-width:767px) {
 
-            #scan-sweep,
-            #scan-sweep2 {
-                display: none;
-            }
-
             #edge-glow {
                 display: none;
             }
@@ -1900,11 +1866,6 @@
         /* ── LIGHT MODE ── */
         html.light body {
             color: var(--txt);
-        }
-
-        html.light #scan-sweep,
-        html.light #scan-sweep2 {
-            display: none;
         }
 
         html.light #edge-glow {
@@ -2069,8 +2030,6 @@
         <div class="aurora-band ab3"></div>
     </div>
     <div id="grid-lines"><canvas id="pgrid"></canvas></div>
-    <div id="scan-sweep"></div>
-    <div id="scan-sweep2"></div>
     <div id="corners"></div>
     <div id="particles"></div>
     <div id="noise"></div>
