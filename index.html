@@ -2879,7 +2879,18 @@
                 const vpX = W * 0.5, vpY = H * 0.78, vLines = 18, hLines = 10, gridTop = H * 0.52, gridBot = H, r = 57, g = 255, b = 20;
                 for (let i = 0; i <= hLines; i++) { const t = Math.pow(i / hLines, 1.8); const y = gridTop + (gridBot - gridTop) * t; const alpha = t * 0.055; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`; ctx.lineWidth = 1; ctx.stroke(); }
                 for (let i = 0; i <= vLines; i++) { const t = i / vLines; const xBot = W * t; const xTop = vpX + (xBot - vpX) * ((gridTop - vpY) / (gridBot - vpY)); const distCenter = Math.abs(t - 0.5) * 2; const alpha = (1 - distCenter * 0.6) * 0.038; const grad = ctx.createLinearGradient(xTop, gridTop, xBot, gridBot); grad.addColorStop(0, `rgba(${r},${g},${b},0)`); grad.addColorStop(1, `rgba(${r},${g},${b},${alpha})`); ctx.beginPath(); ctx.moveTo(xTop, gridTop); ctx.lineTo(xBot, gridBot); ctx.strokeStyle = grad; ctx.lineWidth = 1; ctx.stroke(); }
-                const fade = ctx.createLinearGradient(0, gridTop - 60, 0, gridTop + 80); fade.addColorStop(0, 'rgba(3,5,8,1)'); fade.addColorStop(1, 'rgba(3,5,8,0)'); ctx.fillStyle = fade; ctx.fillRect(0, gridTop - 60, W, 140);
+                // DRAW HORIZON FADE (improved to use transparent fade instead of solid color)
+                const fade = ctx.createLinearGradient(0, gridTop - 100, 0, gridTop + 100); 
+                fade.addColorStop(0, 'rgba(3, 5, 8, 1)'); 
+                fade.addColorStop(0.5, 'rgba(3, 5, 8, 0.4)');
+                fade.addColorStop(1, 'rgba(3, 5, 8, 0)'); 
+                
+                // Use destination-out to softly erase the grid lines at the horizon instead of painting a box on top
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = fade;
+                ctx.fillRect(0, gridTop - 100, W, 200);
+                ctx.restore();
             }
             draw(); let pulse = 0;
             function animate() { pulse += 0.012; canvas.style.opacity = 0.7 + Math.sin(pulse) * 0.3; requestAnimationFrame(animate); } animate();
@@ -2893,7 +2904,20 @@
             const cols = Math.floor(window.innerWidth / 18);
             const drops = Array.from({ length: cols }, () => Math.random() * -50);
             const chars = '01アイウエオカキクケコサシスセソ∆∑Ω∞⌘⟨⟩';
-            function draw() { ctx.fillStyle = 'rgba(3,5,8,0.18)'; ctx.fillRect(0, 0, c.width, c.height); ctx.font = '10px DM Mono,monospace'; drops.forEach((y, i) => { const ch = chars[Math.floor(Math.random() * chars.length)]; const alpha = Math.random() > .7 ? 0.55 : 0.18; ctx.fillStyle = `rgba(57,255,20,${alpha})`; ctx.fillText(ch, i * 18, y * 18); if (y * 18 > c.height && Math.random() > .97) drops[i] = 0; drops[i] += 0.35; }); }
+            function draw() { 
+                // Use a darker, cleaner wipe to avoid gray boxes on mobile
+                ctx.fillStyle = 'rgba(3, 5, 8, 0.22)'; 
+                ctx.fillRect(0, 0, c.width, c.height); 
+                ctx.font = '10px DM Mono,monospace'; 
+                drops.forEach((y, i) => { 
+                    const ch = chars[Math.floor(Math.random() * chars.length)]; 
+                    const alpha = Math.random() > .8 ? 0.7 : 0.2; 
+                    ctx.fillStyle = `rgba(57, 255, 20, ${alpha})`; 
+                    ctx.fillText(ch, i * 18, y * 18); 
+                    if (y * 18 > c.height && Math.random() > .975) drops[i] = 0; 
+                    drops[i] += 0.35; 
+                }); 
+            }
             setInterval(draw, 90);
         })();
 
