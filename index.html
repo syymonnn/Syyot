@@ -304,17 +304,15 @@
 
         /* ── NEURAL ALERTS ── */
         #alerts-container {
-            position: fixed;
-            top: 85px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: sticky;
+            top: 0;
             z-index: 1000;
-            width: 90%;
-            max-width: 400px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
+            gap: 8px;
+            margin-bottom: 4px; /* Reduced gap to feel more integrated */
+            pointer-events: auto;
         }
 
         .alert-toast {
@@ -2412,9 +2410,8 @@
         </div>
     </div>
 
-    <div id="alerts-container"></div>
-
     <div class="app">
+        <div id="alerts-container"></div>
 
         <!-- TOPBAR -->
 
@@ -2572,6 +2569,7 @@
                         <button class="ectab active" id="et-day" onclick="swEnergy('day')">Oggi</button>
                         <button class="ectab" id="et-week" onclick="swEnergy('week')">7 Giorni</button>
                         <button class="ectab" id="et-month" onclick="swEnergy('month')">30 Giorni</button>
+                        <button class="ectab" id="et-total" onclick="swEnergy('total')">Totale</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <div style="flex: 1;">
@@ -3107,6 +3105,7 @@
         // Energy timestamp topics (retained) - store when a relay was turned ON
         const TE1 = 'symo/room/energy/l1ts'; // relay 1 on-timestamp
         const TE2 = 'symo/room/energy/l2ts'; // relay 2 on-timestamp
+        const TEL = 'symo/room/energy/log';  // universal energy log log
         let mc = null, rs = 0, rs2 = 0;
         const $dot = document.getElementById('dot'), $conn = document.getElementById('connText');
         const $T = document.getElementById('temp'), $H = document.getElementById('hum'), $last = document.getElementById('lastMsg');
@@ -3178,7 +3177,7 @@
         let energyState = {
             l1Start: null,
             l2Start: null,
-            activeView: 'day'
+            activeView: 'total'
         };
 
         function todayKey() {
@@ -3191,12 +3190,15 @@
             if (!energyLog[k]) energyLog[k] = { l1: 0, l2: 0 };
             if (relay === 1) energyLog[k].l1 = (energyLog[k].l1 || 0) + kwh;
             else energyLog[k].l2 = (energyLog[k].l2 || 0) + kwh;
-            // Trim: keep only last 90 days
+            // Trim: keep a long history (e.g., 2 years) for cumulative tracking
             const keys = Object.keys(energyLog).sort();
-            if (keys.length > 90) {
-                keys.slice(0, keys.length - 90).forEach(k => delete energyLog[k]);
+            if (keys.length > 730) {
+                keys.slice(0, keys.length - 730).forEach(k => delete energyLog[k]);
             }
             localStorage.setItem('symo-energylog', JSON.stringify(energyLog));
+            if (mc?.connected) {
+                mc.publish(TEL, JSON.stringify(energyLog), { retain: true, qos: 1 });
+            }
         }
 
         function getEnergyRange(days) {
@@ -3225,8 +3227,20 @@
                 data = getEnergyRange(1);
             } else if (v === 'week') {
                 data = getEnergyRange(7);
-            } else {
+            } else if (v === 'month') {
                 data = getEnergyRange(30);
+            } else {
+                // Determine days since first log entry
+                const keys = Object.keys(energyLog).sort();
+                if (keys.length > 0) {
+                    const firstDate = new Date(keys[0]);
+                    const today = new Date();
+                    const diffTime = Math.abs(today - firstDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    data = getEnergyRange(diffDays);
+                } else {
+                    data = getEnergyRange(1);
+                }
             }
 
             // Include live (in-progress) session
@@ -3533,6 +3547,7 @@
                 // Subscribe to energy timestamp topics
                 mc.subscribe(TE1, { qos: 1 });
                 mc.subscribe(TE2, { qos: 1 });
+                mc.subscribe(TEL, { qos: 1 });
                 setSyncStatus(false, 'Caricamento schedule...');
                 schedFallbackTimer = setTimeout(() => { const s = document.getElementById('schedSyncTxt'); if (s && s.textContent === 'Caricamento schedule...') setSyncStatus(false, 'Nessuna programmazione salvata'); }, 10000);
                 setTimeout(() => { if (mc?.connected) mc.publish('symo/room/relay2', 'STATUS', { qos: 0 }); }, 1200);
@@ -3558,6 +3573,26 @@
                             updateEnergyUI();
                         }
                     }
+                    return;
+                }
+                if (t === TEL) {
+                    try {
+                        const remoteLog = JSON.parse(p.toString());
+                        let modified = false;
+                        for (const k in remoteLog) {
+                            if (!energyLog[k]) {
+                                energyLog[k] = remoteLog[k];
+                                modified = true;
+                            } else {
+                                if ((remoteLog[k].l1 || 0) > (energyLog[k].l1 || 0)) { energyLog[k].l1 = remoteLog[k].l1; modified = true; }
+                                if ((remoteLog[k].l2 || 0) > (energyLog[k].l2 || 0)) { energyLog[k].l2 = remoteLog[k].l2; modified = true; }
+                            }
+                        }
+                        if (modified) {
+                            localStorage.setItem('symo-energylog', JSON.stringify(energyLog));
+                            updateEnergyUI();
+                        }
+                    } catch (e) { }
                     return;
                 }
                 if (t === TS) { try { applyScheduleData(JSON.parse(p.toString())); } catch (e) { } return; }
