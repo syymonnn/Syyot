@@ -2404,7 +2404,7 @@
     <!-- BOOT OVERLAY -->
     <div id="boot-screen">
         <div class="boot-wrap">
-            <div class="boot-logo">_Symonn room</div>
+            <div class="boot-logo">Symonn_room</div>
             <div class="boot-log" id="bootLog"></div>
             <div class="boot-bar-wrap">
                 <div class="boot-bar" id="bootBar"></div>
@@ -2590,14 +2590,19 @@
                         </div>
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1; text-align: right;">
-                            <div style="font-size: 9px; color: var(--primary); font-family: 'DM Mono'; font-weight: 700;">CALIBRATED</div>
-                            <div style="font-size: 8px; color: var(--muted); text-transform: uppercase;">Hardware Est.</div>
+                            <div
+                                style="font-size: 9px; color: var(--primary); font-family: 'DM Mono'; font-weight: 700;">
+                                CALIBRATED</div>
+                            <div style="font-size: 8px; color: var(--muted); text-transform: uppercase;">Hardware Est.
+                            </div>
                         </div>
                     </div>
                     <div id="energyBars"
                         style="display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
                     </div>
-                    <div id="energyHistoryList" style="margin-top: 10px; display: none; font-family: 'DM Mono'; font-size: 10px; color: var(--muted); max-height: 80px; overflow-y: auto;"></div>
+                    <div id="energyHistoryList"
+                        style="margin-top: 10px; display: none; font-family: 'DM Mono'; font-size: 10px; color: var(--muted); max-height: 80px; overflow-y: auto;">
+                    </div>
                 </div>
             </div>
 
@@ -3616,24 +3621,22 @@
             const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4a6080, transparent: true, opacity: 0.4 }));
             roomGroup.add(frame);
 
-            // BED: South wall, East-center, fully inside room
-            // Room S wall at Z=+1.5, bed depth=1.8 → center must be <= 1.5-0.9=0.6
-            // Floor at Y=-1.25, bed height=0.4 → center at -1.25+0.2+0.05=-1.0 (tiny buffer above floor)
+            // BED: South wall, shifted towards East
             const bedGeo = new THREE.BoxGeometry(1.4, 0.4, 1.8);
             const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x0a1428, wireframe: true }));
-            bed.position.set(0.5, -1.0, 0.55);  // center-east, fully inside south wall
+            bed.position.set(1.1, -1.0, 0.55);  // Moved towards East (X=1.1)
             roomGroup.add(bed);
 
-            // DESK: North wall (Z=-1.15), West side (X=-1.1) [Consistent with Door 1]
+            // DESK: North wall (Z=-1.15), shifted towards East
             const deskGeo = new THREE.BoxGeometry(1.4, 0.06, 0.7);
             const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xbbff00, emissive: 0x0d1200, wireframe: true }));
-            deskTop.position.set(-1.1, -0.72, -1.15);
+            deskTop.position.set(1.1, -0.72, -1.15); // Moved towards East (X=1.1)
             roomGroup.add(deskTop);
 
             // Desk legs (4 thin pillars)
             const legGeo = new THREE.BoxGeometry(0.05, 0.55, 0.05);
             const legMat = new THREE.MeshBasicMaterial({ color: 0x667788 });
-            const legPos = [[-1.75, -1.45], [-0.45, -1.45], [-1.75, -0.85], [-0.45, -0.85]];
+            const legPos = [[0.45, -1.45], [1.75, -1.45], [0.45, -0.85], [1.75, -0.85]]; // Updated X for East side
             legPos.forEach(([x, z]) => {
                 const leg = new THREE.Mesh(legGeo, legMat);
                 leg.position.set(x, -1.0, z);
@@ -3669,9 +3672,9 @@
             roomLights.ambient = new THREE.AmbientLight(0x223344, 0.8);
             scene.add(roomLights.ambient);
 
-            // RELAY 1: Blue LED atmosfera above desk (North-West)
+            // RELAY 1: Blue LED atmosfera above desk (now towards East)
             roomLights.l1 = new THREE.PointLight(0x4a8eff, 0, 2.2);
-            roomLights.l1.position.set(-1.1, 0.3, -1.15);  // follows desk
+            roomLights.l1.position.set(1.1, 0.3, -1.15);  // follows desk to East
             roomGroup.add(roomLights.l1);
             // Visual LED sphere for R1 (blue)
             const led1Geo = new THREE.SphereGeometry(0.06, 8, 8);
