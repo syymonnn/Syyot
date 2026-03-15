@@ -29,8 +29,8 @@
 
         :root {
             /* Colore primario che diventerà dinamico col meteo */
-            --primary: #bbff00; 
-            
+            --primary: #bbff00;
+
             --green: var(--primary);
             --yellow: #48d5ff;
             --grad: linear-gradient(135deg, #7c4dff 0%, #2d7dff 55%, #10d7ff 100%);
@@ -40,14 +40,14 @@
             --txt: #edf3ff;
             --mid: #94a9d2;
             --muted: #5d7094;
-            
+
             /* Glassmorphism minimal */
             --lg: rgba(10, 15, 30, 0.12);
             --lbd: rgba(255, 255, 255, 0.08);
             --lbdt: rgba(255, 255, 255, 0.15);
             --lsh: 0 24px 48px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
             --lblur: blur(14px) saturate(180%) brightness(1.1);
-            
+
             --r: 24px;
             --rs: 12px;
             --rp: 999px;
@@ -56,7 +56,7 @@
 
         html.light {
             --primary: #2159ff;
-        
+
             --green: var(--primary);
             --yellow: #008cc0;
             --grad: linear-gradient(135deg, #3041ff, #23a6ff);
@@ -66,13 +66,13 @@
             --txt: #0a1120;
             --mid: #384e75;
             --muted: #51678a;
-            
+
             --lg: rgba(255, 255, 255, 0.22);
             --lbd: rgba(0, 0, 0, 0.05);
             --lbdt: rgba(255, 255, 255, 0.38);
             --lsh: 0 12px 32px rgba(13, 45, 116, 0.08), 0 1px 0 rgba(255, 255, 255, 0.9) inset;
             --lblur: blur(12px) saturate(160%) brightness(1.05);
-            
+
             --r: 24px;
             --rs: 12px;
             --rp: 999px;
@@ -201,11 +201,27 @@
         }
 
         @keyframes scanLineAnim {
-            0% { top: -2%; opacity: 0; }
-            5% { opacity: 0.2; }
-            50% { opacity: 0.4; }
-            95% { opacity: 0.2; }
-            100% { top: 102%; opacity: 0; }
+            0% {
+                top: -2%;
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+
+            95% {
+                opacity: 0.2;
+            }
+
+            100% {
+                top: 102%;
+                opacity: 0;
+            }
         }
 
         /* ── BOOT SEQUENCE ── */
@@ -261,7 +277,10 @@
         }
 
         @keyframes bootLineIn {
-            to { opacity: 0.7; transform: translateX(0); }
+            to {
+                opacity: 0.7;
+                transform: translateX(0);
+            }
         }
 
         .boot-bar-wrap {
@@ -332,8 +351,15 @@
         }
 
         @keyframes alertIn {
-            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .alert-toast.fade-out {
@@ -341,7 +367,10 @@
         }
 
         @keyframes alertOut {
-            to { opacity: 0; transform: translateY(-10px) scale(0.9); }
+            to {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.9);
+            }
         }
 
         /* ── STAGGER PREP ── */
@@ -356,13 +385,13 @@
             transform: translateY(0);
         }
 
-        .app > * {
+        .app>* {
             opacity: 0;
             transform: translateY(15px);
             transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .app.visible > * {
+        .app.visible>* {
             opacity: 1;
             transform: translateY(0);
         }
@@ -1068,7 +1097,7 @@
         /* ── INTERNAL CARD TABS ── */
         .ctabs {
             display: flex;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             padding: 4px;
             border-radius: 10px;
             margin-bottom: 12px;
@@ -1091,7 +1120,7 @@
         }
 
         .ctab.active {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--primary);
         }
 
@@ -1105,10 +1134,24 @@
             display: flex;
         }
 
-        html.light .ctabs { background: rgba(0,0,0,0.05); }
-        html.light .ctab.active { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        html.light .scenario-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
-        html.light .scenario-btn.active { background: rgba(22, 163, 74, .08); border-color: rgba(22, 163, 74, .3); }
+        html.light .ctabs {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        html.light .ctab.active {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        html.light .scenario-btn {
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        html.light .scenario-btn.active {
+            background: rgba(22, 163, 74, .08);
+            border-color: rgba(22, 163, 74, .3);
+        }
 
         /* ── ENERGY TABS ── */
         .ectab {
@@ -1126,8 +1169,9 @@
             transition: .2s;
             font-family: 'Sora', sans-serif;
         }
+
         .ectab.active {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--primary);
         }
 
@@ -2287,6 +2331,47 @@
         html.light code {
             color: var(--green);
         }
+
+        /* ── LIGHT MODE: yellow/orange → accessible blue tones ── */
+        html.light .pres-label.state-active {
+            color: #0077cc;
+            filter: drop-shadow(0 0 8px rgba(0, 119, 204, .25));
+        }
+
+        html.light .pres-label.state-near {
+            color: #0055aa;
+            filter: drop-shadow(0 0 8px rgba(0, 85, 170, .25));
+        }
+
+        html.light .pres-ico-wrap.state-active {
+            background: rgba(0, 119, 204, .07);
+            border-color: rgba(0, 119, 204, .28);
+            box-shadow: 0 0 28px rgba(0, 119, 204, .12);
+            color: rgba(0, 119, 204, .4);
+        }
+
+        html.light .pres-ico-wrap.state-near {
+            background: rgba(0, 85, 170, .07);
+            border-color: rgba(0, 85, 170, .28);
+            box-shadow: 0 0 28px rgba(0, 85, 170, .12);
+            color: rgba(0, 85, 170, .4);
+        }
+
+        html.light .pres-chip.lit-yellow {
+            background: rgba(0, 119, 204, .08);
+            border-color: rgba(0, 119, 204, .25);
+            color: #0077cc;
+        }
+
+        html.light .pres-chip.lit-orange {
+            background: rgba(0, 85, 170, .08);
+            border-color: rgba(0, 85, 170, .25);
+            color: #0055aa;
+        }
+
+        html.light #ticker {
+            color: var(--green) !important;
+        }
     </style>
 
 </head>
@@ -2319,7 +2404,7 @@
     <!-- BOOT OVERLAY -->
     <div id="boot-screen">
         <div class="boot-wrap">
-            <div class="boot-logo">_Symonn room-control</div>
+            <div class="boot-logo">_Symonn room</div>
             <div class="boot-log" id="bootLog"></div>
             <div class="boot-bar-wrap">
                 <div class="boot-bar" id="bootBar"></div>
@@ -2382,7 +2467,9 @@
         <div class="cdev glass">
             <div class="ch">
                 <span class="clbl">Dispositivi</span>
-                <div class="lpill" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: var(--muted);">HUB M01</div>
+                <div class="lpill"
+                    style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: var(--muted);">
+                    HUB M01</div>
             </div>
 
             <!-- CARD INTERNAL TABS -->
@@ -2396,23 +2483,35 @@
             <div class="cpanel active" id="cp-ctrl">
                 <div class="scenarios">
                     <button class="scenario-btn" id="btn-scen-off" onclick="triggerScenario('off')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                            <line x1="12" y1="2" x2="12" y2="12" />
+                        </svg>
                         Off
                     </button>
                     <button class="scenario-btn" id="btn-scen-focus" onclick="triggerScenario('focus')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="22" y1="12" x2="18" y2="12" />
+                            <line x1="6" y1="12" x2="2" y2="12" />
+                            <line x1="12" y1="6" x2="12" y2="2" />
+                            <line x1="12" y1="22" x2="12" y2="18" />
+                        </svg>
                         Focus
                     </button>
                     <button class="scenario-btn" id="btn-scen-relax" onclick="triggerScenario('relax')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6.36 6.36 0 0 0-3.64 1.14 6.7 6.7 0 0 0-2.4 3A7 7 0 0 0 12 21a7 7 0 0 0 6.04-3.46 6.7 6.7 0 0 0-2.4-3.04A6.36 6.36 0 0 0 12 13.5v-1.5z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M12 3a6.36 6.36 0 0 0-3.64 1.14 6.7 6.7 0 0 0-2.4 3A7 7 0 0 0 12 21a7 7 0 0 0 6.04-3.46 6.7 6.7 0 0 0-2.4-3.04A6.36 6.36 0 0 0 12 13.5v-1.5z" />
+                        </svg>
                         Relax
                     </button>
                 </div>
 
                 <div id="ditem" class="ditem">
                     <div class="dico">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path
                                 d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
                             <path d="M9 18h6" />
@@ -2433,7 +2532,8 @@
                 </div>
                 <div id="ditem2" class="ditem">
                     <div class="dico">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <circle cx="12" cy="12" r="4" />
                             <path d="M12 2v3" />
                             <path d="M12 19v3" />
@@ -2461,10 +2561,13 @@
 
             <!-- PANEL TWIN & ENERGY -->
             <div class="cpanel" id="cp-twin" style="gap: 8px;">
-                <div id="three-container" style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2); position: relative; z-index: 5;"></div>
-                
+                <div id="three-container"
+                    style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2); position: relative; z-index: 5;">
+                </div>
+
                 <!-- ENERGY HUB -->
-                <div style="background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
+                <div
+                    style="background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
                     <div style="display: flex; gap: 4px; margin-bottom: 10px;">
                         <button class="ectab active" id="et-day" onclick="swEnergy('day')">Oggi</button>
                         <button class="ectab" id="et-week" onclick="swEnergy('week')">7 Giorni</button>
@@ -2472,21 +2575,29 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <div style="flex: 1;">
-                            <div style="font-size: 26px; font-weight: 700; font-family: 'Space Grotesk'; color: var(--primary);" id="energyVal">0.000</div>
-                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">kWh</div>
+                            <div style="font-size: 26px; font-weight: 700; font-family: 'Space Grotesk'; color: var(--primary);"
+                                id="energyVal">0.000</div>
+                            <div
+                                style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">
+                                kWh</div>
                         </div>
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1;">
                             <div style="font-size: 16px; font-weight: 600;" id="energyCost">&euro; 0.00</div>
-                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Costo</div>
+                            <div
+                                style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">
+                                Costo</div>
                         </div>
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1; text-align: right;">
-                            <div style="font-size: 10px; color: var(--muted); font-family: 'DM Mono';">L1: <span id="statusL1" style="color: #4a8eff;">0.000</span></div>
-                            <div style="font-size: 10px; color: var(--muted); font-family: 'DM Mono';">L2: <span id="statusL2" style="color: var(--yellow);">0.000</span></div>
+                            <div style="font-size: 9px; color: var(--primary); font-family: 'DM Mono'; font-weight: 700;">CALIBRATED</div>
+                            <div style="font-size: 8px; color: var(--muted); text-transform: uppercase;">Hardware Est.</div>
                         </div>
                     </div>
-                    <div id="energyBars" style="display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;"></div>
+                    <div id="energyBars"
+                        style="display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                    </div>
+                    <div id="energyHistoryList" style="margin-top: 10px; display: none; font-family: 'DM Mono'; font-size: 10px; color: var(--muted); max-height: 80px; overflow-y: auto;"></div>
                 </div>
             </div>
 
@@ -2496,33 +2607,59 @@
                     <div class="sched-rows">
                         <!-- L1 Rows -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="sched-row"
+                                style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                                 <span class="sched-lbl" style="color:var(--green)">L1 ON</span>
-                                <input type="time" class="sched-time" id="s-l1-on" value="20:00" style="font-size: 12px; padding: 3px 5px;">
-                                <div class="sched-en" id="en-l1-on" onclick="toggleSched('l1-on')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                <input type="time" class="sched-time" id="s-l1-on" value="20:00"
+                                    style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l1-on" onclick="toggleSched('l1-on')"><svg width="10"
+                                        height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg></div>
                             </div>
-                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="sched-row"
+                                style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                                 <span class="sched-lbl" style="color:var(--danger)">L1 OFF</span>
-                                <input type="time" class="sched-time" id="s-l1-off" value="23:30" style="font-size: 12px; padding: 3px 5px;">
-                                <div class="sched-en" id="en-l1-off" onclick="toggleSched('l1-off')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                <input type="time" class="sched-time" id="s-l1-off" value="23:30"
+                                    style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l1-off" onclick="toggleSched('l1-off')"><svg width="10"
+                                        height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg></div>
                             </div>
                         </div>
                         <!-- L2 Rows -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="sched-row"
+                                style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                                 <span class="sched-lbl" style="color:var(--yellow)">L2 ON</span>
-                                <input type="time" class="sched-time" id="s-l2-on" value="20:00" style="font-size: 12px; padding: 3px 5px;">
-                                <div class="sched-en" id="en-l2-on" onclick="toggleSched('l2-on')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                <input type="time" class="sched-time" id="s-l2-on" value="20:00"
+                                    style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l2-on" onclick="toggleSched('l2-on')"><svg width="10"
+                                        height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg></div>
                             </div>
-                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="sched-row"
+                                style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                                 <span class="sched-lbl" style="color:var(--danger)">L2 OFF</span>
-                                <input type="time" class="sched-time" id="s-l2-off" value="23:30" style="font-size: 12px; padding: 3px 5px;">
-                                <div class="sched-en" id="en-l2-off" onclick="toggleSched('l2-off')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                <input type="time" class="sched-time" id="s-l2-off" value="23:30"
+                                    style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l2-off" onclick="toggleSched('l2-off')"><svg width="10"
+                                        height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+                                        stroke-width="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg></div>
                             </div>
                         </div>
                     </div>
                     <button class="sched-apply" onclick="saveSchedule()" style="margin-top: 8px;">Salva</button>
-                    <div id="schedSyncTxt" style="font-size:8px; color:var(--muted); text-align: center; margin-top: 4px;">In attesa sync...</div>
+                    <div id="schedSyncTxt"
+                        style="font-size:8px; color:var(--muted); text-align: center; margin-top: 4px;">In attesa
+                        sync...</div>
                 </div>
             </div>
         </div>
@@ -2557,7 +2694,8 @@
                     </svg>Presenza
                 </button>
                 <button class="tab" id="tab-hst" onclick="swTab('hst')">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                     </svg>Storico
                 </button>
@@ -2719,7 +2857,9 @@
                 </div>
                 <!-- PANEL STORICO (GRAFICI) -->
                 <div class="panel phst" id="panel-hst" style="padding: 10px;">
-                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 15px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Ultime 24h (Locale)</div>
+                    <div
+                        style="font-size: 11px; color: var(--muted); margin-bottom: 15px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">
+                        Ultime 24h (Locale)</div>
                     <div style="position: relative; height: 160px; width: 100%;">
                         <canvas id="historyChart"></canvas>
                     </div>
@@ -2727,26 +2867,34 @@
             </div>
         </div>
 
-        </div>
+    </div>
 
-        <div class="foot">
-            <div id="ticker-wrap" style="width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
-                <div id="ticker" style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
-                    SISTEMA ONLINE · PROTOCOLLO ZERO ATTIVO · CONNESSIONE MQTT STABILE · MONITORAGGIO AMBIENTALE IN CORSO · NESSUNA ANOMALIA RILEVATA · SCANNER RADAR ATTIVATO · FEED DATI REALTIME · 
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-                <span>MQTT <code>symo/room</code> · Borgomanero</span>
-                <span id="lastMsg">Last: -</span>
+    <div class="foot">
+        <div id="ticker-wrap"
+            style="width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+            <div id="ticker"
+                style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
+                SISTEMA ONLINE · PROTOCOLLO ZERO ATTIVO · CONNESSIONE MQTT STABILE · MONITORAGGIO AMBIENTALE IN CORSO ·
+                NESSUNA ANOMALIA RILEVATA · SCANNER RADAR ATTIVATO · FEED DATI REALTIME ·
             </div>
         </div>
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <span>MQTT <code>symo/room</code> · Borgomanero</span>
+            <span id="lastMsg">Last: -</span>
+        </div>
+    </div>
 
-        <style>
-            @keyframes tickerAnim {
-                from { transform: translateX(100%); }
-                to { transform: translateX(-100%); }
+    <style>
+        @keyframes tickerAnim {
+            from {
+                transform: translateX(100%);
             }
-        </style>
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
 
     </div>
 
@@ -2765,12 +2913,12 @@
         })();
 
         const TABS = ['ext', 'cmp', 'prs', 'hst'];
-        function swTab(n) { 
-            TABS.forEach(k => { 
-                document.getElementById('tab-' + k).classList.toggle('active', k === n); 
-                document.getElementById('panel-' + k).classList.toggle('on', k === n); 
-            }); 
-            if (n === 'cmp') updDelta(); 
+        function swTab(n) {
+            TABS.forEach(k => {
+                document.getElementById('tab-' + k).classList.toggle('active', k === n);
+                document.getElementById('panel-' + k).classList.toggle('on', k === n);
+            });
+            if (n === 'cmp') updDelta();
             if (n === 'hst') setTimeout(renderChart, 50); // Resize fix when tab is shown
         }
 
@@ -3030,7 +3178,7 @@
 
         function todayKey() {
             const d = new Date();
-            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         }
 
         function addKWh(relay, kwh) {
@@ -3050,7 +3198,7 @@
             const result = [];
             for (let i = days - 1; i >= 0; i--) {
                 const d = new Date(); d.setDate(d.getDate() - i);
-                const k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                const k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                 const entry = energyLog[k] || { l1: 0, l2: 0 };
                 result.push({ key: k, l1: entry.l1 || 0, l2: entry.l2 || 0, total: (entry.l1 || 0) + (entry.l2 || 0) });
             }
@@ -3097,6 +3245,7 @@
 
             // Draw mini bar chart
             const barsEl = document.getElementById('energyBars');
+            const listEl = document.getElementById('energyHistoryList');
             if (barsEl && data.length > 0) {
                 const maxDay = Math.max(...data.map(d => d.total), 0.001);
                 barsEl.innerHTML = data.map((d, i) => {
@@ -3104,6 +3253,18 @@
                     const isToday = i === data.length - 1;
                     return `<div style="flex:1; height:${h}px; border-radius:3px 3px 0 0; background:${isToday ? 'var(--primary)' : 'rgba(255,255,255,0.12)'}; transition:.3s;" title="${d.key}\n${d.total.toFixed(3)} kWh"></div>`;
                 }).join('');
+            }
+            if (listEl) {
+                if (v === 'day') listEl.style.display = 'none';
+                else {
+                    listEl.style.display = 'block';
+                    listEl.innerHTML = data.slice().reverse().map(d => `
+                        <div style="display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                            <span>${d.key.split('-').slice(1).join('/')}</span>
+                            <span style="color:var(--txt)">${d.total.toFixed(3)} kWh</span>
+                        </div>
+                    `).join('');
+                }
             }
         }
 
@@ -3158,11 +3319,11 @@
         const activeAlerts = new Set();
         function checkAlerts(t, h) {
             if (t === null || h === null) return;
-            
+
             // Temperature alerts
             if (t < 19) triggerAlert('temp-low', 'Anomalia: Freddo rilevato', 'warning');
             else clearAlert('temp-low');
-            
+
             if (t > 23.5) triggerAlert('temp-high', 'Critico: Caldo eccessivo', 'danger');
             else clearAlert('temp-high');
 
@@ -3202,23 +3363,23 @@
             const now = Date.now();
             // Aggiungi nuovo punto
             historyData.push({ time: now, temp: t, hum: h });
-            
+
             // Tieni solo le ultime 24 ore (86400000 ms)
             historyData = historyData.filter(d => now - d.time < 86400000);
-            
+
             // Decima i dati (es. salva al massimo 1 punto ogni 15 minuti: 900000 ms)
             // Selezioniamo solo i punti che distano più di 15m dal precedente per evitare db enorme
             const thinned = [];
             let lastTime = 0;
-            for(let i=0; i<historyData.length; i++) {
-                if(historyData[i].time - lastTime > 900000 || i === historyData.length - 1) {
+            for (let i = 0; i < historyData.length; i++) {
+                if (historyData[i].time - lastTime > 900000 || i === historyData.length - 1) {
                     thinned.push(historyData[i]);
                     lastTime = historyData[i].time;
                 }
             }
             historyData = thinned;
             localStorage.setItem('symo-history', JSON.stringify(historyData));
-            
+
             // Aggiorna grafico se visibile
             if (document.getElementById('panel-hst').classList.contains('on')) {
                 renderChart();
@@ -3227,7 +3388,7 @@
 
         function renderChart() {
             const ctx = document.getElementById('historyChart').getContext('2d');
-            
+
             const isLight = document.documentElement.classList.contains('light');
             const textColor = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)';
             const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
@@ -3245,11 +3406,11 @@
                 chartInst.data.labels = labels;
                 chartInst.data.datasets[0].data = temps;
                 chartInst.data.datasets[1].data = hums;
-                
+
                 // Aggiorna colore in base a tema/reattività
                 chartInst.data.datasets[0].borderColor = tempColor;
-                chartInst.data.datasets[0].backgroundColor = tempColor + '15'; 
-                
+                chartInst.data.datasets[0].backgroundColor = tempColor + '15';
+
                 chartInst.options.scales.x.ticks.color = textColor;
                 chartInst.options.scales.y.ticks.color = textColor;
                 chartInst.options.scales.y1.ticks.color = textColor;
@@ -3300,9 +3461,9 @@
                         intersect: false,
                     },
                     plugins: {
-                        legend: { 
-                            display: true, 
-                            labels: { color: textColor, boxWidth: 12, font: {family: 'Inter', size: 10} } 
+                        legend: {
+                            display: true,
+                            labels: { color: textColor, boxWidth: 12, font: { family: 'Inter', size: 10 } }
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0,0,0,0.8)',
@@ -3337,7 +3498,7 @@
         /* ── SCENARI ── */
         function triggerScenario(type) {
             if (!mc?.connected) return;
-            
+
             // Animazione UI dei bottoni
             document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById('btn-scen-' + type);
@@ -3400,14 +3561,14 @@
                     const j = JSON.parse(p.toString());
                     const tVal = j.temperature ?? j.temp ?? j.t;
                     const hVal = j.humidity ?? j.hum ?? j.h;
-                    
-                    if (tVal != null && !Number.isNaN(Number(tVal))) { 
-                        inT = Number(tVal); flashNum($T, inT, 1); 
+
+                    if (tVal != null && !Number.isNaN(Number(tVal))) {
+                        inT = Number(tVal); flashNum($T, inT, 1);
                         updateReactiveColor(inT);
                         if (roomLights.ambient) roomLights.ambient.color.set(getComputedStyle(document.documentElement).getPropertyValue('--primary').trim());
                     }
                     if (hVal != null && !Number.isNaN(Number(hVal))) { inH = Number(hVal); flashNum($H, inH, 1); }
-                    
+
                     // Salviamo ogni lettura utile (se abbiamo tem e um) nel localStorage (la decimeremo dentro saveHistoryPoint)
                     if (inT != null && inH != null) {
                         saveHistoryPoint(inT, inH);
@@ -3455,13 +3616,15 @@
             const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4a6080, transparent: true, opacity: 0.4 }));
             roomGroup.add(frame);
 
-            // BED: South wall (Z=+1.1), slightly East-center
+            // BED: South wall, East-center, fully inside room
+            // Room S wall at Z=+1.5, bed depth=1.8 → center must be <= 1.5-0.9=0.6
+            // Floor at Y=-1.25, bed height=0.4 → center at -1.25+0.2+0.05=-1.0 (tiny buffer above floor)
             const bedGeo = new THREE.BoxGeometry(1.4, 0.4, 1.8);
             const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x0a1428, wireframe: true }));
-            bed.position.set(0.4, -1.05, 1.15);
+            bed.position.set(0.5, -1.0, 0.55);  // center-east, fully inside south wall
             roomGroup.add(bed);
 
-            // DESK: North wall (Z=-1.2), West side (X=-1.2) [North-West corner]
+            // DESK: North wall (Z=-1.15), West side (X=-1.1) [Consistent with Door 1]
             const deskGeo = new THREE.BoxGeometry(1.4, 0.06, 0.7);
             const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xbbff00, emissive: 0x0d1200, wireframe: true }));
             deskTop.position.set(-1.1, -0.72, -1.15);
@@ -3470,38 +3633,36 @@
             // Desk legs (4 thin pillars)
             const legGeo = new THREE.BoxGeometry(0.05, 0.55, 0.05);
             const legMat = new THREE.MeshBasicMaterial({ color: 0x667788 });
-            const legPos = [[-1.75, -1.2], [-0.45, -1.2], [-1.75, -0.8], [-0.45, -0.8]];
+            const legPos = [[-1.75, -1.45], [-0.45, -1.45], [-1.75, -0.85], [-0.45, -0.85]];
             legPos.forEach(([x, z]) => {
                 const leg = new THREE.Mesh(legGeo, legMat);
                 leg.position.set(x, -1.0, z);
                 roomGroup.add(leg);
             });
 
-            // DOORS: West wall (X=-1.99), outlined panels
+            // DOORS
             const doorGeo = new THREE.PlaneGeometry(0.8, 2.0);
             const doorMat = new THREE.MeshBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
             const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.5 });
 
-            // Door 1: North-West (near desk)
+            // Door 1: NORTH wall, near West corner (no Y rotation — plane faces Z direction)
             const door1 = new THREE.Mesh(doorGeo, doorMat);
-            door1.rotation.y = Math.PI / 2;
-            door1.position.set(-1.99, -0.25, -0.7);
+            door1.position.set(-1.3, -0.25, -1.49);  // north wall, X=-1.3 (near west)
             roomGroup.add(door1);
             const de1 = new THREE.EdgesGeometry(doorGeo);
             const dl1 = new THREE.LineSegments(de1, doorEdgeMat.clone());
-            dl1.rotation.y = Math.PI / 2;
-            dl1.position.set(-1.99, -0.25, -0.7);
+            dl1.position.set(-1.3, -0.25, -1.49);
             roomGroup.add(dl1);
 
-            // Door 2: South-West (next to bed)
+            // Door 2: West wall, near bed (bed is on south side, center Z=0.55)
             const door2 = new THREE.Mesh(doorGeo, doorMat.clone());
             door2.rotation.y = Math.PI / 2;
-            door2.position.set(-1.99, -0.25, 0.75);
+            door2.position.set(-1.99, -0.25, 0.55);
             roomGroup.add(door2);
             const de2 = new THREE.EdgesGeometry(doorGeo);
             const dl2 = new THREE.LineSegments(de2, doorEdgeMat.clone());
             dl2.rotation.y = Math.PI / 2;
-            dl2.position.set(-1.99, -0.25, 0.75);
+            dl2.position.set(-1.99, -0.25, 0.55);
             roomGroup.add(dl2);
 
             // Soft ambient
@@ -3510,14 +3671,13 @@
 
             // RELAY 1: Blue LED atmosfera above desk (North-West)
             roomLights.l1 = new THREE.PointLight(0x4a8eff, 0, 2.2);
-            roomLights.l1.position.set(-1.1, 0.3, -1.15);
+            roomLights.l1.position.set(-1.1, 0.3, -1.15);  // follows desk
             roomGroup.add(roomLights.l1);
             // Visual LED sphere for R1 (blue)
             const led1Geo = new THREE.SphereGeometry(0.06, 8, 8);
-            const led1Mat = new THREE.MeshBasicMaterial({ color: 0x4a8eff });
+            const led1Mat = new THREE.MeshBasicMaterial({ color: 0x1a2040 });
             const led1Mesh = new THREE.Mesh(led1Geo, led1Mat);
             led1Mesh.position.copy(roomLights.l1.position);
-            led1Mesh.userData.relay = 'l1';
             roomGroup.add(led1Mesh);
 
             // RELAY 2: Warm LED strip on West wall, high up (center of west wall)
@@ -3565,11 +3725,11 @@
                 for (let i = 0; i <= hLines; i++) { const t = Math.pow(i / hLines, 1.8); const y = gridTop + (gridBot - gridTop) * t; const alpha = t * 0.055; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`; ctx.lineWidth = 1; ctx.stroke(); }
                 for (let i = 0; i <= vLines; i++) { const t = i / vLines; const xBot = W * t; const xTop = vpX + (xBot - vpX) * ((gridTop - vpY) / (gridBot - vpY)); const distCenter = Math.abs(t - 0.5) * 2; const alpha = (1 - distCenter * 0.6) * 0.038; const grad = ctx.createLinearGradient(xTop, gridTop, xBot, gridBot); grad.addColorStop(0, `rgba(${r},${g},${b},0)`); grad.addColorStop(1, `rgba(${r},${g},${b},${alpha})`); ctx.beginPath(); ctx.moveTo(xTop, gridTop); ctx.lineTo(xBot, gridBot); ctx.strokeStyle = grad; ctx.lineWidth = 1; ctx.stroke(); }
                 // DRAW HORIZON FADE (improved to use transparent fade instead of solid color)
-                const fade = ctx.createLinearGradient(0, gridTop - 100, 0, gridTop + 100); 
-                fade.addColorStop(0, 'rgba(3, 5, 8, 1)'); 
+                const fade = ctx.createLinearGradient(0, gridTop - 100, 0, gridTop + 100);
+                fade.addColorStop(0, 'rgba(3, 5, 8, 1)');
                 fade.addColorStop(0.5, 'rgba(3, 5, 8, 0.4)');
-                fade.addColorStop(1, 'rgba(3, 5, 8, 0)'); 
-                
+                fade.addColorStop(1, 'rgba(3, 5, 8, 0)');
+
                 // Use destination-out to softly erase the grid lines at the horizon instead of painting a box on top
                 ctx.save();
                 ctx.globalCompositeOperation = 'destination-out';
@@ -3589,19 +3749,19 @@
             const cols = Math.floor(window.innerWidth / 18);
             const drops = Array.from({ length: cols }, () => Math.random() * -50);
             const chars = '01アイウエオカキクケコサシスセソ∆∑Ω∞⌘⟨⟩';
-            function draw() { 
+            function draw() {
                 // Use a darker, cleaner wipe to avoid gray boxes on mobile
-                ctx.fillStyle = 'rgba(3, 5, 8, 0.22)'; 
-                ctx.fillRect(0, 0, c.width, c.height); 
-                ctx.font = '10px DM Mono,monospace'; 
-                drops.forEach((y, i) => { 
-                    const ch = chars[Math.floor(Math.random() * chars.length)]; 
-                    const alpha = Math.random() > .8 ? 0.7 : 0.2; 
-                    ctx.fillStyle = `rgba(57, 255, 20, ${alpha})`; 
-                    ctx.fillText(ch, i * 18, y * 18); 
-                    if (y * 18 > c.height && Math.random() > .975) drops[i] = 0; 
-                    drops[i] += 0.35; 
-                }); 
+                ctx.fillStyle = 'rgba(3, 5, 8, 0.22)';
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.font = '10px DM Mono,monospace';
+                drops.forEach((y, i) => {
+                    const ch = chars[Math.floor(Math.random() * chars.length)];
+                    const alpha = Math.random() > .8 ? 0.7 : 0.2;
+                    ctx.fillStyle = `rgba(57, 255, 20, ${alpha})`;
+                    ctx.fillText(ch, i * 18, y * 18);
+                    if (y * 18 > c.height && Math.random() > .975) drops[i] = 0;
+                    drops[i] += 0.35;
+                });
             }
             setInterval(draw, 90);
         })();
@@ -3641,7 +3801,7 @@
             const bar = document.getElementById('bootBar');
             const screen = document.getElementById('boot-screen');
             const app = document.querySelector('.app');
-            
+
             let p = 0;
             let lineIdx = 0;
 
@@ -3653,7 +3813,7 @@
                     setTimeout(finishBoot, 600);
                 }
                 bar.style.width = p + '%';
-                
+
                 // Add log lines periodically
                 if (p > (lineIdx + 1) * (100 / BOOT_LINES.length) && lineIdx < BOOT_LINES.length) {
                     const l = document.createElement('div');
