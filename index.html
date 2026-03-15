@@ -3615,28 +3615,30 @@
             const roomGroup = new THREE.Group();
             scene.add(roomGroup);
 
-            // Room Wireframe (4m W-E, 2.5m tall, 3m N-S)
-            const roomGeo = new THREE.BoxGeometry(4, 2.5, 3);
+            // Room Wireframe (3m W-E, 2.5m tall, 4.5m N-S) - Rectangular
+            const roomGeo = new THREE.BoxGeometry(3, 2.5, 4.5);
             const edges = new THREE.EdgesGeometry(roomGeo);
             const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4a6080, transparent: true, opacity: 0.4 }));
             roomGroup.add(frame);
 
             // BED: South wall, shifted towards East
-            const bedGeo = new THREE.BoxGeometry(1.4, 0.4, 1.8);
+            // S wall at Z=+2.25, bed depth=1.8 -> center at 2.25-0.9=1.35
+            const bedGeo = new THREE.BoxGeometry(1.2, 0.4, 1.8);
             const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x0a1428, wireframe: true }));
-            bed.position.set(1.1, -1.0, 0.55);  // Moved towards East (X=1.1)
+            bed.position.set(0.8, -1.0, 1.3);
             roomGroup.add(bed);
 
-            // DESK: North wall (Z=-1.15), shifted towards East
-            const deskGeo = new THREE.BoxGeometry(1.4, 0.06, 0.7);
+            // DESK: North wall (Z=-2.25), shifted towards East
+            // N wall at Z=-2.25, desk depth=0.7 -> center at -2.25+0.35=-1.9
+            const deskGeo = new THREE.BoxGeometry(1.2, 0.06, 0.7);
             const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xbbff00, emissive: 0x0d1200, wireframe: true }));
-            deskTop.position.set(1.1, -0.72, -1.15); // Moved towards East (X=1.1)
+            deskTop.position.set(0.8, -0.72, -1.9);
             roomGroup.add(deskTop);
 
-            // Desk legs (4 thin pillars)
-            const legGeo = new THREE.BoxGeometry(0.05, 0.55, 0.05);
+            // Desk legs
+            const legGeo = new THREE.BoxGeometry(0.04, 0.55, 0.04);
             const legMat = new THREE.MeshBasicMaterial({ color: 0x667788 });
-            const legPos = [[0.45, -1.45], [1.75, -1.45], [0.45, -0.85], [1.75, -0.85]]; // Updated X for East side
+            const legPos = [[0.3, -2.15], [1.3, -2.15], [0.3, -1.65], [1.3, -1.65]];
             legPos.forEach(([x, z]) => {
                 const leg = new THREE.Mesh(legGeo, legMat);
                 leg.position.set(x, -1.0, z);
@@ -3648,33 +3650,33 @@
             const doorMat = new THREE.MeshBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
             const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.5 });
 
-            // Door 1: NORTH wall, near West corner (no Y rotation — plane faces Z direction)
+            // Door 1: NORTH wall, near West corner
             const door1 = new THREE.Mesh(doorGeo, doorMat);
-            door1.position.set(-1.3, -0.25, -1.49);  // north wall, X=-1.3 (near west)
+            door1.position.set(-0.8, -0.25, -2.24);
             roomGroup.add(door1);
             const de1 = new THREE.EdgesGeometry(doorGeo);
             const dl1 = new THREE.LineSegments(de1, doorEdgeMat.clone());
-            dl1.position.set(-1.3, -0.25, -1.49);
+            dl1.position.set(-0.8, -0.25, -2.24);
             roomGroup.add(dl1);
 
-            // Door 2: West wall, near bed (bed is on south side, center Z=0.55)
+            // Door 2: West wall, near bed
             const door2 = new THREE.Mesh(doorGeo, doorMat.clone());
             door2.rotation.y = Math.PI / 2;
-            door2.position.set(-1.99, -0.25, 0.55);
+            door2.position.set(-1.49, -0.25, 0.5);
             roomGroup.add(door2);
             const de2 = new THREE.EdgesGeometry(doorGeo);
             const dl2 = new THREE.LineSegments(de2, doorEdgeMat.clone());
             dl2.rotation.y = Math.PI / 2;
-            dl2.position.set(-1.99, -0.25, 0.55);
+            dl2.position.set(-1.49, -0.25, 0.5);
             roomGroup.add(dl2);
 
             // Soft ambient
             roomLights.ambient = new THREE.AmbientLight(0x223344, 0.8);
             scene.add(roomLights.ambient);
 
-            // RELAY 1: Blue LED atmosfera above desk (now towards East)
+            // RELAY 1: Blue LED atmosfera above desk
             roomLights.l1 = new THREE.PointLight(0x4a8eff, 0, 2.2);
-            roomLights.l1.position.set(1.1, 0.3, -1.15);  // follows desk to East
+            roomLights.l1.position.set(0.8, 0.3, -1.9);  // follows desk
             roomGroup.add(roomLights.l1);
             // Visual LED sphere for R1 (blue)
             const led1Geo = new THREE.SphereGeometry(0.06, 8, 8);
@@ -3683,16 +3685,15 @@
             led1Mesh.position.copy(roomLights.l1.position);
             roomGroup.add(led1Mesh);
 
-            // RELAY 2: Warm LED strip on West wall, high up (center of west wall)
+            // RELAY 2: Warm LED on West wall
             roomLights.l2 = new THREE.PointLight(0xffe08a, 0, 3.0);
-            roomLights.l2.position.set(-1.8, 0.95, 0.0);
+            roomLights.l2.position.set(-1.3, 0.95, -0.5);
             roomGroup.add(roomLights.l2);
             // Visual LED bar for R2 (warm)
             const led2Geo = new THREE.BoxGeometry(0.04, 0.04, 0.6);
             const led2Mat = new THREE.MeshBasicMaterial({ color: 0xffe08a });
             const led2Mesh = new THREE.Mesh(led2Geo, led2Mat);
             led2Mesh.position.copy(roomLights.l2.position);
-            led2Mesh.userData.relay = 'l2';
             roomGroup.add(led2Mesh);
 
             // Update LED mesh emissivity based on relay state
