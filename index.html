@@ -12,7 +12,13 @@
         rel="stylesheet">
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        :root {
+            --boot-bg: #030508;
+            --boot-txt: #39ff14;
+        }
+
         *,
         *::before,
         *::after {
@@ -202,13 +208,170 @@
             100% { top: 102%; opacity: 0; }
         }
 
+        /* ── BOOT SEQUENCE ── */
+        #boot-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--boot-bg);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'DM Mono', monospace;
+            color: var(--boot-txt);
+            padding: 20px;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+        }
+
+        #boot-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .boot-wrap {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .boot-logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 10px var(--boot-txt));
+        }
+
+        .boot-log {
+            font-size: 10px;
+            height: 120px;
+            overflow: hidden;
+            border-left: 1px solid rgba(57, 255, 20, 0.3);
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+
+        .boot-line {
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateX(-5px);
+            animation: bootLineIn 0.3s forwards;
+        }
+
+        @keyframes bootLineIn {
+            to { opacity: 0.7; transform: translateX(0); }
+        }
+
+        .boot-bar-wrap {
+            width: 100%;
+            height: 2px;
+            background: rgba(57, 255, 20, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .boot-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--boot-txt);
+            box-shadow: 0 0 10px var(--boot-txt);
+            transition: width 0.1s linear;
+        }
+
+        /* ── NEURAL ALERTS ── */
+        #alerts-container {
+            position: fixed;
+            top: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .alert-toast {
+            background: rgba(255, 79, 134, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 79, 134, 0.4);
+            color: #ff4f86;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: alertIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 8px 32px rgba(255, 79, 134, 0.2);
+        }
+
+        .alert-toast.warning {
+            background: rgba(255, 180, 0, 0.15);
+            border-color: rgba(255, 180, 0, 0.4);
+            color: #ffb400;
+            box-shadow: 0 8px 32px rgba(255, 180, 0, 0.2);
+        }
+
+        .alert-icon {
+            width: 18px;
+            height: 18px;
+            background: currentColor;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E") no-repeat center;
+            mask-size: contain;
+        }
+
+        @keyframes alertIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .alert-toast.fade-out {
+            animation: alertOut 0.5s forwards;
+        }
+
+        @keyframes alertOut {
+            to { opacity: 0; transform: translateY(-10px) scale(0.9); }
+        }
+
+        /* ── STAGGER PREP ── */
+        .app {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .app.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .app > * {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .app.visible > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* ── CORNERS ── */
         #corners {
             position: fixed;
             inset: 0;
             z-index: 2;
-            pointer-events: none;
         }
 
         #corners::before,
@@ -2075,6 +2238,19 @@
     <div id="edge-glow"></div>
     <div id="sl"></div>
 
+    <!-- BOOT OVERLAY -->
+    <div id="boot-screen">
+        <div class="boot-wrap">
+            <div class="boot-logo">System Zero</div>
+            <div class="boot-log" id="bootLog"></div>
+            <div class="boot-bar-wrap">
+                <div class="boot-bar" id="bootBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alerts-container"></div>
+
     <div class="app">
 
         <!-- TOPBAR -->
@@ -2441,10 +2617,55 @@
             </div>
         </div>
 
-        <div class="foot">
-            <span>MQTT <code>symo/room</code> · Borgomanero</span>
-            <span id="lastMsg">Last: -</span>
         </div>
+
+        <!-- CARD ENERGY & INTELLIGENCE -->
+        <div class="cenergy glass" style="margin-top: 8px;">
+            <div class="ch">
+                <span class="clbl">Energy & Intelligence</span>
+                <div class="lpill" style="background: rgba(187, 255, 0, 0.05); border-color: var(--primary);">
+                    STIMA KWH
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px; padding: 10px 0;">
+                <div style="flex: 1;">
+                    <div style="font-size: 28px; font-weight: 700; font-family: 'Space Grotesk';" id="energyVal">0.000</div>
+                    <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Consumo stimato oggi (kWh)</div>
+                </div>
+                <div style="width: 1px; height: 35px; background: rgba(255,255,255,0.1);"></div>
+                <div style="flex: 1;">
+                    <div style="font-size: 16px; font-weight: 600;" id="energyCost">€ 0.00</div>
+                    <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Costo stimato (~0.25€/kWh)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3D VISUALIZER -->
+        <div class="c3d glass" style="height: 220px; padding: 0; overflow: hidden; border-radius: var(--r);">
+            <div class="ch" style="position: absolute; top: 16px; left: 20px; z-index: 5; margin: 0; pointer-events: none;">
+                <span class="clbl">Digital Twin 3D</span>
+            </div>
+            <div id="three-container" style="width: 100%; height: 100%;"></div>
+        </div>
+
+        <div class="foot">
+            <div id="ticker-wrap" style="width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                <div id="ticker" style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
+                    SISTEMA ONLINE · PROTOCOLLO ZERO ATTIVO · CONNESSIONE MQTT STABILE · MONITORAGGIO AMBIENTALE IN CORSO · NESSUNA ANOMALIA RILEVATA · SCANNER RADAR ATTIVATO · FEED DATI REALTIME · 
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <span>MQTT <code>symo/room</code> · Borgomanero</span>
+                <span id="lastMsg">Last: -</span>
+            </div>
+        </div>
+
+        <style>
+            @keyframes tickerAnim {
+                from { transform: translateX(100%); }
+                to { transform: translateX(-100%); }
+            }
+        </style>
 
     </div>
 
@@ -2639,10 +2860,10 @@
         const $tgl2 = document.getElementById('tgl2'), $dtxt2 = document.getElementById('dtxt2'), $di2 = document.getElementById('ditem2');
         function setConn(ok, msg) { $dot.classList.toggle('ok', ok); $conn.textContent = msg; }
         function bounceTgl(tgl) { tgl.classList.remove('bounce'); void tgl.offsetWidth; tgl.classList.add('bounce'); setTimeout(() => tgl.classList.remove('bounce'), 450); }
-        function setRelay(on) { rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); }
-        function toggleRelay() { const n = rs ? 0 : 1; setRelay(n === 1); if (mc?.connected) mc.publish(TR, n ? 'ON' : 'OFF'); }
-        function setRelay2(on) { rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); }
-        function toggleRelay2() { const n = rs2 ? 0 : 1; setRelay2(n === 1); if (mc?.connected) mc.publish(TR2, n ? 'ON' : 'OFF'); }
+        function setRelay(on) { rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); trackUptime(1, on); }
+        function toggleRelay() { const n = rs ? 0 : 1; setRelay(n === 1); if (mc?.connected) mc.publish(TR, n ? 'ON' : 'OFF'); playBeep(800, 0.1, 'square', 0.05); }
+        function setRelay2(on) { rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); trackUptime(2, on); }
+        function toggleRelay2() { const n = rs2 ? 0 : 1; setRelay2(n === 1); if (mc?.connected) mc.publish(TR2, n ? 'ON' : 'OFF'); playBeep(1000, 0.1, 'square', 0.05); }
 
         /* ── THROTTLED animations: fix bug reset continuo ── */
 
@@ -2653,6 +2874,68 @@
             el.textContent = newTxt;
         }
         let lastStream = 0;
+        /* ── SOUND DESIGN ── */
+        const SOUNDS = {
+            boot: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ9vT29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29v', // Mock base64, usually I'd generate a real beep
+            click: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ9vT29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29v',
+            alert: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ9vT29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29vb29v'
+        };
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, dur, type = 'sine', vol = 0.1) {
+            if (audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + dur);
+        }
+
+        /* ── ENERGY LOGIC ── */
+        let energyState = {
+            l1Start: null,
+            l2Start: null,
+            totalKWh: parseFloat(localStorage.getItem('symo-energy') || '0'),
+            p1: 0.015, // 15W
+            p2: 0.025  // 25W
+        };
+
+        function updateEnergyUI() {
+            document.getElementById('energyVal').textContent = energyState.totalKWh.toFixed(3);
+            document.getElementById('energyCost').textContent = '€ ' + (energyState.totalKWh * 0.25).toFixed(2);
+        }
+
+        function trackUptime(relay, on) {
+            const now = Date.now();
+            if (relay === 1) {
+                if (on) energyState.l1Start = now;
+                else if (energyState.l1Start) {
+                    const diffH = (now - energyState.l1Start) / 3600000;
+                    energyState.totalKWh += diffH * energyState.p1;
+                    energyState.l1Start = null;
+                }
+            } else {
+                if (on) energyState.l2Start = now;
+                else if (energyState.l2Start) {
+                    const diffH = (now - energyState.l2Start) / 3600000;
+                    energyState.totalKWh += diffH * energyState.p2;
+                    energyState.l2Start = null;
+                }
+            }
+            localStorage.setItem('symo-energy', energyState.totalKWh);
+            updateEnergyUI();
+        }
+
+        // Periodic update to avoid losing data if page closes while ON
+        setInterval(() => {
+            if (energyState.l1Start) trackUptime(1, true); 
+            if (energyState.l2Start) trackUptime(2, true);
+        }, 30000);
+
         function triggerStream() {
             const now = Date.now(); if (now - lastStream < 1000) return; lastStream = now;
             const sb = document.getElementById('envStream'); if (!sb) return;
@@ -2664,13 +2947,57 @@
         let chartInst = null;
 
         function updateReactiveColor(temp) {
-            let color = '#bbff00'; // Default Green (Ideale 19-25)
+            let color = '#bbff00'; // Green (Ideale 19-23.5)
             if (temp < 19) {
                 color = '#00aee7'; // Cold Blue
-            } else if (temp > 25) {
+            } else if (temp > 23.5) {
                 color = '#ff4f86'; // Hot Red/Pink
             }
             document.documentElement.style.setProperty('--primary', color);
+            checkAlerts(temp, inH);
+        }
+
+        const activeAlerts = new Set();
+        function checkAlerts(t, h) {
+            if (t === null || h === null) return;
+            
+            // Temperature alerts
+            if (t < 19) triggerAlert('temp-low', 'Anomalia: Freddo rilevato', 'warning');
+            else clearAlert('temp-low');
+            
+            if (t > 23.5) triggerAlert('temp-high', 'Critico: Caldo eccessivo', 'danger');
+            else clearAlert('temp-high');
+
+            // Humidity alerts
+            if (h < 35) triggerAlert('hum-low', 'Allerta: Aria troppo secca', 'warning');
+            else clearAlert('hum-low');
+
+            if (h > 60) triggerAlert('hum-high', 'Allerta: Umidità elevata', 'danger');
+            else clearAlert('hum-high');
+        }
+
+        function triggerAlert(id, msg, type) {
+            if (activeAlerts.has(id)) return;
+            activeAlerts.add(id);
+            playBeep(type === 'warning' ? 400 : 200, 0.5, 'sawtooth', 0.03);
+            const container = document.getElementById('alerts-container');
+            const alert = document.createElement('div');
+            alert.id = 'alert-' + id;
+            alert.className = 'alert-toast ' + (type === 'warning' ? 'warning' : '');
+            alert.innerHTML = `<div class="alert-icon"></div><span>${msg}</span>`;
+            container.appendChild(alert);
+        }
+
+        function clearAlert(id) {
+            if (!activeAlerts.has(id)) return;
+            const el = document.getElementById('alert-' + id);
+            if (el) {
+                el.classList.add('fade-out');
+                setTimeout(() => {
+                    el.remove();
+                    activeAlerts.delete(id);
+                }, 500);
+            }
         }
 
         function saveHistoryPoint(t, h) {
@@ -2851,6 +3178,7 @@
                     if (tVal != null && !Number.isNaN(Number(tVal))) { 
                         inT = Number(tVal); flashNum($T, inT, 1); 
                         updateReactiveColor(inT);
+                        if (roomLights.ambient) roomLights.ambient.color.set(getComputedStyle(document.documentElement).getPropertyValue('--primary').trim());
                     }
                     if (hVal != null && !Number.isNaN(Number(hVal))) { inH = Number(hVal); flashNum($H, inH, 1); }
                     
@@ -2860,13 +3188,96 @@
                     }
 
                     triggerStream();
-                    if (typeof j.relay === 'number') setRelay(j.relay === 1);
-                    if (typeof j.relay2 === 'number') setRelay2(j.relay2 === 1);
+                    if (typeof j.relay === 'number') { setRelay(j.relay === 1); if (roomLights.l1) roomLights.l1.visible = (j.relay === 1); }
+                    if (typeof j.relay2 === 'number') { setRelay2(j.relay2 === 1); if (roomLights.l2) roomLights.l2.visible = (j.relay2 === 1); }
                     if (j.present !== undefined || j.out !== undefined) { radarState.present = j.out ?? j.present ?? false; radarState.near = j.near ?? false; radarState.moving = j.moving ?? false; radarState.act = j.act ?? 0; radarState.ema = j.ema ?? 0; updatePresenceUI(); }
                     $last.textContent = 'Last: ' + new Date().toLocaleTimeString('it-IT'); updDelta();
                 } catch (e) { }
             });
             mc.on('close', () => { setConn(false, 'Offline'); setSyncStatus(false, 'Offline'); });
+        }
+
+        /* ── THREE.JS DIGITAL TWIN ── */
+        let roomLights = { l1: null, l2: null, ambient: null };
+        function initThree() {
+            const container = document.getElementById('three-container');
+            if (!container) return;
+            const w = container.offsetWidth, h = container.offsetHeight;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.set(4, 4, 4);
+            camera.lookAt(0, 0, 0);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Room Wireframe (Stanza rettangolare)
+            const roomGeo = new THREE.BoxGeometry(4, 2.5, 3);
+            const edges = new THREE.EdgesGeometry(roomGeo);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.3 }));
+            scene.add(line);
+
+            // Furnishings (Bed & Desk)
+            const bedGeo = new THREE.BoxGeometry(1.6, 0.4, 2);
+            const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x101a30, wireframe: true }));
+            bed.position.set(1.2, -1.05, 0.5); // South side
+            scene.add(bed);
+
+            const deskGeo = new THREE.BoxGeometry(1.2, 0.75, 0.6);
+            const desk = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xccff00, emissive: 0x1a2100, wireframe: true }));
+            desk.position.set(1.4, -0.85, -1.2); // North side
+            scene.add(desk);
+
+            // Doors (West wall: -2)
+            const doorGeo = new THREE.PlaneGeometry(0.8, 2);
+            const doorMat = new THREE.MeshBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
+            const door1 = new THREE.Mesh(doorGeo, doorMat);
+            door1.rotation.y = Math.PI / 2;
+            door1.position.set(-1.99, -0.25, 1); // West-South
+            scene.add(door1);
+
+            const door2 = new THREE.Mesh(doorGeo, doorMat);
+            door2.rotation.y = Math.PI / 2;
+            door2.position.set(-1.99, -0.25, -1); // West-North
+            scene.add(door2);
+
+            // Lights
+            roomLights.ambient = new THREE.AmbientLight(0xbbff00, 0.5);
+            scene.add(roomLights.ambient);
+
+            roomLights.l1 = new THREE.PointLight(0xbbff00, 2, 5);
+            roomLights.l1.position.set(-1, 0.8, 0);
+            scene.add(roomLights.l1);
+
+            roomLights.l2 = new THREE.PointLight(0x48d5ff, 2, 5);
+            roomLights.l2.position.set(1, 0.8, 0);
+            scene.add(roomLights.l2);
+
+            // Animate
+            function animate() {
+                requestAnimationFrame(animate);
+                line.rotation.y += 0.003;
+                bed.rotation.y = line.rotation.y;
+                bed.position.x = 1.2 * Math.cos(line.rotation.y) - 0.5 * Math.sin(line.rotation.y);
+                bed.position.z = 1.2 * Math.sin(line.rotation.y) + 0.5 * Math.cos(line.rotation.y);
+                
+                desk.rotation.y = line.rotation.y;
+                desk.position.x = 1.4 * Math.cos(line.rotation.y) - (-1.2) * Math.sin(line.rotation.y);
+                desk.position.z = 1.4 * Math.sin(line.rotation.y) + (-1.2) * Math.cos(line.rotation.y);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+            
+            window.addEventListener('resize', () => {
+                const nw = container.offsetWidth, nh = container.offsetHeight;
+                camera.aspect = nw / nh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nw, nh);
+            });
         }
 
         /* ── PERSPECTIVE GRID ── */
@@ -2938,7 +3349,69 @@
             }
         })();
 
+        /* ── BOOT CONTROLLER ── */
+        const BOOT_LINES = [
+            "INITIALIZING PROTOCOL ZERO...",
+            "KERNEL VERSION 1.0.4-SYMO",
+            "SCANNING PERIPHERALS...",
+            "CORE MODULES: OPTIMIZED",
+            "MAPPING THREEJS TOPOLOGY...",
+            "CONNECTING TO HIVE_CLOUD...",
+            "ESTABLISHING MQTT BRIDGE...",
+            "REACTIVE COLOR ENGINE: ACTIVE",
+            "SYSTEM READY."
+        ];
+
+        function runBoot() {
+            const log = document.getElementById('bootLog');
+            const bar = document.getElementById('bootBar');
+            const screen = document.getElementById('boot-screen');
+            const app = document.querySelector('.app');
+            
+            let p = 0;
+            let lineIdx = 0;
+
+            const timer = setInterval(() => {
+                p += Math.random() * 4;
+                if (p >= 100) {
+                    p = 100;
+                    clearInterval(timer);
+                    setTimeout(finishBoot, 600);
+                }
+                bar.style.width = p + '%';
+                
+                // Add log lines periodically
+                if (p > (lineIdx + 1) * (100 / BOOT_LINES.length) && lineIdx < BOOT_LINES.length) {
+                    const l = document.createElement('div');
+                    l.className = 'boot-line';
+                    l.textContent = '> ' + BOOT_LINES[lineIdx];
+                    log.appendChild(l);
+                    log.scrollTop = log.scrollHeight;
+                    lineIdx++;
+                }
+            }, 60);
+
+            function finishBoot() {
+                screen.classList.add('hidden');
+                initThree();
+                updateEnergyUI();
+                playBeep(600, 0.8, 'sine', 0.1);
+                setTimeout(() => {
+                    app.classList.add('visible');
+                    // Stagger child elements
+                    const children = Array.from(app.children);
+                    children.forEach((child, i) => {
+                        setTimeout(() => {
+                            child.style.opacity = '1';
+                            child.style.transform = 'translateY(0)';
+                        }, i * 120);
+                    });
+                }, 400);
+            }
+        }
+
         loadSchedule(); fetchWx(); setInterval(fetchWx, 600000); mqttConnect();
+        window.addEventListener('load', runBoot);
     </script>
 
 </body>
