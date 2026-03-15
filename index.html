@@ -1110,6 +1110,27 @@
         html.light .scenario-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
         html.light .scenario-btn.active { background: rgba(22, 163, 74, .08); border-color: rgba(22, 163, 74, .3); }
 
+        /* ── ENERGY TABS ── */
+        .ectab {
+            flex: 1;
+            padding: 5px 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: .2s;
+            font-family: 'Sora', sans-serif;
+        }
+        .ectab.active {
+            background: rgba(255,255,255,0.08);
+            color: var(--primary);
+        }
+
         .dr {
             display: flex;
             align-items: center;
@@ -2298,7 +2319,7 @@
     <!-- BOOT OVERLAY -->
     <div id="boot-screen">
         <div class="boot-wrap">
-            <div class="boot-logo">System Zero</div>
+            <div class="boot-logo">_Symonn room-control</div>
             <div class="boot-log" id="bootLog"></div>
             <div class="boot-bar-wrap">
                 <div class="boot-bar" id="bootBar"></div>
@@ -2442,18 +2463,30 @@
             <div class="cpanel" id="cp-twin" style="gap: 8px;">
                 <div id="three-container" style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2); position: relative; z-index: 5;"></div>
                 
-                <div class="cenergy" style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; align-items: center; gap: 20px;">
+                <!-- ENERGY HUB -->
+                <div style="background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 10px;">
+                        <button class="ectab active" id="et-day" onclick="swEnergy('day')">Oggi</button>
+                        <button class="ectab" id="et-week" onclick="swEnergy('week')">7 Giorni</button>
+                        <button class="ectab" id="et-month" onclick="swEnergy('month')">30 Giorni</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
                         <div style="flex: 1;">
-                            <div style="font-size: 24px; font-weight: 700; font-family: 'Space Grotesk';" id="energyVal">0.000</div>
-                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase;">kWh Odierni</div>
+                            <div style="font-size: 26px; font-weight: 700; font-family: 'Space Grotesk'; color: var(--primary);" id="energyVal">0.000</div>
+                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">kWh</div>
                         </div>
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1;">
-                            <div style="font-size: 14px; font-weight: 600;" id="energyCost">€ 0.00</div>
-                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase;">Costo Est.</div>
+                            <div style="font-size: 16px; font-weight: 600;" id="energyCost">&euro; 0.00</div>
+                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Costo</div>
+                        </div>
+                        <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
+                        <div style="flex: 1; text-align: right;">
+                            <div style="font-size: 10px; color: var(--muted); font-family: 'DM Mono';">L1: <span id="statusL1" style="color: #4a8eff;">0.000</span></div>
+                            <div style="font-size: 10px; color: var(--muted); font-family: 'DM Mono';">L2: <span id="statusL2" style="color: var(--yellow);">0.000</span></div>
                         </div>
                     </div>
+                    <div id="energyBars" style="display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;"></div>
                 </div>
             </div>
 
@@ -2914,7 +2947,13 @@
 
         /* ── MQTT ── */
         const HOST = 'ff68867802ae4c19875944cbd0bd6dac.s1.eu.hivemq.cloud';
-        const PORT = 8884; const TD = 'symo/room/data'; const TR = 'symo/room/relay'; const TR2 = 'symo/room/relay2';
+        const PORT = 8884;
+        const TD = 'symo/room/data';
+        const TR = 'symo/room/relay';
+        const TR2 = 'symo/room/relay2';
+        // Energy timestamp topics (retained) - store when a relay was turned ON
+        const TE1 = 'symo/room/energy/l1ts'; // relay 1 on-timestamp
+        const TE2 = 'symo/room/energy/l2ts'; // relay 2 on-timestamp
         let mc = null, rs = 0, rs2 = 0;
         const $dot = document.getElementById('dot'), $conn = document.getElementById('connText');
         const $T = document.getElementById('temp'), $H = document.getElementById('hum'), $last = document.getElementById('lastMsg');
@@ -2923,9 +2962,25 @@
         function setConn(ok, msg) { $dot.classList.toggle('ok', ok); $conn.textContent = msg; }
         function bounceTgl(tgl) { tgl.classList.remove('bounce'); void tgl.offsetWidth; tgl.classList.add('bounce'); setTimeout(() => tgl.classList.remove('bounce'), 450); }
         function setRelay(on) { rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); trackUptime(1, on); }
-        function toggleRelay() { const n = rs ? 0 : 1; setRelay(n === 1); if (mc?.connected) mc.publish(TR, n ? 'ON' : 'OFF'); playBeep(800, 0.1, 'square', 0.05); }
+        function toggleRelay() {
+            const n = rs ? 0 : 1; setRelay(n === 1);
+            if (mc?.connected) {
+                mc.publish(TR, n ? 'ON' : 'OFF');
+                // Publish retained timestamp when turning ON, clear when OFF
+                mc.publish(TE1, n ? String(Date.now()) : '', { retain: true, qos: 1 });
+            }
+            playBeep(800, 0.1, 'square', 0.05);
+        }
         function setRelay2(on) { rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); trackUptime(2, on); }
-        function toggleRelay2() { const n = rs2 ? 0 : 1; setRelay2(n === 1); if (mc?.connected) mc.publish(TR2, n ? 'ON' : 'OFF'); playBeep(1000, 0.1, 'square', 0.05); }
+        function toggleRelay2() {
+            const n = rs2 ? 0 : 1; setRelay2(n === 1);
+            if (mc?.connected) {
+                mc.publish(TR2, n ? 'ON' : 'OFF');
+                // Publish retained timestamp when turning ON, clear when OFF
+                mc.publish(TE2, n ? String(Date.now()) : '', { retain: true, qos: 1 });
+            }
+            playBeep(1000, 0.1, 'square', 0.05);
+        }
 
         /* ── THROTTLED animations: fix bug reset continuo ── */
 
@@ -2957,45 +3012,126 @@
             osc.stop(audioCtx.currentTime + dur);
         }
 
-        /* ── ENERGY LOGIC ── */
+        /* ── ENERGY HUB SYSTEM ── */
+        // Calibrated wattage:
+        // Relay 1: LED strip atmosfera - 3 metri a ~7.5W/m media (tra 5-10W/m) = 22.5W ≈ 22W
+        // Relay 2: LED bar parete ovest - ~20W totali
+        const E_P1 = 0.0225;  // kW  (3m × 7.5W/m)
+        const E_P2 = 0.020;   // kW  (~20W totali)
+        const E_RATE = 0.25;  // €/kWh (tariffa media IT 2024)
+
+        // energyLog: { 'YYYY-MM-DD': { l1: kWh, l2: kWh } }
+        let energyLog = JSON.parse(localStorage.getItem('symo-energylog') || '{}');
         let energyState = {
             l1Start: null,
             l2Start: null,
-            totalKWh: parseFloat(localStorage.getItem('symo-energy') || '0'),
-            p1: 0.015, // 15W
-            p2: 0.025  // 25W
+            activeView: 'day'
         };
 
+        function todayKey() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+
+        function addKWh(relay, kwh) {
+            const k = todayKey();
+            if (!energyLog[k]) energyLog[k] = { l1: 0, l2: 0 };
+            if (relay === 1) energyLog[k].l1 = (energyLog[k].l1 || 0) + kwh;
+            else energyLog[k].l2 = (energyLog[k].l2 || 0) + kwh;
+            // Trim: keep only last 90 days
+            const keys = Object.keys(energyLog).sort();
+            if (keys.length > 90) {
+                keys.slice(0, keys.length - 90).forEach(k => delete energyLog[k]);
+            }
+            localStorage.setItem('symo-energylog', JSON.stringify(energyLog));
+        }
+
+        function getEnergyRange(days) {
+            const result = [];
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                const k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                const entry = energyLog[k] || { l1: 0, l2: 0 };
+                result.push({ key: k, l1: entry.l1 || 0, l2: entry.l2 || 0, total: (entry.l1 || 0) + (entry.l2 || 0) });
+            }
+            return result;
+        }
+
+        function swEnergy(view) {
+            energyState.activeView = view;
+            document.querySelectorAll('.ectab').forEach(b => b.classList.remove('active'));
+            document.getElementById('et-' + view).classList.add('active');
+            updateEnergyUI();
+        }
+
         function updateEnergyUI() {
-            document.getElementById('energyVal').textContent = energyState.totalKWh.toFixed(3);
-            document.getElementById('energyCost').textContent = '€ ' + (energyState.totalKWh * 0.25).toFixed(2);
+            const v = energyState.activeView;
+            let data, l1Total, l2Total;
+
+            if (v === 'day') {
+                data = getEnergyRange(1);
+            } else if (v === 'week') {
+                data = getEnergyRange(7);
+            } else {
+                data = getEnergyRange(30);
+            }
+
+            // Include live (in-progress) session
+            let liveL1 = 0, liveL2 = 0;
+            const now = Date.now();
+            if (energyState.l1Start) liveL1 = ((now - energyState.l1Start) / 3600000) * E_P1;
+            if (energyState.l2Start) liveL2 = ((now - energyState.l2Start) / 3600000) * E_P2;
+
+            l1Total = data.reduce((s, d) => s + d.l1, 0) + liveL1;
+            l2Total = data.reduce((s, d) => s + d.l2, 0) + liveL2;
+            const total = l1Total + l2Total;
+
+            const ev = document.getElementById('energyVal');
+            const ec = document.getElementById('energyCost');
+            const sl1 = document.getElementById('statusL1');
+            const sl2 = document.getElementById('statusL2');
+            if (ev) ev.textContent = total.toFixed(3);
+            if (ec) ec.textContent = '\u20ac ' + (total * E_RATE).toFixed(2);
+            if (sl1) sl1.textContent = l1Total.toFixed(3);
+            if (sl2) sl2.textContent = l2Total.toFixed(3);
+
+            // Draw mini bar chart
+            const barsEl = document.getElementById('energyBars');
+            if (barsEl && data.length > 0) {
+                const maxDay = Math.max(...data.map(d => d.total), 0.001);
+                barsEl.innerHTML = data.map((d, i) => {
+                    const h = Math.max(3, (d.total / maxDay) * 36);
+                    const isToday = i === data.length - 1;
+                    return `<div style="flex:1; height:${h}px; border-radius:3px 3px 0 0; background:${isToday ? 'var(--primary)' : 'rgba(255,255,255,0.12)'}; transition:.3s;" title="${d.key}\n${d.total.toFixed(3)} kWh"></div>`;
+                }).join('');
+            }
         }
 
         function trackUptime(relay, on) {
             const now = Date.now();
             if (relay === 1) {
-                if (on) energyState.l1Start = now;
+                if (on) { energyState.l1Start = now; }
                 else if (energyState.l1Start) {
                     const diffH = (now - energyState.l1Start) / 3600000;
-                    energyState.totalKWh += diffH * energyState.p1;
+                    addKWh(1, diffH * E_P1);
                     energyState.l1Start = null;
                 }
             } else {
-                if (on) energyState.l2Start = now;
+                if (on) { energyState.l2Start = now; }
                 else if (energyState.l2Start) {
                     const diffH = (now - energyState.l2Start) / 3600000;
-                    energyState.totalKWh += diffH * energyState.p2;
+                    addKWh(2, diffH * E_P2);
                     energyState.l2Start = null;
                 }
             }
-            localStorage.setItem('symo-energy', energyState.totalKWh);
             updateEnergyUI();
         }
 
-        // Periodic update to avoid losing data if page closes while ON
+        // Periodic checkpoint to avoid losing data if page closes while ON
         setInterval(() => {
-            if (energyState.l1Start) trackUptime(1, true); 
-            if (energyState.l2Start) trackUptime(2, true);
+            if (energyState.l1Start) { addKWh(1, (30000 / 3600000) * E_P1); energyState.l1Start = Date.now(); }
+            if (energyState.l2Start) { addKWh(2, (30000 / 3600000) * E_P2); energyState.l2Start = Date.now(); }
+            updateEnergyUI();
         }, 30000);
 
         function triggerStream() {
@@ -3225,12 +3361,39 @@
             setConn(false, 'Connessione...');
             mc = mqtt.connect(`wss://${HOST}:${PORT}/mqtt`, { username: 'syymon', password: 'Piazzale99', clientId: 'symo-' + Math.random().toString(16).slice(2), clean: true, connectTimeout: 8000, reconnectPeriod: 2000, keepalive: 30 });
             mc.on('connect', () => {
-                setConn(true, 'Connesso'); mc.subscribe(TD); mc.subscribe(TS, { qos: 1 });
+                setConn(true, 'Connesso');
+                mc.subscribe(TD);
+                mc.subscribe(TS, { qos: 1 });
+                // Subscribe to energy timestamp topics
+                mc.subscribe(TE1, { qos: 1 });
+                mc.subscribe(TE2, { qos: 1 });
                 setSyncStatus(false, 'Caricamento schedule...');
                 schedFallbackTimer = setTimeout(() => { const s = document.getElementById('schedSyncTxt'); if (s && s.textContent === 'Caricamento schedule...') setSyncStatus(false, 'Nessuna programmazione salvata'); }, 10000);
                 setTimeout(() => { if (mc?.connected) mc.publish('symo/room/relay2', 'STATUS', { qos: 0 }); }, 1200);
             });
             mc.on('message', (t, p) => {
+                // Handle energy timestamp catch-up
+                if (t === TE1 || t === TE2) {
+                    const relay = t === TE1 ? 1 : 2;
+                    const payload = p.toString();
+                    if (payload && !isNaN(Number(payload))) {
+                        const onTs = Number(payload);
+                        const now = Date.now();
+                        // Relay was ON since 'onTs'. Calculate elapsed kWh since then.
+                        const elapsedH = (now - onTs) / 3600000;
+                        if (elapsedH > 0) {
+                            const kwhMissed = elapsedH * (relay === 1 ? E_P1 : E_P2);
+                            // Add missed energy, spread across days if needed
+                            // For simplicity, add to today's log (most of it is usually today)
+                            addKWh(relay, kwhMissed);
+                            // Reset the in-session start to now (to avoid double-counting)
+                            if (relay === 1) energyState.l1Start = now;
+                            else energyState.l2Start = now;
+                            updateEnergyUI();
+                        }
+                    }
+                    return;
+                }
                 if (t === TS) { try { applyScheduleData(JSON.parse(p.toString())); } catch (e) { } return; }
                 if (t !== TD) return;
                 try {
@@ -3251,8 +3414,8 @@
                     }
 
                     triggerStream();
-                    if (typeof j.relay === 'number') { setRelay(j.relay === 1); if (roomLights.l1) roomLights.l1.visible = (j.relay === 1); }
-                    if (typeof j.relay2 === 'number') { setRelay2(j.relay2 === 1); if (roomLights.l2) roomLights.l2.visible = (j.relay2 === 1); }
+                    if (typeof j.relay === 'number') { setRelay(j.relay === 1); if (roomLights.l1) roomLights.l1.intensity = (j.relay === 1) ? 1.8 : 0; }
+                    if (typeof j.relay2 === 'number') { setRelay2(j.relay2 === 1); if (roomLights.l2) roomLights.l2.intensity = (j.relay2 === 1) ? 1.8 : 0; }
                     if (j.present !== undefined || j.out !== undefined) { radarState.present = j.out ?? j.present ?? false; radarState.near = j.near ?? false; radarState.moving = j.moving ?? false; radarState.act = j.act ?? 0; radarState.ema = j.ema ?? 0; updatePresenceUI(); }
                     $last.textContent = 'Last: ' + new Date().toLocaleTimeString('it-IT'); updDelta();
                 } catch (e) { }
@@ -3269,7 +3432,8 @@
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-            camera.position.set(4, 4, 4);
+            // Camera slightly from south-east elevated view
+            camera.position.set(4.5, 3.5, 4.5);
             camera.lookAt(0, 0, 0);
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -3277,61 +3441,111 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
+            // Room coordinate system:
+            //  X: West = -2, East = +2
+            //  Z: North = -1.5, South = +1.5
+            //  Y: Floor = -1.25, Ceiling = +1.25
+
             const roomGroup = new THREE.Group();
             scene.add(roomGroup);
 
-            // Room Wireframe
+            // Room Wireframe (4m W-E, 2.5m tall, 3m N-S)
             const roomGeo = new THREE.BoxGeometry(4, 2.5, 3);
             const edges = new THREE.EdgesGeometry(roomGeo);
-            const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.3 }));
+            const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4a6080, transparent: true, opacity: 0.4 }));
             roomGroup.add(frame);
 
-            // Furnishings
-            const bedGeo = new THREE.BoxGeometry(1.6, 0.4, 2);
-            const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x101a30, wireframe: true }));
-            bed.position.set(1.2, -1.05, 0.5); // South side
+            // BED: South wall (Z=+1.1), slightly East-center
+            const bedGeo = new THREE.BoxGeometry(1.4, 0.4, 1.8);
+            const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x0a1428, wireframe: true }));
+            bed.position.set(0.4, -1.05, 1.15);
             roomGroup.add(bed);
 
-            const deskGeo = new THREE.BoxGeometry(1.2, 0.75, 0.6);
-            const desk = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xccff00, emissive: 0x1a2100, wireframe: true }));
-            desk.position.set(1.4, -0.875, -1.2); // North side - On Floor
-            roomGroup.add(desk);
+            // DESK: North wall (Z=-1.2), West side (X=-1.2) [North-West corner]
+            const deskGeo = new THREE.BoxGeometry(1.4, 0.06, 0.7);
+            const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xbbff00, emissive: 0x0d1200, wireframe: true }));
+            deskTop.position.set(-1.1, -0.72, -1.15);
+            roomGroup.add(deskTop);
 
-            // Doors (West wall: -2)
-            const doorGeo = new THREE.PlaneGeometry(0.8, 2);
-            const doorMat = new THREE.MeshBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
+            // Desk legs (4 thin pillars)
+            const legGeo = new THREE.BoxGeometry(0.05, 0.55, 0.05);
+            const legMat = new THREE.MeshBasicMaterial({ color: 0x667788 });
+            const legPos = [[-1.75, -1.2], [-0.45, -1.2], [-1.75, -0.8], [-0.45, -0.8]];
+            legPos.forEach(([x, z]) => {
+                const leg = new THREE.Mesh(legGeo, legMat);
+                leg.position.set(x, -1.0, z);
+                roomGroup.add(leg);
+            });
+
+            // DOORS: West wall (X=-1.99), outlined panels
+            const doorGeo = new THREE.PlaneGeometry(0.8, 2.0);
+            const doorMat = new THREE.MeshBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+            const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.5 });
+
+            // Door 1: North-West (near desk)
             const door1 = new THREE.Mesh(doorGeo, doorMat);
             door1.rotation.y = Math.PI / 2;
-            door1.position.set(-1.99, -0.25, 1);
+            door1.position.set(-1.99, -0.25, -0.7);
             roomGroup.add(door1);
+            const de1 = new THREE.EdgesGeometry(doorGeo);
+            const dl1 = new THREE.LineSegments(de1, doorEdgeMat.clone());
+            dl1.rotation.y = Math.PI / 2;
+            dl1.position.set(-1.99, -0.25, -0.7);
+            roomGroup.add(dl1);
 
-            const door2 = new THREE.Mesh(doorGeo, doorMat);
+            // Door 2: South-West (next to bed)
+            const door2 = new THREE.Mesh(doorGeo, doorMat.clone());
             door2.rotation.y = Math.PI / 2;
-            door2.position.set(-1.99, -0.25, -1);
+            door2.position.set(-1.99, -0.25, 0.75);
             roomGroup.add(door2);
+            const de2 = new THREE.EdgesGeometry(doorGeo);
+            const dl2 = new THREE.LineSegments(de2, doorEdgeMat.clone());
+            dl2.rotation.y = Math.PI / 2;
+            dl2.position.set(-1.99, -0.25, 0.75);
+            roomGroup.add(dl2);
 
-            // Lights
-            roomLights.ambient = new THREE.AmbientLight(0xbbff00, 0.3);
+            // Soft ambient
+            roomLights.ambient = new THREE.AmbientLight(0x223344, 0.8);
             scene.add(roomLights.ambient);
 
-            // Light 1: Above Desk (Relay 1)
-            roomLights.l1 = new THREE.PointLight(0xbbff00, 1.2, 3);
-            roomLights.l1.position.set(1.4, 0.4, -1.2); 
+            // RELAY 1: Blue LED atmosfera above desk (North-West)
+            roomLights.l1 = new THREE.PointLight(0x4a8eff, 0, 2.2);
+            roomLights.l1.position.set(-1.1, 0.3, -1.15);
             roomGroup.add(roomLights.l1);
+            // Visual LED sphere for R1 (blue)
+            const led1Geo = new THREE.SphereGeometry(0.06, 8, 8);
+            const led1Mat = new THREE.MeshBasicMaterial({ color: 0x4a8eff });
+            const led1Mesh = new THREE.Mesh(led1Geo, led1Mat);
+            led1Mesh.position.copy(roomLights.l1.position);
+            led1Mesh.userData.relay = 'l1';
+            roomGroup.add(led1Mesh);
 
-            // Light 2: West Wall (Relay 2)
-            roomLights.l2 = new THREE.PointLight(0x48d5ff, 1.2, 3);
-            roomLights.l2.position.set(-1.8, 0.4, 0);
+            // RELAY 2: Warm LED strip on West wall, high up (center of west wall)
+            roomLights.l2 = new THREE.PointLight(0xffe08a, 0, 3.0);
+            roomLights.l2.position.set(-1.8, 0.95, 0.0);
             roomGroup.add(roomLights.l2);
+            // Visual LED bar for R2 (warm)
+            const led2Geo = new THREE.BoxGeometry(0.04, 0.04, 0.6);
+            const led2Mat = new THREE.MeshBasicMaterial({ color: 0xffe08a });
+            const led2Mesh = new THREE.Mesh(led2Geo, led2Mat);
+            led2Mesh.position.copy(roomLights.l2.position);
+            led2Mesh.userData.relay = 'l2';
+            roomGroup.add(led2Mesh);
+
+            // Update LED mesh emissivity based on relay state
+            function updateLEDMeshes() {
+                led1Mat.color.set(roomLights.l1.visible !== false && roomLights.l1.intensity > 0 ? 0x4a8eff : 0x1a2040);
+                led2Mat.color.set(roomLights.l2.visible !== false && roomLights.l2.intensity > 0 ? 0xffe08a : 0x3a3020);
+            }
 
             function animate() {
                 requestAnimationFrame(animate);
                 roomGroup.rotation.y += 0.003;
+                updateLEDMeshes();
                 renderer.render(scene, camera);
             }
             animate();
-            animate();
-            
+
             window.addEventListener('resize', () => {
                 const nw = container.offsetWidth, nh = container.offsetHeight;
                 camera.aspect = nw / nh;
