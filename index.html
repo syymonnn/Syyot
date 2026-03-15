@@ -1013,45 +1013,102 @@
         }
 
         .scenarios {
-            display: flex;
-            gap: 6px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .scenario-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--txt);
-            padding: 4px 10px;
-            border-radius: var(--rp);
-            font-size: 10px;
-            font-weight: 600;
+            padding: 16px 10px;
+            border-radius: var(--rs);
+            font-size: 11px;
+            font-weight: 700;
             cursor: pointer;
-            transition: .2s;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .scenario-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .scenario-btn.active {
-            background: rgba(187, 255, 0, 0.1);
-            border-color: rgba(187, 255, 0, 0.4);
+            background: rgba(187, 255, 0, 0.12);
+            border-color: rgba(187, 255, 0, 0.5);
             color: var(--primary);
-            box-shadow: 0 0 10px rgba(187, 255, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(187, 255, 0, 0.2);
+            transform: translateY(-2px);
         }
 
-        html.light .scenario-btn {
-            background: rgba(0, 0, 0, 0.04);
-            border-color: rgba(0, 0, 0, 0.1);
-            color: var(--txt);
+        .scenario-btn svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+            transition: .3s;
         }
 
-        html.light .scenario-btn.active {
-            background: rgba(33, 89, 255, 0.1);
-            border-color: rgba(33, 89, 255, 0.4);
+        .scenario-btn.active svg {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        /* ── INTERNAL CARD TABS ── */
+        .ctabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            gap: 4px;
+        }
+
+        .ctab {
+            flex: 1;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .ctab.active {
+            background: rgba(255,255,255,0.08);
             color: var(--primary);
         }
+
+        .cpanel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cpanel.active {
+            display: flex;
+        }
+
+        html.light .ctabs { background: rgba(0,0,0,0.05); }
+        html.light .ctab.active { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        html.light .scenario-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        html.light .scenario-btn.active { background: rgba(22, 163, 74, .08); border-color: rgba(22, 163, 74, .3); }
 
         .dr {
             display: flex;
@@ -2302,117 +2359,137 @@
         <!-- CARD DISPOSITIVI -->
 
         <div class="cdev glass">
-            <div class="ch" style="margin-bottom:16px">
+            <div class="ch">
                 <span class="clbl">Dispositivi</span>
+                <div class="lpill" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: var(--muted);">HUB M01</div>
+            </div>
+
+            <!-- CARD INTERNAL TABS -->
+            <div class="ctabs">
+                <button class="ctab active" onclick="swInternal('ctrl')">Controlli</button>
+                <button class="ctab" onclick="swInternal('twin')">Twin & Energy</button>
+                <button class="ctab" onclick="swInternal('sched')">Schedule</button>
+            </div>
+
+            <!-- PANEL CONTROLS -->
+            <div class="cpanel active" id="cp-ctrl">
                 <div class="scenarios">
-                    <button class="scenario-btn" id="btn-scen-off" onclick="triggerScenario('off')">Off</button>
-                    <button class="scenario-btn" id="btn-scen-focus" onclick="triggerScenario('focus')">Focus</button>
-                    <button class="scenario-btn" id="btn-scen-relax" onclick="triggerScenario('relax')">Relax</button>
+                    <button class="scenario-btn" id="btn-scen-off" onclick="triggerScenario('off')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                        Off
+                    </button>
+                    <button class="scenario-btn" id="btn-scen-focus" onclick="triggerScenario('focus')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                        Focus
+                    </button>
+                    <button class="scenario-btn" id="btn-scen-relax" onclick="triggerScenario('relax')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6.36 6.36 0 0 0-3.64 1.14 6.7 6.7 0 0 0-2.4 3A7 7 0 0 0 12 21a7 7 0 0 0 6.04-3.46 6.7 6.7 0 0 0-2.4-3.04A6.36 6.36 0 0 0 12 13.5v-1.5z"/></svg>
+                        Relax
+                    </button>
                 </div>
-            </div>
-            <div id="ditem" class="ditem">
-                <div class="dico">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
-                        <path d="M9 18h6" />
-                        <path d="M10 22h4" />
-                    </svg>
+
+                <div id="ditem" class="ditem">
+                    <div class="dico">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
+                            <path d="M9 18h6" />
+                            <path d="M10 22h4" />
+                        </svg>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div class="dnm">Lighting</div>
+                        <div class="dsb">Atmosfera</div>
+                    </div>
+                    <div class="dr">
+                        <span class="dst" id="dtxt">SPENTO</span>
+                        <div id="tgl" class="tgl" onclick="toggleRelay()">
+                            <div class="knob"></div>
+                            <div class="tring"></div>
+                        </div>
+                    </div>
                 </div>
-                <div style="flex:1;min-width:0">
-                    <div class="dnm">Lighting</div>
-                    <div class="dsb">Atmosfera</div>
-                </div>
-                <div class="dr">
-                    <span class="dst" id="dtxt">SPENTO</span>
-                    <div id="tgl" class="tgl" onclick="toggleRelay()">
-                        <div class="knob"></div>
-                        <div class="tring"></div>
+                <div id="ditem2" class="ditem">
+                    <div class="dico">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v3" />
+                            <path d="M12 19v3" />
+                            <path d="M4.22 4.22l2.12 2.12" />
+                            <path d="M17.66 17.66l2.12 2.12" />
+                            <path d="M2 12h3" />
+                            <path d="M19 12h3" />
+                            <path d="M4.22 19.78l2.12-2.12" />
+                            <path d="M17.66 6.34l2.12-2.12" />
+                        </svg>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div class="dnm">Lighting 2</div>
+                        <div class="dsb">Stanza</div>
+                    </div>
+                    <div class="dr">
+                        <span class="dst" id="dtxt2">SPENTO</span>
+                        <div id="tgl2" class="tgl" onclick="toggleRelay2()">
+                            <div class="knob"></div>
+                            <div class="tring"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="ditem2" class="ditem">
-                <div class="dico">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v3" />
-                        <path d="M12 19v3" />
-                        <path d="M4.22 4.22l2.12 2.12" />
-                        <path d="M17.66 17.66l2.12 2.12" />
-                        <path d="M2 12h3" />
-                        <path d="M19 12h3" />
-                        <path d="M4.22 19.78l2.12-2.12" />
-                        <path d="M17.66 6.34l2.12-2.12" />
-                    </svg>
-                </div>
-                <div style="flex:1;min-width:0">
-                    <div class="dnm">Lighting 2</div>
-                    <div class="dsb">Stanza</div>
-                </div>
-                <div class="dr">
-                    <span class="dst" id="dtxt2">SPENTO</span>
-                    <div id="tgl2" class="tgl" onclick="toggleRelay2()">
-                        <div class="knob"></div>
-                        <div class="tring"></div>
+
+            <!-- PANEL TWIN & ENERGY -->
+            <div class="cpanel" id="cp-twin" style="gap: 8px;">
+                <div id="three-container" style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2); position: relative; z-index: 5;"></div>
+                
+                <div class="cenergy" style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 24px; font-weight: 700; font-family: 'Space Grotesk';" id="energyVal">0.000</div>
+                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase;">kWh Odierni</div>
+                        </div>
+                        <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600;" id="energyCost">€ 0.00</div>
+                            <div style="font-size: 9px; color: var(--muted); text-transform: uppercase;">Costo Est.</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="sched-wrap">
-                <div class="sched-title">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                        stroke-linecap="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    Timer automatico
-                </div>
-                <div class="sched-rows">
-                    <div class="sched-row">
-                        <span class="sched-lbl" style="color:var(--green)">L1 ON</span>
-                        <input type="time" class="sched-time" id="s-l1-on" value="20:00">
-                        <div class="sched-en" id="en-l1-on" onclick="toggleSched('l1-on')"><svg width="10" height="10"
-                                viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"
-                                stroke-linecap="round">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg></div>
+
+            <!-- PANEL SCHEDULE -->
+            <div class="cpanel" id="cp-sched">
+                <div class="sched-wrap" style="border: none; background: transparent; padding: 0;">
+                    <div class="sched-rows">
+                        <!-- L1 Rows -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <span class="sched-lbl" style="color:var(--green)">L1 ON</span>
+                                <input type="time" class="sched-time" id="s-l1-on" value="20:00" style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l1-on" onclick="toggleSched('l1-on')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            </div>
+                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <span class="sched-lbl" style="color:var(--danger)">L1 OFF</span>
+                                <input type="time" class="sched-time" id="s-l1-off" value="23:30" style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l1-off" onclick="toggleSched('l1-off')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            </div>
+                        </div>
+                        <!-- L2 Rows -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <span class="sched-lbl" style="color:var(--yellow)">L2 ON</span>
+                                <input type="time" class="sched-time" id="s-l2-on" value="20:00" style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l2-on" onclick="toggleSched('l2-on')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            </div>
+                            <div class="sched-row" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                <span class="sched-lbl" style="color:var(--danger)">L2 OFF</span>
+                                <input type="time" class="sched-time" id="s-l2-off" value="23:30" style="font-size: 12px; padding: 3px 5px;">
+                                <div class="sched-en" id="en-l2-off" onclick="toggleSched('l2-off')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="sched-row">
-                        <span class="sched-lbl" style="color:var(--danger)">L1 OFF</span>
-                        <input type="time" class="sched-time" id="s-l1-off" value="23:30">
-                        <div class="sched-en" id="en-l1-off" onclick="toggleSched('l1-off')"><svg width="10" height="10"
-                                viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"
-                                stroke-linecap="round">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg></div>
-                    </div>
-                    <div class="sched-row">
-                        <span class="sched-lbl" style="color:var(--yellow)">L2 ON</span>
-                        <input type="time" class="sched-time" id="s-l2-on" value="20:00">
-                        <div class="sched-en" id="en-l2-on" onclick="toggleSched('l2-on')"><svg width="10" height="10"
-                                viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"
-                                stroke-linecap="round">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg></div>
-                    </div>
-                    <div class="sched-row">
-                        <span class="sched-lbl" style="color:var(--danger)">L2 OFF</span>
-                        <input type="time" class="sched-time" id="s-l2-off" value="23:30">
-                        <div class="sched-en" id="en-l2-off" onclick="toggleSched('l2-off')"><svg width="10" height="10"
-                                viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5"
-                                stroke-linecap="round">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg></div>
-                    </div>
-                </div>
-                <button class="sched-apply" onclick="saveSchedule()">Salva programmazione</button>
-                <div class="sched-status" id="schedStatus"></div>
-                <div style="display:flex;align-items:center;gap:5px;margin-top:2px;">
-                    <div class="sched-sync-dot" id="syncDot"
-                        style="width:5px;height:5px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s;flex-shrink:0;">
-                    </div>
-                    <span id="schedSyncTxt" style="font-size:8px;color:var(--muted);font-family:'DM Mono',monospace;">In
-                        attesa sync...</span>
+                    <button class="sched-apply" onclick="saveSchedule()" style="margin-top: 8px;">Salva</button>
+                    <div id="schedSyncTxt" style="font-size:8px; color:var(--muted); text-align: center; margin-top: 4px;">In attesa sync...</div>
                 </div>
             </div>
         </div>
@@ -2619,35 +2696,6 @@
 
         </div>
 
-        <!-- CARD ENERGY & INTELLIGENCE -->
-        <div class="cenergy glass" style="margin-top: 8px;">
-            <div class="ch">
-                <span class="clbl">Energy & Intelligence</span>
-                <div class="lpill" style="background: rgba(187, 255, 0, 0.05); border-color: var(--primary);">
-                    STIMA KWH
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 20px; padding: 10px 0;">
-                <div style="flex: 1;">
-                    <div style="font-size: 28px; font-weight: 700; font-family: 'Space Grotesk';" id="energyVal">0.000</div>
-                    <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Consumo stimato oggi (kWh)</div>
-                </div>
-                <div style="width: 1px; height: 35px; background: rgba(255,255,255,0.1);"></div>
-                <div style="flex: 1;">
-                    <div style="font-size: 16px; font-weight: 600;" id="energyCost">€ 0.00</div>
-                    <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Costo stimato (~0.25€/kWh)</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CARD 3D VISUALIZER -->
-        <div class="c3d glass" style="height: 220px; padding: 0; overflow: hidden; border-radius: var(--r);">
-            <div class="ch" style="position: absolute; top: 16px; left: 20px; z-index: 5; margin: 0; pointer-events: none;">
-                <span class="clbl">Digital Twin 3D</span>
-            </div>
-            <div id="three-container" style="width: 100%; height: 100%;"></div>
-        </div>
-
         <div class="foot">
             <div id="ticker-wrap" style="width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
                 <div id="ticker" style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
@@ -2762,6 +2810,20 @@
                 document.getElementById('cIco').innerHTML = CICO[k];
                 document.getElementById('cLbl').textContent = l;
                 document.getElementById('cDsc').textContent = d;
+            }
+        }
+
+        /* ── INTERNAL UI CONTROLLER ── */
+        function swInternal(id) {
+            document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.cpanel').forEach(p => p.classList.remove('active'));
+            // Find the button that was clicked
+            const btn = document.querySelector(`.ctab[onclick="swInternal('${id}')"]`);
+            if (btn) btn.classList.add('active');
+            document.getElementById('cp-' + id).classList.add('active');
+            playBeep(900, 0.05, 'sine', 0.02);
+            if (id === 'twin') {
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
             }
         }
 
@@ -3155,6 +3217,7 @@
                 setRelay(true); mc.publish(TR, 'ON');
                 setTimeout(() => { setRelay2(false); mc.publish(TR2, 'OFF'); }, 300);
             }
+            playBeep(btn.id.includes('off') ? 400 : 800, 0.1, 'sine', 0.04);
         }
 
         function mqttConnect() {
@@ -3214,62 +3277,59 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Room Wireframe (Stanza rettangolare)
+            const roomGroup = new THREE.Group();
+            scene.add(roomGroup);
+
+            // Room Wireframe
             const roomGeo = new THREE.BoxGeometry(4, 2.5, 3);
             const edges = new THREE.EdgesGeometry(roomGeo);
-            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.3 }));
-            scene.add(line);
+            const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.3 }));
+            roomGroup.add(frame);
 
-            // Furnishings (Bed & Desk)
+            // Furnishings
             const bedGeo = new THREE.BoxGeometry(1.6, 0.4, 2);
             const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x101a30, wireframe: true }));
             bed.position.set(1.2, -1.05, 0.5); // South side
-            scene.add(bed);
+            roomGroup.add(bed);
 
             const deskGeo = new THREE.BoxGeometry(1.2, 0.75, 0.6);
             const desk = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xccff00, emissive: 0x1a2100, wireframe: true }));
-            desk.position.set(1.4, -0.85, -1.2); // North side
-            scene.add(desk);
+            desk.position.set(1.4, -0.875, -1.2); // North side - On Floor
+            roomGroup.add(desk);
 
             // Doors (West wall: -2)
             const doorGeo = new THREE.PlaneGeometry(0.8, 2);
             const doorMat = new THREE.MeshBasicMaterial({ color: 0x5d7094, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
             const door1 = new THREE.Mesh(doorGeo, doorMat);
             door1.rotation.y = Math.PI / 2;
-            door1.position.set(-1.99, -0.25, 1); // West-South
-            scene.add(door1);
+            door1.position.set(-1.99, -0.25, 1);
+            roomGroup.add(door1);
 
             const door2 = new THREE.Mesh(doorGeo, doorMat);
             door2.rotation.y = Math.PI / 2;
-            door2.position.set(-1.99, -0.25, -1); // West-North
-            scene.add(door2);
+            door2.position.set(-1.99, -0.25, -1);
+            roomGroup.add(door2);
 
             // Lights
-            roomLights.ambient = new THREE.AmbientLight(0xbbff00, 0.5);
+            roomLights.ambient = new THREE.AmbientLight(0xbbff00, 0.3);
             scene.add(roomLights.ambient);
 
-            roomLights.l1 = new THREE.PointLight(0xbbff00, 2, 5);
-            roomLights.l1.position.set(-1, 0.8, 0);
-            scene.add(roomLights.l1);
+            // Light 1: Above Desk (Relay 1)
+            roomLights.l1 = new THREE.PointLight(0xbbff00, 1.2, 3);
+            roomLights.l1.position.set(1.4, 0.4, -1.2); 
+            roomGroup.add(roomLights.l1);
 
-            roomLights.l2 = new THREE.PointLight(0x48d5ff, 2, 5);
-            roomLights.l2.position.set(1, 0.8, 0);
-            scene.add(roomLights.l2);
+            // Light 2: West Wall (Relay 2)
+            roomLights.l2 = new THREE.PointLight(0x48d5ff, 1.2, 3);
+            roomLights.l2.position.set(-1.8, 0.4, 0);
+            roomGroup.add(roomLights.l2);
 
-            // Animate
             function animate() {
                 requestAnimationFrame(animate);
-                line.rotation.y += 0.003;
-                bed.rotation.y = line.rotation.y;
-                bed.position.x = 1.2 * Math.cos(line.rotation.y) - 0.5 * Math.sin(line.rotation.y);
-                bed.position.z = 1.2 * Math.sin(line.rotation.y) + 0.5 * Math.cos(line.rotation.y);
-                
-                desk.rotation.y = line.rotation.y;
-                desk.position.x = 1.4 * Math.cos(line.rotation.y) - (-1.2) * Math.sin(line.rotation.y);
-                desk.position.z = 1.4 * Math.sin(line.rotation.y) + (-1.2) * Math.cos(line.rotation.y);
-
+                roomGroup.rotation.y += 0.003;
                 renderer.render(scene, camera);
             }
+            animate();
             animate();
             
             window.addEventListener('resize', () => {
