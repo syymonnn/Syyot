@@ -3662,12 +3662,12 @@
             // Door 2: West wall, near bed
             const door2 = new THREE.Mesh(doorGeo, doorMat.clone());
             door2.rotation.y = Math.PI / 2;
-            door2.position.set(-1.49, -0.25, 0.5);
+            door2.position.set(-1.49, -0.25, 1.65); // Moved closer to South wall (2.25)
             roomGroup.add(door2);
             const de2 = new THREE.EdgesGeometry(doorGeo);
             const dl2 = new THREE.LineSegments(de2, doorEdgeMat.clone());
             dl2.rotation.y = Math.PI / 2;
-            dl2.position.set(-1.49, -0.25, 0.5);
+            dl2.position.set(-1.49, -0.25, 1.65);
             roomGroup.add(dl2);
 
             // Soft ambient
