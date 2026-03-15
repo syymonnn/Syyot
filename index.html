@@ -3113,7 +3113,10 @@
         const $tgl2 = document.getElementById('tgl2'), $dtxt2 = document.getElementById('dtxt2'), $di2 = document.getElementById('ditem2');
         function setConn(ok, msg) { $dot.classList.toggle('ok', ok); $conn.textContent = msg; }
         function bounceTgl(tgl) { tgl.classList.remove('bounce'); void tgl.offsetWidth; tgl.classList.add('bounce'); setTimeout(() => tgl.classList.remove('bounce'), 450); }
-        function setRelay(on) { rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); trackUptime(1, on); }
+        function setRelay(on) { 
+            console.log(`[RELAY 1] Action: ${on ? 'ON' : 'OFF'} | Source: ${new Error().stack.split('\n')[2].trim()}`);
+            rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); trackUptime(1, on); 
+        }
         function toggleRelay() {
             const n = rs ? 0 : 1; setRelay(n === 1);
             if (mc?.connected) {
@@ -3123,7 +3126,10 @@
             }
             playBeep(800, 0.1, 'square', 0.05);
         }
-        function setRelay2(on) { rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); trackUptime(2, on); }
+        function setRelay2(on) { 
+            console.log(`[RELAY 2] Action: ${on ? 'ON' : 'OFF'} | Source: ${new Error().stack.split('\n')[2].trim()}`);
+            rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); trackUptime(2, on); 
+        }
         function toggleRelay2() {
             const n = rs2 ? 0 : 1; setRelay2(n === 1);
             if (mc?.connected) {
@@ -3308,11 +3314,12 @@
         }
 
         // Periodic checkpoint to avoid losing data if page closes while ON
+        // FIX: To avoid double counting when multiple devices are open, 
+        // we only update UI or "virtual" consumption, but we don't save intermediate deltas to the log.
+        // Instead, we rely on session start/end and the 'retained' MQTT timestamps.
         setInterval(() => {
-            if (energyState.l1Start) { addKWh(1, (30000 / 3600000) * E_P1); energyState.l1Start = Date.now(); }
-            if (energyState.l2Start) { addKWh(2, (30000 / 3600000) * E_P2); energyState.l2Start = Date.now(); }
             updateEnergyUI();
-        }, 30000);
+        }, 15000);
 
         function triggerStream() {
             const now = Date.now(); if (now - lastStream < 1000) return; lastStream = now;
@@ -3550,7 +3557,7 @@
                 mc.subscribe(TEL, { qos: 1 });
                 setSyncStatus(false, 'Caricamento schedule...');
                 schedFallbackTimer = setTimeout(() => { const s = document.getElementById('schedSyncTxt'); if (s && s.textContent === 'Caricamento schedule...') setSyncStatus(false, 'Nessuna programmazione salvata'); }, 10000);
-                setTimeout(() => { if (mc?.connected) mc.publish('symo/room/relay2', 'STATUS', { qos: 0 }); }, 1200);
+                // setTimeout(() => { if (mc?.connected) mc.publish('symo/room/relay2', 'STATUS', { qos: 0 }); }, 1200);
             });
             mc.on('message', (t, p) => {
                 // Handle energy timestamp catch-up
