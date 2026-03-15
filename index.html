@@ -3089,7 +3089,7 @@
             SCHED_KEYS.forEach(k => {
                 if (!schedEnabled[k]) return; const t = document.getElementById('s-' + k).value; if (t !== cur) return;
                 const nowMin = now.getHours() * 60 + now.getMinutes(); if (schedTimers['last-' + k] === nowMin) return; schedTimers['last-' + k] = nowMin;
-                if (k === 'l1-on') { setRelay(true); mc.publish(TR, 'ON'); } else if (k === 'l1-off') { setRelay(false); mc.publish(TR, 'OFF'); } else if (k === 'l2-on') { setRelay2(true); mc.publish(TR2, 'ON'); } else if (k === 'l2-off') { setRelay2(false); mc.publish(TR2, 'OFF'); }
+                if (k === 'l1-on') { setRelay(true, 'Schedule_ON'); mc.publish(TR, 'ON'); } else if (k === 'l1-off') { setRelay(false, 'Schedule_OFF'); mc.publish(TR, 'OFF'); } else if (k === 'l2-on') { setRelay2(true, 'Schedule_ON'); mc.publish(TR2, 'ON'); } else if (k === 'l2-off') { setRelay2(false, 'Schedule_OFF'); mc.publish(TR2, 'OFF'); }
                 const st = document.getElementById('schedStatus'); const labels = { 'l1-on': 'L1 acceso', 'l1-off': 'L1 spento', 'l2-on': 'L2 acceso', 'l2-off': 'L2 spento' };
                 st.textContent = '⚡ Automatico: ' + labels[k] + ' alle ' + t; st.className = 'sched-status ok';
                 setTimeout(() => { st.textContent = ''; st.className = 'sched-status'; }, 4000);
@@ -3113,28 +3113,28 @@
         const $tgl2 = document.getElementById('tgl2'), $dtxt2 = document.getElementById('dtxt2'), $di2 = document.getElementById('ditem2');
         function setConn(ok, msg) { $dot.classList.toggle('ok', ok); $conn.textContent = msg; }
         function bounceTgl(tgl) { tgl.classList.remove('bounce'); void tgl.offsetWidth; tgl.classList.add('bounce'); setTimeout(() => tgl.classList.remove('bounce'), 450); }
-        function setRelay(on) { 
-            console.log(`[RELAY 1] Action: ${on ? 'ON' : 'OFF'} | Source: ${new Error().stack.split('\n')[2].trim()}`);
+        function setRelay(on, source = 'unknown') { 
+            if (rs === (on ? 1 : 0)) return; // Guard: only proceed if state actually changes
+            console.log(`[RELAY 1] Action: ${on ? 'ON' : 'OFF'} | State Change: ${rs} -> ${on ? 1 : 0} | Source: ${source}`);
             rs = on ? 1 : 0; $tgl.classList.toggle('on', on); $di.classList.toggle('on', on); $dtxt.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl.classList.remove('burst'); void $tgl.offsetWidth; $tgl.classList.add('burst'); bounceTgl($tgl); setTimeout(() => $tgl.classList.remove('burst'), 520); trackUptime(1, on); 
         }
         function toggleRelay() {
-            const n = rs ? 0 : 1; setRelay(n === 1);
+            const n = rs ? 0 : 1; setRelay(n === 1, 'UI_Toggle');
             if (mc?.connected) {
                 mc.publish(TR, n ? 'ON' : 'OFF');
-                // Publish retained timestamp when turning ON, clear when OFF
                 mc.publish(TE1, n ? String(Date.now()) : '', { retain: true, qos: 1 });
             }
             playBeep(800, 0.1, 'square', 0.05);
         }
-        function setRelay2(on) { 
-            console.log(`[RELAY 2] Action: ${on ? 'ON' : 'OFF'} | Source: ${new Error().stack.split('\n')[2].trim()}`);
+        function setRelay2(on, source = 'unknown') { 
+            if (rs2 === (on ? 1 : 0)) return; // Guard: only proceed if state actually changes
+            console.log(`[RELAY 2] Action: ${on ? 'ON' : 'OFF'} | State Change: ${rs2} -> ${on ? 1 : 0} | Source: ${source}`);
             rs2 = on ? 1 : 0; $tgl2.classList.toggle('on', on); $di2.classList.toggle('on', on); $dtxt2.textContent = on ? 'ACCESO' : 'SPENTO'; $tgl2.classList.remove('burst'); void $tgl2.offsetWidth; $tgl2.classList.add('burst'); bounceTgl($tgl2); setTimeout(() => $tgl2.classList.remove('burst'), 520); trackUptime(2, on); 
         }
         function toggleRelay2() {
-            const n = rs2 ? 0 : 1; setRelay2(n === 1);
+            const n = rs2 ? 0 : 1; setRelay2(n === 1, 'UI_Toggle');
             if (mc?.connected) {
                 mc.publish(TR2, n ? 'ON' : 'OFF');
-                // Publish retained timestamp when turning ON, clear when OFF
                 mc.publish(TE2, n ? String(Date.now()) : '', { retain: true, qos: 1 });
             }
             playBeep(1000, 0.1, 'square', 0.05);
@@ -3531,14 +3531,14 @@
             if (btn) btn.classList.add('active');
 
             if (type === 'off') {
-                setRelay(false); mc.publish(TR, 'OFF');
-                setTimeout(() => { setRelay2(false); mc.publish(TR2, 'OFF'); }, 300);
+                setRelay(false, 'Scenario_OFF'); mc.publish(TR, 'OFF');
+                setTimeout(() => { setRelay2(false, 'Scenario_OFF'); mc.publish(TR2, 'OFF'); }, 300);
             } else if (type === 'focus') {
-                setRelay(true); mc.publish(TR, 'ON');
-                setTimeout(() => { setRelay2(true); mc.publish(TR2, 'ON'); }, 300);
+                setRelay(true, 'Scenario_Focus'); mc.publish(TR, 'ON');
+                setTimeout(() => { setRelay2(true, 'Scenario_Focus'); mc.publish(TR2, 'ON'); }, 300);
             } else if (type === 'relax') {
-                setRelay(true); mc.publish(TR, 'ON');
-                setTimeout(() => { setRelay2(false); mc.publish(TR2, 'OFF'); }, 300);
+                setRelay(true, 'Scenario_Relax'); mc.publish(TR, 'ON');
+                setTimeout(() => { setRelay2(false, 'Scenario_Relax'); mc.publish(TR2, 'OFF'); }, 300);
             }
             playBeep(btn.id.includes('off') ? 400 : 800, 0.1, 'sine', 0.04);
         }
@@ -3622,8 +3622,8 @@
                     }
 
                     triggerStream();
-                    if (typeof j.relay === 'number') { setRelay(j.relay === 1); if (roomLights.l1) roomLights.l1.intensity = (j.relay === 1) ? 1.8 : 0; }
-                    if (typeof j.relay2 === 'number') { setRelay2(j.relay2 === 1); if (roomLights.l2) roomLights.l2.intensity = (j.relay2 === 1) ? 1.8 : 0; }
+                    if (typeof j.relay === 'number') { setRelay(j.relay === 1, `MQTT_Data_Msg[relay:${j.relay}]`); if (roomLights.l1) roomLights.l1.intensity = (j.relay === 1) ? 1.8 : 0; }
+                    if (typeof j.relay2 === 'number') { setRelay2(j.relay2 === 1, `MQTT_Data_Msg[relay2:${j.relay2}]`); if (roomLights.l2) roomLights.l2.intensity = (j.relay2 === 1) ? 1.8 : 0; }
                     if (j.present !== undefined || j.out !== undefined) { radarState.present = j.out ?? j.present ?? false; radarState.near = j.near ?? false; radarState.moving = j.moving ?? false; radarState.act = j.act ?? 0; radarState.ema = j.ema ?? 0; updatePresenceUI(); }
                     $last.textContent = 'Last: ' + new Date().toLocaleTimeString('it-IT'); updDelta();
                 } catch (e) { }
