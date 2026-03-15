@@ -3103,9 +3103,10 @@
         const TR = 'symo/room/relay';
         const TR2 = 'symo/room/relay2';
         // Energy timestamp topics (retained) - store when a relay was turned ON
-        const TE1 = 'symo/room/energy/l1ts'; // relay 1 on-timestamp
-        const TE2 = 'symo/room/energy/l2ts'; // relay 2 on-timestamp
-        const TEL = 'symo/room/energy/log';  // universal energy log log
+        // Changed prefix to `symo_storage` to prevent the ESP from receiving these and crashing
+        const TE1 = 'symo_storage/energy/l1ts'; // relay 1 on-timestamp
+        const TE2 = 'symo_storage/energy/l2ts'; // relay 2 on-timestamp
+        const TEL = 'symo_storage/energy/log';  // universal energy log log
         let mc = null, rs = 0, rs2 = 0;
         const $dot = document.getElementById('dot'), $conn = document.getElementById('connText');
         const $T = document.getElementById('temp'), $H = document.getElementById('hum'), $last = document.getElementById('lastMsg');
@@ -3122,7 +3123,7 @@
             const n = rs ? 0 : 1; setRelay(n === 1, 'UI_Toggle');
             if (mc?.connected) {
                 mc.publish(TR, n ? 'ON' : 'OFF');
-                // mc.publish(TE1, n ? String(Date.now()) : '', { retain: true, qos: 1 });
+                mc.publish(TE1, n ? String(Date.now()) : '', { retain: true, qos: 1 });
             }
             playBeep(800, 0.1, 'square', 0.05);
         }
@@ -3135,7 +3136,7 @@
             const n = rs2 ? 0 : 1; setRelay2(n === 1, 'UI_Toggle');
             if (mc?.connected) {
                 mc.publish(TR2, n ? 'ON' : 'OFF');
-                // mc.publish(TE2, n ? String(Date.now()) : '', { retain: true, qos: 1 });
+                mc.publish(TE2, n ? String(Date.now()) : '', { retain: true, qos: 1 });
             }
             playBeep(1000, 0.1, 'square', 0.05);
         }
@@ -3202,9 +3203,9 @@
                 keys.slice(0, keys.length - 730).forEach(k => delete energyLog[k]);
             }
             localStorage.setItem('symo-energylog', JSON.stringify(energyLog));
-            // if (mc?.connected) {
-            //     mc.publish(TEL, JSON.stringify(energyLog), { retain: true, qos: 1 });
-            // }
+            if (mc?.connected) {
+                mc.publish(TEL, JSON.stringify(energyLog), { retain: true, qos: 1 });
+            }
         }
 
         function getEnergyRange(days) {
@@ -3557,7 +3558,6 @@
                 mc.subscribe(TEL, { qos: 1 });
                 setSyncStatus(false, 'Caricamento schedule...');
                 schedFallbackTimer = setTimeout(() => { const s = document.getElementById('schedSyncTxt'); if (s && s.textContent === 'Caricamento schedule...') setSyncStatus(false, 'Nessuna programmazione salvata'); }, 10000);
-                setTimeout(() => { if (mc?.connected) mc.publish('symo/room/relay2', 'STATUS', { qos: 0 }); }, 1200);
             });
             mc.on('message', (t, p) => {
                 // Handle energy timestamp catch-up
