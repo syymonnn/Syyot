@@ -1,0 +1,15 @@
+{
+  "name": "Syynapse Room",
+  "short_name": "Syynapse",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#030508",
+  "background_color": "#030508",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ]
+}
