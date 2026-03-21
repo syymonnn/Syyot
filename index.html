@@ -1526,6 +1526,56 @@
             display: flex !important;
         }
 
+        /* ── ENERGY HUB ── */
+        .ebar {
+            flex: 1;
+            border-radius: 3px 3px 0 0;
+            background: rgba(255, 255, 255, 0.12);
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .ebar:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scaleY(1.05);
+        }
+
+        .ebar.today {
+            background: rgba(187, 255, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+        }
+
+        .ebar.sel {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            z-index: 2;
+        }
+
+        .ectab {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: .2s;
+            font-family: 'DM Mono';
+        }
+
+        .ectab.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .elist-item:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
         /* PANEL ESTERNO */
         .pext {
             grid-template-columns: 1fr 1fr;
@@ -2566,18 +2616,18 @@
                 <div
                     style="background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
                     <div style="display: flex; gap: 4px; margin-bottom: 10px;">
-                        <button class="ectab active" id="et-day" onclick="swEnergy('day')">Oggi</button>
-                        <button class="ectab" id="et-week" onclick="swEnergy('week')">7 Giorni</button>
-                        <button class="ectab" id="et-month" onclick="swEnergy('month')">30 Giorni</button>
-                        <button class="ectab" id="et-total" onclick="swEnergy('total')">Totale</button>
+                        <button class="ectab" id="et-day" onclick="energyState.selectedKey=null;swEnergy('day')">Oggi</button>
+                        <button class="ectab" id="et-week" onclick="energyState.selectedKey=null;swEnergy('week')">7 Giorni</button>
+                        <button class="ectab" id="et-month" onclick="energyState.selectedKey=null;swEnergy('month')">30 Giorni</button>
+                        <button class="ectab" id="et-total" onclick="energyState.selectedKey=null;swEnergy('total')">Totale</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <div style="flex: 1;">
                             <div style="font-size: 26px; font-weight: 700; font-family: 'Space Grotesk'; color: var(--primary);"
                                 id="energyVal">0.000</div>
-                            <div
+                            <div id="energyTitle"
                                 style="font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">
-                                kWh</div>
+                                Oggi</div>
                         </div>
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1;">
@@ -2589,8 +2639,8 @@
                         <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
                         <div style="flex: 1; text-align: right;">
                             <div
-                                style="font-size: 9px; color: var(--primary); font-family: 'DM Mono'; font-weight: 700;">
-                                CALIBRATED</div>
+                                style="font-size: 9px; color: var(--primary); font-family: 'DM Mono'; font-weight: 700; cursor: pointer;" onclick="confirmReset()">
+                                [ RESET ]</div>
                             <div style="font-size: 8px; color: var(--muted); text-transform: uppercase;">Hardware Est.
                             </div>
                         </div>
@@ -2832,8 +2882,8 @@
                             </svg>
                         </div>
                         <div>
-                            <div class="pres-label state-empty" id="presLabel">In attesa radar...</div>
-                            <div class="pres-sub" id="presSub">Connetti MQTT</div>
+                            <div class="pres-label state-empty" id="presLabel">Radar Offline</div>
+                            <div class="pres-sub" id="presSub">Connetti MQTT per iniziare lo scan</div>
                         </div>
                     </div>
                     <div class="pres-chips">
@@ -2875,11 +2925,9 @@
     <div class="foot">
         <div id="ticker-wrap"
             style="width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
-            <div id="ticker"
-                style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
-                SISTEMA ONLINE · PROTOCOLLO ZERO ATTIVO · CONNESSIONE MQTT STABILE · MONITORAGGIO AMBIENTALE IN CORSO ·
-                NESSUNA ANOMALIA RILEVATA · SCANNER RADAR ATTIVATO · FEED DATI REALTIME ·
-            </div>
+                <div id="ticker"
+                    style="display: inline-block; font-size: 8px; font-family: 'DM Mono'; color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; animation: tickerAnim 30s linear infinite;">
+                </div>
         </div>
         <div style="display: flex; justify-content: space-between; width: 100%;">
             <span>MQTT <code>symo/room</code> · Borgomanero</span>
@@ -3019,6 +3067,15 @@
             moving: `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M3 12h14"/><path d="M11 20l-4-4 4-4"/><path d="M21 8v8"/></svg>`,
             near: `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#ffb400" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4"/><path d="M17.7 6.3a8 8 0 0 1 0 11.4"/><path d="M9.2 9.2a4 4 0 0 0 0 5.6"/><path d="M14.8 9.2a4 4 0 0 1 0 5.6"/></svg>`,
         };
+
+        function updateTicker(status) {
+            const t = document.getElementById('ticker');
+            if (!t) return;
+            const base = "SISTEMA ONLINE · PROTOCOLLO ZERO ATTIVO · CONNESSIONE MQTT STABILE · MONITORAGGIO AMBIENTALE IN CORSO · NESSUNA ANOMALIA RILEVATA · ";
+            const suffix = status || "SCANNER RADAR IN ATTESA · FEED DATI REALTIME ·";
+            t.textContent = base + suffix;
+        }
+        updateTicker();
         function updatePresenceUI() {
             const r = radarState;
             const wrap = document.getElementById('presIcoWrap');
@@ -3032,8 +3089,11 @@
                 sub.textContent = 'Nessuna presenza rilevata dal radar';
                 document.getElementById('chipActivity').className = 'pres-chip';
                 document.getElementById('chipActivityTxt').textContent = 'Nessuna attività';
-                setSonar(false); return;
+                setSonar(false); 
+                updateTicker("SCANNER RADAR IN ATTESA · FEED DATI REALTIME ·");
+                return;
             }
+            updateTicker("SCANNER RADAR ATTIVATO · PRESENZA RILEVATA ·");
             document.getElementById('chipPresent').className = 'pres-chip lit-green'; setSonar(true);
             if (r.near && r.moving) { wrap.className = 'pres-ico-wrap state-near'; lbl.className = 'pres-label state-near'; wrap.innerHTML = PICO.near; lbl.textContent = 'Presenza Vicina Attiva'; sub.textContent = 'Movimento ravvicinato rilevato'; document.getElementById('chipMoving').className = 'pres-chip lit-yellow'; document.getElementById('chipNear').className = 'pres-chip lit-orange'; }
             else if (r.near) { wrap.className = 'pres-ico-wrap state-near'; lbl.className = 'pres-label state-near'; wrap.innerHTML = PICO.near; lbl.textContent = 'Presenza Vicina'; sub.textContent = 'Persona ferma a distanza ravvicinata'; document.getElementById('chipNear').className = 'pres-chip lit-orange'; }
@@ -3184,7 +3244,8 @@
         let energyState = {
             l1Start: null,
             l2Start: null,
-            activeView: 'total'
+            activeView: 'total',
+            selectedKey: null
         };
 
         function todayKey() {
@@ -3202,11 +3263,27 @@
             if (keys.length > 730) {
                 keys.slice(0, keys.length - 730).forEach(k => delete energyLog[k]);
             }
+            saveEnergy();
+        }
+
+        function saveEnergy() {
             localStorage.setItem('symo-energylog', JSON.stringify(energyLog));
             if (mc?.connected) {
                 mc.publish(TEL, JSON.stringify(energyLog), { retain: true, qos: 1 });
             }
         }
+
+        function resetEnergy() {
+            if (confirm("Sei sicuro di voler resettare tutti i dati di consumo?")) {
+                energyLog = {};
+                energyState.l1Start = rs ? Date.now() : null;
+                energyState.l2Start = rs2 ? Date.now() : null;
+                saveEnergy();
+                updateEnergyUI();
+                playBeep(400, 0.2, 'sawtooth', 0.05);
+            }
+        }
+        window.confirmReset = resetEnergy;
 
         function getEnergyRange(days) {
             const result = [];
@@ -3228,71 +3305,90 @@
 
         function updateEnergyUI() {
             const v = energyState.activeView;
-            let data, l1Total, l2Total;
+            let data;
 
-            if (v === 'day') {
-                data = getEnergyRange(1);
-            } else if (v === 'week') {
-                data = getEnergyRange(7);
-            } else if (v === 'month') {
-                data = getEnergyRange(30);
-            } else {
-                // Determine days since first log entry
+            if (v === 'day') data = getEnergyRange(1);
+            else if (v === 'week') data = getEnergyRange(7);
+            else if (v === 'month') data = getEnergyRange(30);
+            else {
                 const keys = Object.keys(energyLog).sort();
-                if (keys.length > 0) {
-                    const firstDate = new Date(keys[0]);
-                    const today = new Date();
-                    const diffTime = Math.abs(today - firstDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    data = getEnergyRange(diffDays);
-                } else {
-                    data = getEnergyRange(1);
-                }
+                data = getEnergyRange(keys.length > 0 ? (Math.ceil((Date.now() - new Date(keys[0])) / 86400000) + 1) : 1);
             }
 
-            // Include live (in-progress) session
-            let liveL1 = 0, liveL2 = 0;
-            const now = Date.now();
-            if (energyState.l1Start) liveL1 = ((now - energyState.l1Start) / 3600000) * E_P1;
-            if (energyState.l2Start) liveL2 = ((now - energyState.l2Start) / 3600000) * E_P2;
+            const today = todayKey();
+            const selKey = energyState.selectedKey;
+            let l1Disp = 0, l2Disp = 0, isShowingRange = !selKey;
 
-            l1Total = data.reduce((s, d) => s + d.l1, 0) + liveL1;
-            l2Total = data.reduce((s, d) => s + d.l2, 0) + liveL2;
-            const total = l1Total + l2Total;
+            if (selKey) {
+                const entry = data.find(d => d.key === selKey) || { l1: 0, l2: 0 };
+                l1Disp = entry.l1; l2Disp = entry.l2;
+                if (selKey === today) {
+                    if (energyState.l1Start) l1Disp += ((Date.now() - energyState.l1Start) / 3600000) * E_P1;
+                    if (energyState.l2Start) l2Disp += ((Date.now() - energyState.l2Start) / 3600000) * E_P2;
+                }
+            } else {
+                l1Disp = data.reduce((s, d) => s + d.l1, 0);
+                l2Disp = data.reduce((s, d) => s + d.l2, 0);
+                // Only add "live" if looking at today or total
+                if (v === 'day' || v === 'total') {
+                    if (energyState.l1Start) l1Disp += ((Date.now() - energyState.l1Start) / 3600000) * E_P1;
+                    if (energyState.l2Start) l2Disp += ((Date.now() - energyState.l2Start) / 3600000) * E_P2;
+                }
+            }
 
             const ev = document.getElementById('energyVal');
             const ec = document.getElementById('energyCost');
             const sl1 = document.getElementById('statusL1');
             const sl2 = document.getElementById('statusL2');
-            if (ev) ev.textContent = total.toFixed(3);
-            if (ec) ec.textContent = '\u20ac ' + (total * E_RATE).toFixed(2);
-            if (sl1) sl1.textContent = l1Total.toFixed(3);
-            if (sl2) sl2.textContent = l2Total.toFixed(3);
+            const etit = document.getElementById('energyTitle') || { textContent: '' };
+            
+            if (ev) ev.textContent = (l1Disp + l2Disp).toFixed(3);
+            if (ec) ec.textContent = '\u20ac ' + ((l1Disp + l2Disp) * E_RATE).toFixed(2);
+            if (sl1) sl1.textContent = l1Disp.toFixed(3);
+            if (sl2) sl2.textContent = l2Disp.toFixed(3);
+            
+            const rangeLabels = { day: 'Oggi', week: 'Ultima Settimana', month: 'Ultimo Mese', total: 'Totale Storico' };
+            etit.textContent = selKey ? `Dettaglio: ${selKey.split('-').reverse().join('/')}` : rangeLabels[v];
 
-            // Draw mini bar chart
+            // Render Chart
             const barsEl = document.getElementById('energyBars');
-            const listEl = document.getElementById('energyHistoryList');
             if (barsEl && data.length > 0) {
                 const maxDay = Math.max(...data.map(d => d.total), 0.001);
-                barsEl.innerHTML = data.map((d, i) => {
+                barsEl.innerHTML = data.map((d) => {
                     const h = Math.max(3, (d.total / maxDay) * 36);
-                    const isToday = i === data.length - 1;
-                    return `<div style="flex:1; height:${h}px; border-radius:3px 3px 0 0; background:${isToday ? 'var(--primary)' : 'rgba(255,255,255,0.12)'}; transition:.3s;" title="${d.key}\n${d.total.toFixed(3)} kWh"></div>`;
+                    const isSelected = d.key === selKey;
+                    const isToday = d.key === today;
+                    return `<div onclick="selBar('${d.key}')" class="ebar ${isSelected ? 'sel' : ''} ${isToday ? 'today' : ''}" style="height:${h}px;" title="${d.key}: ${d.total.toFixed(3)} kWh"></div>`;
                 }).join('');
             }
+
+            // Render History List
+            const listEl = document.getElementById('energyHistoryList');
             if (listEl) {
-                if (v === 'day') listEl.style.display = 'none';
-                else {
+                if (v === 'day') {
+                    listEl.style.display = 'none';
+                } else {
                     listEl.style.display = 'block';
-                    listEl.innerHTML = data.slice().reverse().map(d => `
-                        <div style="display:flex; justify-content:space-between; padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
-                            <span>${d.key.split('-').slice(1).join('/')}</span>
-                            <span style="color:var(--txt)">${d.total.toFixed(3)} kWh</span>
-                        </div>
-                    `).join('');
+                    listEl.innerHTML = data.slice().reverse().map(d => {
+                        const isSelected = d.key === selKey;
+                        return `
+                            <div onclick="selBar('${d.key}')" class="elist-item ${isSelected ? 'active' : ''}" 
+                                 style="display:flex; justify-content:space-between; padding:4px 6px; border-radius:4px; margin-bottom:2px; cursor:pointer; transition:.2s; border:1px solid ${isSelected ? 'var(--primary)' : 'transparent'}; background:${isSelected ? 'rgba(var(--primary-rgb),0.1)' : 'transparent'};">
+                                <span style="font-family:'DM Mono'; font-size:10px;">${d.key.split('-').reverse().slice(0,2).join('/')}</span>
+                                <span style="font-family:'DM Mono'; font-size:10px; color:${isSelected ? 'var(--primary)' : 'var(--muted)'}">${d.total.toFixed(3)} kWh</span>
+                            </div>
+                        `;
+                    }).join('');
                 }
             }
         }
+
+        function selBar(key) {
+            energyState.selectedKey = (energyState.selectedKey === key) ? null : key;
+            updateEnergyUI();
+            playBeep(energyState.selectedKey ? 1000 : 600, 0.05, 'sine', 0.03);
+        }
+        window.selBar = selBar;
 
         function trackUptime(relay, on) {
             const now = Date.now();
@@ -3319,8 +3415,23 @@
         // we only update UI or "virtual" consumption, but we don't save intermediate deltas to the log.
         // Instead, we rely on session start/end and the 'retained' MQTT timestamps.
         setInterval(() => {
-            updateEnergyUI();
-        }, 15000);
+            // Periodic checkpoint: if relays are ON, we save the current session delta to avoid data loss
+            const now = Date.now();
+            let changed = false;
+            if (energyState.l1Start) {
+                const diffH = (now - energyState.l1Start) / 3600000;
+                addKWh(1, diffH * E_P1);
+                energyState.l1Start = now; // increment start to now
+                changed = true;
+            }
+            if (energyState.l2Start) {
+                const diffH = (now - energyState.l2Start) / 3600000;
+                addKWh(2, diffH * E_P2);
+                energyState.l2Start = now;
+                changed = true;
+            }
+            if (!changed) updateEnergyUI();
+        }, 60000); // Checkpoint every minute
 
         function triggerStream() {
             const now = Date.now(); if (now - lastStream < 1000) return; lastStream = now;
@@ -3333,10 +3444,10 @@
         let chartInst = null;
 
         function updateReactiveColor(temp) {
-            let color = '#bbff00'; // Green (Ideale 19-23.5)
+            let color = '#bbff00'; // Green (Ideale 19-25)
             if (temp < 19) {
                 color = '#00aee7'; // Cold Blue
-            } else if (temp > 23.5) {
+            } else if (temp > 27.5) {
                 color = '#ff4f86'; // Hot Red/Pink
             }
             document.documentElement.style.setProperty('--primary', color);
@@ -3348,10 +3459,10 @@
             if (t === null || h === null) return;
 
             // Temperature alerts
-            if (t < 19) triggerAlert('temp-low', 'Anomalia: Freddo rilevato', 'warning');
+            if (t < 18) triggerAlert('temp-low', 'Anomalia: Freddo rilevato', 'warning');
             else clearAlert('temp-low');
 
-            if (t > 23.5) triggerAlert('temp-high', 'Critico: Caldo eccessivo', 'danger');
+            if (t > 27.5) triggerAlert('temp-high', 'Critico: Caldo eccessivo', 'danger');
             else clearAlert('temp-high');
 
             // Humidity alerts
@@ -3657,23 +3768,65 @@
             const roomGroup = new THREE.Group();
             scene.add(roomGroup);
 
+            // GROUND PLANE
+            const groundGeo = new THREE.PlaneGeometry(10, 10);
+            const groundMat = new THREE.MeshPhongMaterial({ 
+                color: 0x030508, 
+                transparent: true, 
+                opacity: 0.4 
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -1.26;
+            scene.add(ground);
+
+            const groundGrid = new THREE.GridHelper(10, 20, 0x4a6080, 0x1a2535);
+            groundGrid.position.y = -1.259;
+            groundGrid.material.transparent = true;
+            groundGrid.material.opacity = 0.2;
+            scene.add(groundGrid);
+
             // Room Wireframe (3m W-E, 2.5m tall, 4.5m N-S) - Rectangular
             const roomGeo = new THREE.BoxGeometry(3, 2.5, 4.5);
+            const roomMat = new THREE.MeshPhongMaterial({ 
+                color: 0x4a6080, 
+                transparent: true, 
+                opacity: 0.08, 
+                side: THREE.BackSide 
+            });
+            const roomMesh = new THREE.Mesh(roomGeo, roomMat);
+            roomGroup.add(roomMesh);
+
             const edges = new THREE.EdgesGeometry(roomGeo);
-            const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4a6080, transparent: true, opacity: 0.4 }));
+            const frame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ 
+                color: 0x4a6080, 
+                transparent: true, 
+                opacity: 0.3 
+            }));
             roomGroup.add(frame);
 
             // BED: South wall, shifted towards East
-            // S wall at Z=+2.25, bed depth=1.8 -> center at 2.25-0.9=1.35
             const bedGeo = new THREE.BoxGeometry(1.2, 0.4, 1.8);
-            const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ color: 0x2d7dff, emissive: 0x0a1428, wireframe: true }));
+            const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({ 
+                color: 0x2d7dff, 
+                emissive: 0x0a1428, 
+                transparent: true, 
+                opacity: 0.7,
+                shininess: 80
+            }));
             bed.position.set(0.8, -1.0, 1.3);
             roomGroup.add(bed);
 
             // DESK: North wall (Z=-2.25), shifted towards East
             // N wall at Z=-2.25, desk depth=0.7 -> center at -2.25+0.35=-1.9
             const deskGeo = new THREE.BoxGeometry(1.2, 0.06, 0.7);
-            const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ color: 0xbbff00, emissive: 0x0d1200, wireframe: true }));
+            const deskTop = new THREE.Mesh(deskGeo, new THREE.MeshPhongMaterial({ 
+                color: 0xbbff00, 
+                emissive: 0x0d1200, 
+                transparent: true, 
+                opacity: 0.8,
+                shininess: 100
+            }));
             deskTop.position.set(0.8, -0.72, -1.9);
             roomGroup.add(deskTop);
 
@@ -3689,8 +3842,14 @@
 
             // DOORS
             const doorGeo = new THREE.PlaneGeometry(0.8, 2.0);
-            const doorMat = new THREE.MeshBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
-            const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.5 });
+            const doorMat = new THREE.MeshPhongMaterial({ 
+                color: 0x8aadff, 
+                transparent: true, 
+                opacity: 0.2, 
+                side: THREE.DoubleSide,
+                emissive: 0x112244
+            });
+            const doorEdgeMat = new THREE.LineBasicMaterial({ color: 0x8aadff, transparent: true, opacity: 0.6 });
 
             // Door 1: NORTH wall, near West corner
             const door1 = new THREE.Mesh(doorGeo, doorMat);
