@@ -2051,7 +2051,8 @@
         .foot {
             flex-shrink: 0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 4px;
             font-size: 9px;
             color: var(--muted);
             font-family: 'DM Mono', monospace;
@@ -2508,7 +2509,6 @@
     <div id="grid-lines"><canvas id="pgrid"></canvas></div>
     <div class="scan-line"></div>
     <div class="scan-line sl2"></div>
-    <div id="corners"></div>
     <div id="particles"></div>
     <div id="noise"></div>
     <div id="ov"></div>
@@ -3246,6 +3246,7 @@
         const TD = 'symo/room/data';
         const TR = 'symo/room/relay';
         const TR2 = 'symo/room/relay2';
+        const TSCE = 'symo/room/scenario'; // scenario bridge topic (retained)
         // Energy timestamp topics (retained) - store when a relay was turned ON
         // Changed prefix to `symo_storage` to prevent the ESP from receiving these and crashing
         const TE1 = 'symo_storage/energy/l1ts'; // relay 1 on-timestamp
@@ -3763,10 +3764,15 @@
         function triggerScenario(type) {
             if (!mc?.connected) return;
 
-            // Animazione UI dei bottoni
+            // Animazione UI dei bottoni (per Off solo un lampo veloce)
             document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById('btn-scen-' + type);
-            if (btn) btn.classList.add('active');
+            if (btn && type !== 'off') btn.classList.add('active');
+
+            // Pubblica lo scenario su MQTT se non è già quello attivo (o pubblica sempre per sicurezza)
+            if (mc?.connected) {
+                mc.publish(TSCE, type, { retain: true, qos: 1 });
+            }
 
             if (type === 'off') {
                 setRelay(false, 'Scenario_OFF'); mc.publish(TR, 'OFF');
@@ -3789,6 +3795,7 @@
                 setConn(true, 'Connesso');
                 mc.subscribe(TD);
                 mc.subscribe(TS, { qos: 1 });
+                mc.subscribe(TSCE, { qos: 1 }); // scenarios sync
                 // Subscribe to energy timestamp topics
                 mc.subscribe(TE1, { qos: 1 });
                 mc.subscribe(TE2, { qos: 1 });
@@ -3840,6 +3847,15 @@
                     return;
                 }
                 if (t === TS) { try { applyScheduleData(JSON.parse(p.toString())); } catch (e) { } return; }
+                if (t === TSCE) {
+                    const type = p.toString();
+                    document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+                    if (type !== 'off') {
+                        const btn = document.getElementById('btn-scen-' + type);
+                        if (btn) btn.classList.add('active');
+                    }
+                    return;
+                }
                 if (t !== TD) return;
                 try {
                     const j = JSON.parse(p.toString());
